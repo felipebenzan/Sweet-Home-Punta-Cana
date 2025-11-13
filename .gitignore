@@ -1,0 +1,5 @@
+node_modules/
+.next/
+.env
+.env.local
+punta-cana-stays-firebase-adminsdk-fbsvc-a66d89a017.json

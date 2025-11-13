@@ -1,0 +1,170 @@
+
+.section {
+    width: 100%;
+    padding: 4rem 1.5rem;
+    background-color: #F9F7F2; /* shpc-sand */
+}
+
+.container {
+    max-width: 1280px;
+    margin: 0 auto;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+.tile {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    background-color: #f5f5f7;
+    color: #1d1d1f;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex; /* Ensure tile itself is a flex container */
+    flex-direction: column; /* Stack content vertically */
+}
+
+.tileDark {
+    background: #000;
+    color: #f5f5f7;
+}
+
+.tile:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 40px rgba(0,0,0,.1);
+}
+
+.tile:hover .image {
+    transform: scale(1.05);
+}
+
+.link {
+    text-decoration: none;
+    color: inherit;
+    display: flex; /* Make link a flex container */
+    flex-direction: column; /* Stack content vertically */
+    height: 100%;
+}
+
+.content {
+    padding: 28px;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1; /* Allow content to grow and push image down */
+}
+
+.headline {
+    font-family: var(--font-playfair-display), serif;
+    font-size: clamp(32px, 4vw, 48px);
+    font-weight: 700;
+    line-height: 1.1;
+}
+
+.subheadline {
+    font-size: clamp(16px, 2vw, 18px);
+    margin-top: 0.5rem;
+    max-w: 380px;
+    margin-left: auto;
+    margin-right: auto;
+    color: #6e6e73;
+}
+
+.tileDark .subheadline {
+    color: rgba(255,255,255,0.8);
+}
+
+
+.ctaContainer {
+    margin-top: 1rem;
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+}
+
+.cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 6px 16px;
+    border-radius: 9999px;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.3s;
+    border: 1px solid transparent;
+}
+
+.ctaPrimary {
+    background-color: transparent;
+    color: #0071e3;
+    border-color: #0071e3;
+}
+
+.ctaPrimary:hover {
+    background-color: #0071e3;
+    color: white;
+}
+
+.tileDark .ctaPrimary {
+    color: #2997ff;
+    border-color: #2997ff;
+}
+
+.tileDark .ctaPrimary:hover {
+    background-color: #2997ff;
+    color: #000;
+}
+
+
+.imageContainer {
+    margin-top: auto; /* Push image to the bottom */
+    padding-top: 1rem; /* Space between CTAs and image */
+    position: relative;
+    aspect-ratio: 16/9;
+    width: 100%;
+    overflow: hidden;
+}
+
+.image {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    transition: transform 0.4s ease;
+}
+
+@media (min-width: 768px) {
+    .grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem; /* 24px */
+    }
+    .tile {
+        border-radius: 28px;
+    }
+    .content {
+        padding: 48px 48px 24px; /* Adjust bottom padding */
+    }
+    .imageContainer {
+       padding-top: 1.5rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .tile, .image, .cta {
+        transition: none;
+    }
+    .tile:hover {
+        transform: none;
+    }
+    .tile:hover .image {
+        transform: none;
+    }
+}

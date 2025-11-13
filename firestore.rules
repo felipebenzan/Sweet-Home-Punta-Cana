@@ -1,0 +1,61 @@
+
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isStaff() {
+      // In a real app, you'd check a custom claim or a user role document.
+      // For now, we'll assume any signed-in user might be staff for wider testing,
+      // but in production this should be properly secured.
+      // Example: return request.auth.token.role == 'staff'
+      return isSignedIn();
+    }
+    
+    function isOwner(userId) {
+        return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // Publicly readable catalog data
+    match /rooms/{roomId} {
+      allow get, list: if true;
+      allow write: if isStaff();
+    }
+    match /excursions/{excursionId} {
+      allow get, list: if true;
+      allow write: if isStaff();
+    }
+    match /rates/{roomId}/calendar/{date} {
+        allow get, list: if true;
+        allow write: if isStaff();
+    }
+    
+    // Anyone can create their own booking.
+    // Reading/updating/deleting is restricted.
+    match /reservations/{reservationId} {
+      // allow create: if isSignedIn() && request.resource.data.guestUid == request.auth.uid;
+      allow create: if true
+      allow read: if true
+      // allow read: if isStaff() || isOwner(resource.data.guestUid);
+      allow update, delete: if isStaff();
+    }
+
+    match /serviceBookings/{bookingId} {
+      allow create: if true
+      // allow create: if isSignedIn() && request.resource.data.guestUid == request.auth.uid;
+      // allow read: if isStaff() || isOwner(resource.data.guestUid);
+      allow read: if true;
+      allow update, delete: if isStaff();
+    }
+
+    // Users can only manage their own data.
+    match /users/{userId} {
+      allow read, write: if isOwner(userId);
+      allow list, create: if isStaff();
+    }
+  }
+}
