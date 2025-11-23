@@ -9,18 +9,17 @@ service cloud.firestore {
     }
 
     function isStaff() {
-      // In a real app, you'd check a custom claim or a user role document.
-      // For now, we'll assume any signed-in user might be staff for wider testing,
-      // but in production this should be properly secured.
-      // Example: return request.auth.token.role == 'staff'
-      return isSignedIn();
+      // This is a placeholder. In a real app, you would check a custom claim.
+      // For example: return request.auth.token.role == 'staff'
+      // We will keep it open for now for broad testing.
+      return isSignedIn(); 
     }
     
     function isOwner(userId) {
         return isSignedIn() && request.auth.uid == userId;
     }
 
-    // Publicly readable catalog data
+    // PUBLIC DATA
     match /rooms/{roomId} {
       allow get, list: if true;
       allow write: if isStaff();
@@ -34,28 +33,36 @@ service cloud.firestore {
         allow write: if isStaff();
     }
     
-    // Anyone can create their own booking.
-    // Reading/updating/deleting is restricted.
+    // USER-SPECIFIC DATA
+
+    // Room reservations
     match /reservations/{reservationId} {
-      // allow create: if isSignedIn() && request.resource.data.guestUid == request.auth.uid;
-      allow create: if true
-      allow read: if true
-      // allow read: if isStaff() || isOwner(resource.data.guestUid);
-      allow update, delete: if isStaff();
+      // Anyone can create a pending reservation.
+      allow create: if true;
+      // Only staff or the owner can read it.
+      allow read: if isStaff() || (resource.data.guestUid != null && isOwner(resource.data.guestUid));
+      // Only staff can modify confirmed reservations. The owner can update it before it's confirmed (e.g. payment)
+      allow update, delete: if isStaff(); // This might need refinement for payment flows
     }
 
+    // Service bookings (like transfers, laundry)
     match /serviceBookings/{bookingId} {
-      allow create: if true
-      // allow create: if isSignedIn() && request.resource.data.guestUid == request.auth.uid;
-      // allow read: if isStaff() || isOwner(resource.data.guestUid);
-      allow read: if true;
-      allow update, delete: if isStaff();
+      // Anyone can create a booking, which starts as PENDING_PAYMENT.
+      allow create: if true;
+      
+      // After creation, only the owner or staff can read it.
+      allow read: if isStaff() || (resource.data.guestUid != null && isOwner(resource.data.guestUid));
+      
+      // The key change: The owner can update their own booking (to confirm payment),
+      // and staff can modify or delete it.
+      allow update: if isStaff() || (resource.data.guestUid != null && isOwner(resource.data.guestUid));
+      allow delete: if isStaff();
     }
 
-    // Users can only manage their own data.
+    // User profile
     match /users/{userId} {
       allow read, write: if isOwner(userId);
-      allow list, create: if isStaff();
+      allow list, create: if isStaff(); // Only staff can create new users or list them all
     }
   }
 }

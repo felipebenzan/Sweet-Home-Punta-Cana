@@ -21,7 +21,6 @@ export function PayPalButtonsWrapper({
     const [{ isPending }] = usePayPalScriptReducer();
 
     const createOrder = (_data: any, actions: any) => {
-        console.log("Creating PayPal order on client-side...");
         return actions.order.create({
             purchase_units: [
                 {
@@ -32,30 +31,17 @@ export function PayPalButtonsWrapper({
                     description: 'Sweet Home Punta Cana Booking',
                 },
             ],
-            application_context: {
-                // Note: return_url and cancel_url are not typically used with this client-side flow
-                // as the onApprove, onCancel, onError callbacks handle the result.
-            },
+            application_context: {},
         });
     };
 
     const onApprove = async (_data: any, actions: any) => {
-        console.log("Payment approved. Capturing payment...");
         try {
-            // The actions.order.capture() function communicates with PayPal to finalize the transaction.
             const details = await actions.order.capture();
-            console.log("Payment captured successfully:", details);
-
-            // Extract the necessary IDs from the successful transaction details
             const orderID = details.id;
             const transactionId = details.purchase_units[0].payments.captures[0].id;
-            
-            // This function (passed as a prop from checkout/page.tsx) will now be called.
-            // It is responsible for saving the finalized booking to your database (Firestore).
             onPaymentSuccess(orderID, transactionId);
-
         } catch (error) {
-            console.error("Error capturing payment:", error);
             onPaymentError(error);
         }
     };
