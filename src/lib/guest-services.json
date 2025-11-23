@@ -1,0 +1,58 @@
+[
+    {
+        "icon": "Plane",
+        "title": "Airport Transfers",
+        "description": "Seamless rides from PUJ.",
+        "image": "https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/Private%20airport%20transfer%20taxi%20sweet%20home%20punta%20cana.png?alt=media&token=ccaa2b22-3432-4c66-be4f-af7f6e7aec6f",
+        "imageHint": "airport arrivals",
+        "href": "/airport-transfer"
+    },
+    {
+        "icon": "Bike",
+        "title": "Scooter Rentals",
+        "description": "Explore at your own pace.",
+        "image": "https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/Bycicle%20Vespa%20Scooter%20rental%20sweet%20home%20punta%20cana.png?alt=media&token=776f9bd2-45e7-47fa-934e-a261a68af3fb",
+        "imageHint": "scooter rental",
+        "href": "https://www.scooterspc.com"
+    },
+     {
+        "icon": "ConciergeBell",
+        "title": "Excursions",
+        "description": "Discover the best tours.",
+        "image": "https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/Excursion%20booking%20snorkeling%20sweet%20home%20punta%20cana%20guest%20services.png?alt=media&token=6015afee-578f-45cc-b8c4-ee2db9f7d311",
+        "imageHint": "vacation excursion",
+        "href": "/excursions"
+    },
+    {
+        "icon": "Shirt",
+        "title": "Laundry Service",
+        "description": "Fresh clothes, zero hassle.",
+        "image": "https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/laundry%20service%20guest%20services%20sweet%20home%20punta%20cana.png?alt=media&token=f82dc09e-4fe6-45f4-bb76-aaf099ec9de0",
+        "imageHint": "laundry service",
+        "href": "/laundry-service"
+    },
+    {
+        "icon": "Waves",
+        "title": "Beach Access",
+        "description": "Easy access to beautiful beaches.",
+        "image": "https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/Bavaro%20beach%20access%20sweet%20home%20punta%20cana.png?alt=media&token=017d0f60-edfb-4c87-9f0d-74ff66c153ff",
+        "imageHint": "beach access",
+        "href": "/beach-access"
+    },
+    {
+        "icon": "Utensils",
+        "title": "Food Delivery",
+        "description": "Order from your favorite apps.",
+        "image": "https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/food%20delivery%20uber%20eats%20pedidos%20ya%20sweet%20home%20punta%20cana.png?alt=media&token=8f8340a6-dc0e-4684-98eb-eeb7bf0b7d05",
+        "imageHint": "food delivery",
+        "href": "/food-delivery"
+    },
+    {
+        "icon": "ShoppingBasket",
+        "title": "Mini-Market Delivery",
+        "description": "Get groceries delivered.",
+        "image": "https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/Mini%20market%20delivery%20colmado%20sweet%20home%20punta%20cana.png?alt=media&token=447c4d2b-67f4-4389-b5e0-81bbc0b16af6",
+        "imageHint": "grocery delivery",
+        "href": "/minimarket-delivery"
+    }
+]

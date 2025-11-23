@@ -9,6 +9,10 @@ import HeaderManager from '@/components/header-manager';
 import { cn } from '@/lib/utils';
 import { FirebaseClientProvider } from '@/firebase/client-provider';
 import { FirebaseErrorListener } from './FirebaseErrorListener';
+import { PayPalScriptProvider } from '@paypal/react-paypal-js';
+
+const PAYPAL_CLIENT_ID = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID!;
+const CURRENCY = 'USD';
 
 const pagesWithPadding = [
   '/faqs',
@@ -38,36 +42,38 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
 
   return (
     <FirebaseClientProvider>
-      <FirebaseErrorListener />
+      <PayPalScriptProvider options={{ 'client-id': PAYPAL_CLIENT_ID, currency: CURRENCY }}>
+        <FirebaseErrorListener />
 
-      {isAdminPage || isTestPage ? (
-        <main className="flex-grow">{children}</main>
-      ) : isBookingFlowPage ? (
-        <>
-          <Header />
-          <main
-            className="flex-grow bg-shpc-sand pt-[var(--header-height)]"
-          >
-            {children}
-          </main>
-          <Footer />
-        </>
-      ) : (
-        <>
-          <HeaderManager>
+        {isAdminPage || isTestPage ? (
+          <main className="flex-grow">{children}</main>
+        ) : isBookingFlowPage ? (
+          <>
             <Header />
             <main
-              className={cn(
-                "flex-grow bg-shpc-sand",
-                pagesWithPadding.includes(pathname) && "pt-[var(--header-height)]"
-              )}
+              className="flex-grow bg-shpc-sand pt-[var(--header-height)]"
             >
               {children}
             </main>
-          </HeaderManager>
-          <Footer />
-        </>
-      )}
+            <Footer />
+          </>
+        ) : (
+          <>
+            <HeaderManager>
+              <Header />
+              <main
+                className={cn(
+                  "flex-grow bg-shpc-sand",
+                  pagesWithPadding.includes(pathname) && "pt-[var(--header-height)]"
+                )}
+              >
+                {children}
+              </main>
+            </HeaderManager>
+            <Footer />
+          </>
+        )}
+      </PayPalScriptProvider>
     </FirebaseClientProvider>
   );
 }

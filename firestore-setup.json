@@ -1,0 +1,18 @@
+'''{
+  "service_to_add": {
+    "collection": "services",
+    "document_id": "laundry_wash_fold",
+    "data": {
+      "name": "Wash & Fold Laundry Service",
+      "type": "laundry",
+      "pricingModel": "per_bag",
+      "basePrice": 25,
+      "currency": "USD",
+      "isActive": true
+    }
+  },
+  "firestore_rules": {
+    "content": "rules_version = '2';\n\nservice cloud.firestore {\n  match /databases/{database}/documents {\n\n    // Publicly readable service catalog\n    match /services/{serviceId} {\n      allow read: if true;\n      allow write: if false; // Must be updated via Firebase Console\n    }\n\n    // Carts are user-specific and have strict update rules\n    match /carts/{cartId} {\n      allow read, update, delete: if request.auth.uid == resource.data.userId;\n      allow create: if request.auth.uid == request.resource.data.userId\n                      && request.resource.data.status == 'DRAFT';\n\n      // Prevent client from updating status to a completed state or changing server-set fields\n      allow update: if request.auth.uid == resource.data.userId\n                     && !request.resource.data.keys().hasAny(['paymentId', 'serverTotal'])\n                     && !(resource.data.status == 'PENDING_PAYMENT' && request.resource.data.status != 'DRAFT');\n    }\n\n    // Payments can only be read by the user who owns them. All writes are backend-only.\n    match /payments/{paymentId} {\n      allow read: if request.auth.uid == resource.data.userId;\n      allow create, update, delete: if false;\n    }\n\n    // Final records (bookings, etc.) are backend-only\n    match /bookings/{bookingId} {\n      allow read: if request.auth.uid == resource.data.userId;\n      allow create, update, delete: if false;\n    }\n    match /serviceOrders/{orderId} {\n      allow read: if request.auth.uid == resource.data.userId;\n      allow create, update, delete: if false;\n    }\n  }\n}"
+  }
+}
+'''

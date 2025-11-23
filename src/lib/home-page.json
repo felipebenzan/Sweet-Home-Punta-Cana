@@ -1,0 +1,111 @@
+{
+  "hero": {
+    "title": "Welcome Home, Sweet Home Punta Cana",
+    "subtitle": "Paradise feels like home 🌴",
+    "image": {
+      "src": "https://picsum.photos/1600/900",
+      "alt": "Lush tropical garden of a guest house",
+      "hint": "guest house tropical"
+    }
+  },
+  "location": {
+    "title": "Perfectly Placed.",
+    "text": "Set in Bávaro — just 6 minutes from Downtown, 25 minutes from the airport, and a short stroll to white-sand beaches. Supermarket, pharmacy, cafés, and Cocotal Golf Course are all next door.",
+    "points": [
+      {
+        "icon": "Plane",
+        "text": "25 mins to PUJ Airport"
+      },
+      {
+        "icon": "Waves",
+        "text": "Walk/bike to the beach"
+      },
+      {
+        "icon": "Goal",
+        "text": "Cocotal Golf Course nearby"
+      }
+    ],
+    "image": {
+      "src": "https://picsum.photos/600/800",
+      "alt": "Path lined with palm trees",
+      "hint": "palm tree path"
+    }
+  },
+  "shapedByParadise": {
+    "title": "Shaped By Paradise.",
+    "features": [
+      {
+        "title": "Home Kitchen",
+        "icon": "Utensils",
+        "text": "Cook, snack, or sip coffee your way.",
+        "image": {
+          "src": "https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/kitchen%20coock%20share%20dominican%20food%20sweet%20home%20punta%20cana.png?alt=media&token=7499ed20-a8e7-44f8-9548-a8ff87007327",
+          "alt": "Modern home kitchen",
+          "hint": "kitchen interior"
+        }
+      },
+      {
+        "title": "Garden Patio",
+        "icon": "Sprout",
+        "text": "A quiet corner to read, chat, or simply breathe.",
+        "image": {
+          "src": "https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/Garden%20terrace%20coffee%20hamock%20sweet%20home%20punta%20cana.JPG?alt=media&token=fc113c14-a2d7-4a94-b381-ed62210a32ba",
+          "alt": "Peaceful garden patio",
+          "hint": "garden patio"
+        }
+      },
+      {
+        "title": "High-Speed Wi-Fi",
+        "icon": "Wifi",
+        "text": "Stream, work, or share your beach days without limits.",
+        "image": {
+          "src": "https://picsum.photos/seed/wifi/602/602",
+          "alt": "High-speed internet setup",
+          "hint": "wifi router"
+        }
+      }
+    ]
+  },
+  "islandLife": {
+    "title": "Island Life, Simplified.",
+    "image": {
+      "src": "https://picsum.photos/1600/800",
+      "alt": "Aerial view of a tropical coastline",
+      "hint": "tropical coastline aerial"
+    },
+    "features": [
+      {
+        "icon": "Gamepad2",
+        "text": "Tennis & Football",
+        "subtext": "inside the complex"
+      },
+      {
+        "icon": "Goal",
+        "text": "World-class golf",
+        "subtext": "next door"
+      },
+      {
+        "icon": "Car",
+        "text": "Uber & buses",
+        "subtext": "connect you everywhere"
+      },
+      {
+        "icon": "CircleDotDashed",
+        "text": "Food delivery",
+        "subtext": "apps to your doorstep"
+      },
+      {
+        "icon": "Waves",
+        "text": "Bavaro beach",
+        "subtext": "Walk or bike to award wining Bavaro beach"
+      }
+    ]
+  },
+  "closing": {
+    "quote": "“It’s the kind of space where you fall asleep easily, wake up rested.”",
+    "button": {
+      "text": "See Our Rooms",
+      "href": "/rooms"
+    }
+  }
+}

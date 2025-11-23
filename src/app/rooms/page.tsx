@@ -1,52 +1,36 @@
-"use client";
 
 import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { getRooms } from "@/server-actions";
+import { firestore } from "@/lib/firebase-admin";
 import type { Room } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { useRouter } from "next/navigation";
-import { Card, CardContent } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+} from "@/components/ui/card";
 import GuestServicesCarousel from "@/components/guest-services-carousel";
-import { Skeleton } from "@/components/ui/skeleton";
 
-export default function RoomsPage() {
-  const router = useRouter();
-  const [rooms, setRooms] = React.useState<Room[]>([]);
-  const [isLoading, setIsLoading] = React.useState(true);
+// This is now a Server Component.
 
-  React.useEffect(() => {
-    async function fetchRooms() {
-      setIsLoading(true);
-      try {
-        const roomData = await getRooms();
-        setRooms(roomData);
-        console.log("Fetched rooms:", roomData);
-      } catch (error) {
-        console.error("Failed to fetch rooms:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    fetchRooms();
-  }, []);
+export const revalidate = 3600; // Re-fetch room data every hour
 
-  const handleBookNow = (slug: string) => {
-    const today = new Date();
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const dayAfter = new Date(today);
-    dayAfter.setDate(dayAfter.getDate() + 2);
+async function getRooms(): Promise<Room[]> {
+    const snapshot = await firestore.collection('rooms').get();
+    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Room));
+}
 
-    const from = tomorrow.toISOString().split("T")[0];
-    const to = dayAfter.toISOString().split("T")[0];
+export default async function RoomsPage() {
+  let rooms: Room[] = [];
+  let fetchError: string | null = null;
 
-    router.push(`/search?from=${from}&to=${to}&guests=2&room=${slug}`);
-  };
-  console.log('current page: rooms/slug/page.tsx');
+  try {
+    rooms = await getRooms();
+  } catch (error) {
+    console.error("[RoomsPage] Failed to fetch rooms:", error);
+    fetchError = "We couldn't load our rooms right now. Please try again in a few moments.";
+  }
 
   return (
     <div className="bg-shpc-sand">
@@ -65,81 +49,67 @@ export default function RoomsPage() {
             Your Stay, Your Style ✨
           </h1>
           <p className="mt-4 text-lg md:text-2xl font-light max-w-2xl mx-auto">
-            Each room tells its own story — choose the one that feels like
-            yours.
+            Each room tells its own story — choose the one that feels like yours.
           </p>
         </div>
       </section>
 
       <div className="max-w-6xl mx-auto px-6 py-16 sm:py-24">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {isLoading
-            ? Array.from({ length: 4 }).map((_, i) => (
-                <Card
-                  key={i}
-                  className="overflow-hidden shadow-soft rounded-2xl w-full flex flex-col group"
+        {fetchError ? (
+           <div className="text-center py-12">
+             <p className="text-lg text-destructive">{fetchError}</p>
+             <Button asChild variant="outline" className="mt-4">
+                <Link href="/">Return to Homepage</Link>
+             </Button>
+           </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {rooms.map((room) => (
+              <Card
+                key={room.id}
+                className="overflow-hidden shadow-soft rounded-2xl w-full flex flex-col group"
+              >
+                <Link
+                  href={`/rooms/${room.slug}`}
+                  className="block overflow-hidden"
+                  aria-label={`View details for ${room.name}`}
                 >
-                  <Skeleton className="aspect-video w-full" />
-                  <CardContent className="p-6 flex flex-col flex-grow">
-                    <Skeleton className="h-8 w-3/4 mb-2" />
-                    <Skeleton className="h-4 w-full mb-4" />
-                    <div className="flex-grow" />
-                    <div className="flex justify-end items-center mt-6">
-                      <Skeleton className="h-10 w-48" />
-                    </div>
-                  </CardContent>
-                </Card>
-              ))
-            : rooms.map((room) => (
-                <Card
-                  key={room.id}
-                  className="overflow-hidden shadow-soft rounded-2xl w-full flex flex-col group"
-                >
-                  <Link
-                    href={`/rooms/${room.slug}`}
-                    className="block overflow-hidden"
-                  >
-                    <div className="relative aspect-video w-full">
-                      <Image
-                        src={
-                          room.image ||
-                          "https://picsum.photos/seed/room-placeholder/800/600"
-                        }
-                        alt={room.name}
-                        fill
-                        className="object-cover transition-transform duration-300 group-hover:scale-105"
-                        data-ai-hint="hotel room interior"
-                      />
-                    </div>
-                  </Link>
-                  <CardContent className="p-6 flex flex-col flex-grow">
-                    <h3 className="font-playfair text-3xl font-bold text-shpc-ink">
-                      {room.name}
-                    </h3>
-                    <p className="text-muted-foreground mt-2 flex-grow">
-                      {room.tagline || "A perfect room for your stay."}
-                    </p>
-                    <div className="flex justify-end items-center mt-6">
-                      <div className="flex items-center gap-2">
-                        <Button
-                          asChild
-                          variant="outline"
-                          className="rounded-full"
-                        >
-                          <Link href={`/rooms/${room.slug}`}>Step Inside</Link>
-                        </Button>
-                        <Button
-                          onClick={() => handleBookNow(room.slug)}
-                          className="rounded-full"
-                        >
-                          Book Now <ArrowRight className="ml-2 h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-        </div>
+                  <div className="relative aspect-video w-full">
+                    <Image
+                      src={
+                        room.image ||
+                        "https://picsum.photos/seed/room-placeholder/800/600"
+                      }
+                      alt={room.name}
+                      fill
+                      className="object-cover transition-transform duration-300 group-hover:scale-105"
+                      data-ai-hint="hotel room interior"
+                    />
+                  </div>
+                </Link>
+                <CardContent className="p-6 flex flex-col flex-grow">
+                  <h3 className="font-playfair text-3xl font-bold text-shpc-ink">
+                    {room.name}
+                  </h3>
+                  <p className="text-muted-foreground mt-2 flex-grow">
+                    {room.tagline || "A perfect room for your stay."}
+                  </p>
+                  <div className="flex justify-end items-center mt-6">
+                    <Button
+                      asChild
+                      size="lg"
+                      className="rounded-full"
+                    >
+                      <Link href={`/rooms/${room.slug}`}>
+                        View Details & Availability <ArrowRight className="ml-2 h-4 w-4" />
+                      </Link>
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
       </div>
 
       <GuestServicesCarousel />

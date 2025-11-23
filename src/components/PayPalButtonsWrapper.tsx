@@ -1,105 +1,77 @@
-"use client";
+'use client';
 
-import React from 'react';
-import { PayPalButtons, PayPalScriptProvider } from '@paypal/react-paypal-js';
-import { Toast } from '@/components/ui/toast';
-import { createPaypalOrder, capturePaypalOrder } from '@/server-actions';
+import { PayPalButtons, usePayPalScriptReducer } from "@paypal/react-paypal-js";
+import { Loader2 } from "lucide-react";
 
-interface PayPalButtonsWrapperProps {
-  amount: string;
-  currency: string;
-  onPaymentSuccess: (orderId: string, transactionId: string) => Promise<void>;
-  onPaymentError: (error: any) => void;
-}
+type PayPalButtonsWrapperProps = {
+    amount: string;
+    currency: string;
+    onPaymentSuccess: (paypalOrderId: string, paypalTransactionId: string) => void;
+    onPaymentError: (error: any) => void;
+    onPaymentCancel: () => void;
+};
 
 export function PayPalButtonsWrapper({
-  amount,
-  currency,
-  onPaymentSuccess,
-  onPaymentError,
+    amount,
+    currency,
+    onPaymentSuccess,
+    onPaymentError,
+    onPaymentCancel
 }: PayPalButtonsWrapperProps) {
-  const paypalClientId = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID;
+    const [{ isPending }] = usePayPalScriptReducer();
 
-  // IMPORTANT: Get your merchant ID from your PayPal Developer Account
-  // The error message provided it: "CH3EFATV58J5S" or "sb-mqlmr46875371@business.example.com"
-  // You should store this in an environment variable like NEXT_PUBLIC_PAYPAL_MERCHANT_ID
-  const paypalMerchantId = process.env.NEXT_PUBLIC_PAYPAL_MERCHANT_ID || "CH3EFATV58J5S"; // Use the ID from your error or env var
+    const createOrder = (_data: any, actions: any) => {
+        console.log("Creating PayPal order on client-side...");
+        return actions.order.create({
+            purchase_units: [
+                {
+                    amount: {
+                        value: amount, // The final amount for the transaction
+                        currency_code: currency, // The currency of the transaction
+                    },
+                    description: 'Sweet Home Punta Cana Booking',
+                },
+            ],
+            application_context: {
+                // Note: return_url and cancel_url are not typically used with this client-side flow
+                // as the onApprove, onCancel, onError callbacks handle the result.
+            },
+        });
+    };
 
-  if (!paypalClientId) {
-    console.error("PayPal Client ID is not defined. Check NEXT_PUBLIC_PAYPAL_CLIENT_ID.");
+    const onApprove = async (_data: any, actions: any) => {
+        console.log("Payment approved. Capturing payment...");
+        try {
+            // The actions.order.capture() function communicates with PayPal to finalize the transaction.
+            const details = await actions.order.capture();
+            console.log("Payment captured successfully:", details);
+
+            // Extract the necessary IDs from the successful transaction details
+            const orderID = details.id;
+            const transactionId = details.purchase_units[0].payments.captures[0].id;
+            
+            // This function (passed as a prop from checkout/page.tsx) will now be called.
+            // It is responsible for saving the finalized booking to your database (Firestore).
+            onPaymentSuccess(orderID, transactionId);
+
+        } catch (error) {
+            console.error("Error capturing payment:", error);
+            onPaymentError(error);
+        }
+    };
+
+    if (isPending) {
+        return <div className="flex justify-center items-center"><Loader2 className="h-8 w-8 animate-spin" /></div>;
+    }
+
     return (
-      <div className="text-red-500">
-        PayPal payment is not available. Missing configuration (Client ID).
-      </div>
+        <PayPalButtons
+            key={amount} // Add key to ensure re-render on amount change
+            style={{ layout: "vertical" }}
+            createOrder={createOrder} // Called when the button is clicked
+            onApprove={onApprove}     // Called when the user approves the payment in the popup
+            onError={onPaymentError}  // Called if an error occurs during the transaction
+            onCancel={onPaymentCancel} // Called if the user cancels the payment
+        />
     );
-  }
-
-  // Define the initial options for the PayPalScriptProvider
-  const initialOptions = {
-    clientId: paypalClientId,
-    currency: currency,
-    intent: "capture",
-    // ADD THIS LINE: Explicitly tell the SDK which merchant ID to expect
-    'data-merchant-id': paypalMerchantId, // Or use the email if you prefer: 'data-merchant-id': 'sb-mqlmr46875371@business.example.com'
-  };
-
-  return (
-    <PayPalScriptProvider options={initialOptions}>
-      <PayPalButtons
-        style={{ layout: "vertical" }}
-        createOrder={async (data, actions) => {
-          try {
-            const orderId = await createPaypalOrder(amount, currency);
-            if (!orderId) {
-              throw new Error("Failed to create PayPal order on server.");
-            }
-            return orderId;
-          } catch (error: any) {
-            console.error("Error creating PayPal order:", error);
-            Toast({
-              title: "Payment Error",
-              // description: `Could not start PayPal payment: ${error.message}`,
-              variant: "destructive",
-            });
-            onPaymentError(error);
-            return '';
-          }
-        }}
-        onApprove={async (data, actions) => {
-          try {
-            const transactionId = await capturePaypalOrder(data.orderID);
-            if (!transactionId) {
-              throw new Error("Failed to capture PayPal payment on server.");
-            }
-            await onPaymentSuccess(data.orderID, transactionId);
-          } catch (error: any) {
-            console.error("Error capturing PayPal payment:", error);
-            Toast({
-              title: "Payment Failed",
-              // description: `Your payment could not be processed: ${error.message}`,
-              variant: "destructive",
-            });
-            onPaymentError(error);
-          }
-        }}
-        onCancel={(data) => {
-          console.log("PayPal payment cancelled:", data);
-          Toast({
-            title: "Payment Cancelled",
-            // description: "You have cancelled the PayPal payment.",
-          });
-          onPaymentError(new Error("Payment cancelled"));
-        }}
-        onError={(err) => {
-          console.error("PayPal Buttons Error:", err);
-          Toast({
-            title: "PayPal Error",
-            // description: "An error occurred with PayPal. Please try again.",
-            variant: "destructive",
-          });
-          onPaymentError(err);
-        }}
-      />
-    </PayPalScriptProvider>
-  );
 }

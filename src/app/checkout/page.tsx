@@ -1,18 +1,17 @@
 'use client';
 
 import * as React from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import type { BookingDetails } from '@/lib/types';
-import { format, parseISO, differenceInDays, addDays } from 'date-fns';
-import { ArrowLeft, User, Calendar as CalendarIcon, BedDouble, Users as UsersIcon, Plane, Info, CheckCircle, Clock, Phone, Loader2 } from 'lucide-react';
+import { format, parseISO, addDays } from 'date-fns';
+import { ArrowLeft, Calendar as CalendarIcon, Loader2, CheckCircle, Clock, Phone } from 'lucide-react';
 import Image from 'next/image';
 import { useToast } from '@/hooks/use-toast';
-import { Skeleton } from '@/components/ui/skeleton';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
@@ -22,140 +21,13 @@ import { cn } from '@/lib/utils';
 import { useFirestore, useUser } from '@/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import {PayPalButtonsWrapper} from '@/components/PayPalButtonsWrapper';
+import CheckoutSummary from '@/components/CheckoutSummary'; // Assuming you extract this to its own file
+
 
 type TripType = 'none' | 'one-way' | 'round-trip';
 
 const pickupPrices = {
   puj: { 'one-way': 35, 'round-trip': 70 },
-};
-
-const CheckoutSummary = ({ bookingDetails, pickupPrice, tripType, airline, flightNumber, arrivalDate, returnDate, returnFlightNumber }: { 
-  bookingDetails: BookingDetails, 
-  pickupPrice: number,
-  tripType: TripType,
-  airline?: string,
-  flightNumber?: string,
-  arrivalDate?: Date,
-  returnDate?: Date,
-  returnFlightNumber?: string,
-}) => {
-  if (!bookingDetails) return null;
-
-  const { rooms, dates, guests, nights, totalPrice } = bookingDetails;
-  const fromDate = parseISO(dates.from);
-  const toDate = parseISO(dates.to);
-  
-  const finalPrice = totalPrice + pickupPrice;
-  const isPickupSelected = tripType !== 'none';
-  
-  const missingArrivalDetails = isPickupSelected && (!airline || !flightNumber || !arrivalDate);
-  const missingDepartureDetails = tripType === 'round-trip' && (!returnFlightNumber || !returnDate);
-
-
-  return (
-    <div className="space-y-6 lg:w-[420px] shrink-0">
-      <Card className="bg-white shadow-soft rounded-2xl">
-        <CardHeader className="p-6">
-          <h3 className="text-2xl font-bold">Your Booking</h3>
-        </CardHeader>
-        <CardContent className="p-6 pt-0 space-y-4">
-          <div className="space-y-2 text-sm">
-            <div className="flex justify-between items-center">
-              <span className="text-muted-foreground flex items-center gap-2"><CalendarIcon className="h-4 w-4"/>Dates</span>
-              <span className="font-semibold text-right">{format(fromDate, 'MMM dd, yyyy')} – {format(toDate, 'MMM dd, yyyy')}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-muted-foreground flex items-center gap-2"><UsersIcon className="h-4 w-4"/> Guests</span>
-              <span className="font-bold text-black text-base">{guests} {guests === 1 ? 'guest' : 'guests'}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-muted-foreground flex items-center gap-2"><Clock className="h-4 w-4"/> Nights</span>
-              <span className="font-bold text-black text-base">{nights} {nights === 1 ? 'night' : 'nights'}</span>
-            </div>
-          </div>
-
-          <Separator />
-          
-          {rooms.map(room => (
-            <div key={room.id} className="space-y-2">
-              <div className="flex gap-4 items-start">
-                <Image src={room.image || 'https://picsum.photos/seed/room-placeholder/80/60'} alt={room.name} width={80} height={60} className="rounded-lg object-cover aspect-[4/3]" data-ai-hint="hotel room" />
-                <div className="flex-grow">
-                  <p className="font-semibold">{room.name}</p>
-                  <p className="text-sm text-muted-foreground">{room.bedding} bed</p>
-                  <div className="flex justify-between text-sm mt-1">
-                    <span>${room.price.toFixed(2)} × {nights} {nights === 1 ? 'night' : 'nights'}</span>
-                    <span className="font-medium text-foreground">${(room.price * nights).toFixed(2)}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-
-          {isPickupSelected && (
-            <>
-              <Separator />
-              <div className="space-y-2">
-                <h4 className="font-semibold text-base">Airport Pickup (PUJ)</h4>
-                <div className="text-sm text-muted-foreground space-y-1">
-                  <div className="flex justify-between">
-                    <span className="w-1/3">Type:</span>
-                    <span className="font-medium text-foreground text-right truncate w-2/3">{tripType === 'one-way' ? 'From Punta Cana Airport to Sweet Home Punta Cana' : 'Round Trip'}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Arrival:</span>
-                    <span className="font-medium text-foreground text-right truncate">{arrivalDate ? format(arrivalDate, 'MMM dd, yyyy') : '—'} • {airline || '—'} • {flightNumber || '—'}</span>
-                  </div>
-                  {tripType === 'round-trip' && (
-                    <div className="flex justify-between">
-                      <span>Departure:</span>
-                      <span className="font-medium text-foreground text-right truncate">{returnDate ? format(returnDate, 'MMM dd, yyyy') : '—'} • {returnFlightNumber || '—'}</span>
-                    </div>
-                  )}
-                </div>
-                {(missingArrivalDetails || missingDepartureDetails) && (
-                  <p className="text-xs text-amber-700 bg-amber-50 p-2 rounded-md">We’ll request missing flight details after booking.</p>
-                )}
-              </div>
-            </>
-          )}
-
-          <Separator />
-          
-          <div className="space-y-1">
-            <h4 className="font-semibold text-base mb-2">Price Details</h4>
-            <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Room Subtotal</span>
-              <span>${totalPrice.toFixed(2)}</span>
-            </div>
-            {isPickupSelected && (
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Airport Pickup</span>
-                <span>${pickupPrice.toFixed(2)}</span>
-              </div>
-            )}
-            <div className="flex justify-between text-sm text-green-600 font-medium pt-1">
-              <span className="flex items-center gap-1.5"><CheckCircle className="h-4 w-4"/>All taxes & fees included</span>
-              <span className="flex items-center gap-1.5"><CheckCircle className="h-4 w-4"/>No hidden charges.</span>
-            </div>
-          </div>
-
-          <Separator />
-
-          <div className="flex justify-between font-bold text-lg items-baseline">
-            <span>Total (USD)</span>
-            <span className="font-mono text-2xl">${finalPrice.toFixed(2)}</span>
-          </div>
-        </CardContent>
-        <CardFooter className="p-6 pt-0">
-          <div className="p-4 bg-green-50 text-green-800 rounded-2xl text-sm space-y-2 w-full">
-            <p className="flex items-start gap-2"><Clock className="h-4 w-4 mt-0.5 shrink-0"/> Check-in: 3:00 PM • Check-out: 11:00 AM</p>
-            <p className="flex items-start gap-2"><Info className="h-4 w-4 mt-0.5 shrink-0"/> Free cancellation up to 48h before arrival.</p>
-          </div>
-        </CardFooter>
-      </Card>
-    </div>
-  );
 };
 
 // Define the payload structure that will be sent to Firestore
@@ -213,10 +85,7 @@ function CheckoutPageComponent() {
   const [isArrivalCalendarOpen, setIsArrivalCalendarOpen] = React.useState(false);
   const [isReturnCalendarOpen, setIsReturnCalendarOpen] = React.useState(false);
 
-  // PayPal related states
   const [showPayPalButtons, setShowPayPalButtons] = React.useState(false);
-  const [bookingDetailsForPayment, setBookingDetailsForPayment] = React.useState<FinalBookingPayload | null>(null);
-
 
   React.useEffect(() => {
     const storedDetails = localStorage.getItem('bookingDetails');
@@ -251,9 +120,19 @@ function CheckoutPageComponent() {
         return;
     }
 
+    setShowPayPalButtons(true);
+  };
+
+  const handlePaymentSuccess = async (paypalOrderId: string, paypalTransactionId: string) => {
+    if (!bookingDetails || !firestore) {
+      toast({ title: "Error", description: "Payment successful, but booking details for finalization are missing.", variant: "destructive" });
+      setInitError({ message: "Payment successful, but booking details for finalization are missing." });
+      return;
+    }
+
     setIsProcessing(true);
-    
-    const initialBookingPayload: FinalBookingPayload = {
+
+    const finalBookingPayload: FinalBookingPayload = {
       type: 'room' as const,
       customer: { name: `${firstName} ${lastName}`, email, phone },
       pricing: { totalUSD: finalPrice, currency: 'USD' },
@@ -272,51 +151,27 @@ function CheckoutPageComponent() {
         returnDate: returnDate ? format(returnDate, 'yyyy-MM-dd') : null,
         returnFlightNumber: returnFlightNumber,
       } : null,
-       status: 'Pending Payment', // Set initial status to pending
+       status: 'Confirmed' as const,
        createdAt: serverTimestamp(),
        updatedAt: serverTimestamp(),
        guestUid: user?.uid ?? null,
-    };
-
-    // Store this payload temporarily for PayPal to use and for final database write
-    setBookingDetailsForPayment(initialBookingPayload);
-    setShowPayPalButtons(true);
-    setIsProcessing(false); // Done with initial processing, now waiting for PayPal interaction
-  };
-
-  const handlePaymentSuccess = async (paypalOrderId: string, paypalTransactionId: string) => {
-    if (!bookingDetailsForPayment || !firestore) {
-      toast({ title: "Error", description: "Payment successful, but booking details for finalization are missing.", variant: "destructive" });
-      setInitError({ message: "Payment successful, but booking details for finalization are missing." });
-      return;
-    }
-
-    setIsProcessing(true); // Indicate processing for database write
-
-    const finalBookingPayload = {
-      ...bookingDetailsForPayment,
-      paypalOrderId,
-      paypalTransactionId,
-      status: 'Confirmed' as const, // Update status to Confirmed
-      updatedAt: serverTimestamp(), // Update timestamp for confirmation
+       paypalOrderId,
+       paypalTransactionId,
     };
 
     try {
       const docRef = await addDoc(collection(firestore, "reservations"), finalBookingPayload);
       toast({ title: "Booking Confirmed", description: "Your room booking has been successfully confirmed!", variant: "default" });
-      // Clear local storage and navigate
       localStorage.removeItem('bookingDetails');
       router.push(`/confirmation?bid=${docRef.id}`);
     } catch (error: any) {
         console.error("Booking finalization failed:", error);
         const errorMessage = error.message || "Could not finalize booking after payment. Please contact support.";
         toast({ title: "Booking Finalization Failed", description: errorMessage, variant: "destructive" });
-        // It's critical here: payment was successful, but DB failed. Log this for manual intervention.
         setInitError({ message: errorMessage, payload: finalBookingPayload });
     } finally {
         setIsProcessing(false);
         setShowPayPalButtons(false);
-        setBookingDetailsForPayment(null);
     }
   };
 
@@ -328,7 +183,6 @@ function CheckoutPageComponent() {
       variant: "destructive"
     });
     setShowPayPalButtons(false);
-    setBookingDetailsForPayment(null);
     setIsProcessing(false);
   };
 
@@ -339,7 +193,6 @@ function CheckoutPageComponent() {
         variant: "default"
     });
     setShowPayPalButtons(false);
-    setBookingDetailsForPayment(null);
     setIsProcessing(false);
   }
   
@@ -526,27 +379,25 @@ function CheckoutPageComponent() {
                   </Button>
                 ) : (
                   <>
-                    {finalPrice > 0 && bookingDetailsForPayment && ( // Only show PayPal if price is greater than 0
+                    {finalPrice > 0 && (
                       <PayPalButtonsWrapper
                         amount={finalPrice.toFixed(2)}
-                        currency="USD" // Your documented currency
+                        currency="USD"
                         onPaymentSuccess={handlePaymentSuccess}
                         onPaymentError={handlePaymentError}
                         onPaymentCancel={handlePaymentCancel}
                       />
                     )}
-                    {finalPrice === 0 && ( // Handle free bookings if applicable
-                        <Button size="lg" className="w-full h-12" onClick={handlePaymentSuccess} disabled={isProcessing}>
+                    {finalPrice === 0 && (
+                        <Button size="lg" className="w-full h-12" onClick={() => handlePaymentSuccess('N/A', 'N/A')} disabled={isProcessing}>
                             {isProcessing ? <Loader2 className="animate-spin" /> : 'Confirm Free Booking'}
                         </Button>
                     )}
-                    {/* Optional: Add a 'Cancel Payment' button to go back to the form */}
                     <Button variant="outline" className="w-full h-12 mt-2" onClick={() => setShowPayPalButtons(false)} disabled={isProcessing}>
                         Cancel Payment
                     </Button>
                   </>
                 )}
-
 
                {initError && (
                     <Card className="mt-4 bg-destructive/10 border-destructive">

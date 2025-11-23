@@ -86,6 +86,7 @@ export default function GuestServicesPage() {
           src="https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/Guest%20services%20sweet%20home%20punta%20cana%20guest%20house%20hotel%20hostel%20adults%20only.png?alt=media&token=d1ac1b86-bd1b-4343-980b-426082136f4b"
           alt="Guest enjoying a cocktail by the pool"
           fill
+          sizes="100vw"
           priority
           className="object-cover opacity-40"
           data-ai-hint="resort pool"
@@ -110,6 +111,7 @@ export default function GuestServicesPage() {
                             src={service.image} 
                             alt={service.title} 
                             fill 
+                            sizes="100vw"
                             className="object-cover transition-transform duration-300 group-hover:scale-105"
                             data-ai-hint={service.imageHint}
                         />
@@ -148,6 +150,7 @@ export default function GuestServicesPage() {
                         src={service.image} 
                         alt={service.title} 
                         fill 
+                        sizes="100vw"
                         className="object-cover transition-transform duration-300 group-hover:scale-105"
                         data-ai-hint={service.imageHint}
                     />
