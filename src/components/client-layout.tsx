@@ -4,6 +4,7 @@ import Header from '@/components/header';
 import Footer from '@/components/footer';
 import { usePathname } from 'next/navigation';
 import HeaderManager from '@/components/header-manager';
+import { PayPalProvider } from '@/components/paypal-provider';
 
 export default function ClientLayout({
   children,
@@ -37,19 +38,21 @@ export default function ClientLayout({
   }
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <HeaderManager>
-        <div
-          id="main-header"
-          className="fixed top-0 left-0 right-0 z-[1000] bg-white transition-transform duration-300 ease-in-out will-change-transform"
-        >
-          <Header />
-        </div>
-        <main className="flex-grow flex flex-col min-h-screen pt-[var(--header-height)] bg-shpc-sand relative z-0">
-          {children}
-        </main>
-      </HeaderManager>
-      <Footer />
-    </div>
+    <PayPalProvider>
+      <div className="flex flex-col min-h-screen">
+        <HeaderManager>
+          <div
+            id="main-header"
+            className="fixed top-0 left-0 right-0 z-[1000] bg-white transition-transform duration-300 ease-in-out will-change-transform"
+          >
+            <Header />
+          </div>
+          <main className="flex-grow flex flex-col min-h-screen pt-[var(--header-height)] bg-shpc-sand relative z-0">
+            {children}
+          </main>
+        </HeaderManager>
+        <Footer />
+      </div>
+    </PayPalProvider>
   );
 }

@@ -18,8 +18,10 @@ export async function getPayPalAccessToken(): Promise<string> {
 
   const auth = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
 
+  const apiBase = process.env.PAYPAL_API_BASE || (process.env.NODE_ENV === 'production' ? 'https://api-m.paypal.com' : 'https://api-m.sandbox.paypal.com');
+
   try {
-    const response = await fetch(`${process.env.PAYPAL_API_BASE}/v1/oauth2/token`, {
+    const response = await fetch(`${apiBase}/v1/oauth2/token`, {
       method: 'POST',
       headers: {
         Authorization: `Basic ${auth}`,
