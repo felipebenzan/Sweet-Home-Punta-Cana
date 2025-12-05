@@ -1,4 +1,6 @@
 import { verifySession } from '@/lib/auth';
+
+export const dynamic = 'force-dynamic';
 import { redirect } from 'next/navigation';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
