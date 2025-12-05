@@ -3,6 +3,8 @@ import { sendBookingConfirmation } from '@/lib/email-service';
 import { checkDailyLimit } from '@/lib/settings';
 import { prisma } from '@/lib/prisma';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
     try {
         const booking = await request.json();

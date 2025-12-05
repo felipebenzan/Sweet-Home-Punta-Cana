@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import type { Excursion } from '@/lib/types';
 
+export const dynamic = 'force-dynamic';
+
 // Helper to map Prisma Excursion to Frontend Excursion type
 function mapExcursion(excursion: any): Excursion {
     return {

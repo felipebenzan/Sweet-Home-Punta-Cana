@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import type { Room } from '@/lib/types';
 
+export const dynamic = 'force-dynamic';
+
 // Helper to map Prisma room to Type room
 function mapPrismaRoom(room: any): Room {
     return {
