@@ -3,11 +3,11 @@
 import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { saveRoom } from "@/server-actions";
+// import { saveRoom } from "@/server-actions"; // TODO: Replace with API
 import type { Room } from "@/lib/types";
-import { collection, query, where, getDocs } from "firebase/firestore";
-import { useFirestore } from "@/firebase";
-import { ref as storageRef, deleteObject } from "firebase/storage";
+// import { collection, query, where, getDocs } from "firebase/firestore"; // Removed Firebase
+// import { useFirestore } from "@/firebase"; // Removed Firebase
+// import { ref as storageRef, deleteObject } from "firebase/storage"; // Removed Firebase
 
 import {
   ChevronLeft,
@@ -64,7 +64,7 @@ const initialAmenities = [
 export default function RoomEditor({ slug }: RoomEditorProps) {
   const router = useRouter();
   const { toast } = useToast();
-  const db = useFirestore();
+  // const db = useFirestore(); // Removed Firebase
   const [room, setRoom] = React.useState<Partial<Room> | null>(null);
   const [isLoading, setIsLoading] = React.useState(!!slug);
   const [isSaving, setIsSaving] = React.useState(false);
@@ -91,25 +91,21 @@ export default function RoomEditor({ slug }: RoomEditorProps) {
         return;
       }
 
-      if (!db) {
-        // Firestore is not available yet, wait for it
-        return;
-      }
-
       setIsLoading(true);
       try {
-        const q = query(collection(db, "rooms"), where("slug", "==", slug));
-        const snapshot = await getDocs(q);
-        if (snapshot.empty) {
+        // Load from JSON file via server action
+        const response = await fetch('/api/admin/rooms?slug=' + slug);
+        const data = await response.json();
+
+        if (data.success && data.room) {
+          setRoom(data.room);
+        } else {
           toast({
             title: "Not Found",
             description: "Room not found",
             variant: "destructive",
           });
           router.push("/admin/rooms");
-        } else {
-          const doc = snapshot.docs[0];
-          setRoom({ id: doc.id, ...doc.data() } as Room);
         }
       } catch (error) {
         console.error("Failed to fetch room:", error);
@@ -123,7 +119,7 @@ export default function RoomEditor({ slug }: RoomEditorProps) {
       }
     }
     fetchRoom();
-  }, [slug, router, toast, db]);
+  }, [slug, router, toast]);
 
   const handleInputChange = (field: keyof Room, value: any) => {
     setRoom((prev) => (prev ? { ...prev, [field]: value } : null));
@@ -143,33 +139,43 @@ export default function RoomEditor({ slug }: RoomEditorProps) {
     if (!room) return;
     setIsSaving(true);
     try {
-      if (isNew) {
-        const newRoomData: Room = {
-          id: "", // Firestore will generate this
-          name: room.name || "",
-          slug: room.slug || "",
-          tagline: room.tagline || "",
-          description: room.description || "",
-          bedding: room.bedding || "King",
-          capacity: room.capacity || 2,
-          price: room.price || 0,
-          image: room.image || "",
-          amenities: room.amenities || [],
-          gallery: room.gallery || [],
-          inventoryUnits: room.inventoryUnits || 1,
-        };
-        const { id } = await saveRoom(newRoomData);
-        console.log('save room data:',{ id })
-        setRoom((prev) => ({ ...prev, id }));
+      const roomData: Room = {
+        id: room.id || "",
+        name: room.name || "",
+        slug: room.slug || "",
+        tagline: room.tagline || "",
+        description: room.description || "",
+        bedding: room.bedding || "King",
+        capacity: room.capacity || 2,
+        price: room.price || 0,
+        image: room.image || "",
+        amenities: room.amenities || [],
+        gallery: room.gallery || [],
+        inventoryUnits: room.inventoryUnits || 1,
+        beds24_room_id: room.beds24_room_id || null,
+      };
+
+      const response = await fetch('/api/admin/rooms', {
+        method: isNew ? 'POST' : 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(roomData),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        setRoom(result.room);
         toast({
           title: "Success",
-          description: "Room created. You can now manage photos.",
+          description: isNew ? "Room created successfully." : "Room saved successfully.",
         });
-        router.push(`/admin/rooms/edit/${newRoomData.slug}`);
-        router.refresh();
+
+        if (isNew && roomData.slug) {
+          router.push(`/admin/rooms/edit/${roomData.slug}`);
+          router.refresh();
+        }
       } else {
-        await saveRoom(room as Room);
-        toast({ title: "Success", description: "Room saved successfully." });
+        throw new Error(result.error || 'Failed to save room');
       }
     } catch (e) {
       console.error(e);
@@ -231,8 +237,20 @@ export default function RoomEditor({ slug }: RoomEditorProps) {
     if (!room) return;
     const updatedRoom = { ...room, image: url };
     setRoom(updatedRoom);
-    await saveRoom(updatedRoom as Room);
-    toast({ title: "Cover Image Updated" });
+
+    try {
+      const response = await fetch('/api/admin/rooms', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedRoom),
+      });
+
+      if (!response.ok) throw new Error('Failed to update');
+      toast({ title: "Cover Image Updated" });
+    } catch (error) {
+      console.error('Failed to update cover:', error);
+      setRoom(room); // Revert on error
+    }
   };
 
   const handleDeleteImage = async (urlToDelete: string) => {
@@ -248,7 +266,13 @@ export default function RoomEditor({ slug }: RoomEditorProps) {
     setRoom(updatedRoom);
 
     try {
-      await saveRoom(updatedRoom as Room);
+      const response = await fetch('/api/admin/rooms', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedRoom),
+      });
+
+      if (!response.ok) throw new Error('Failed to update');
       toast({ title: "Image Removed" });
     } catch (error) {
       console.error("Failed to update room after image removal:", error);
@@ -346,6 +370,18 @@ export default function RoomEditor({ slug }: RoomEditorProps) {
                     required
                     readOnly={!isNew}
                   />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="beds24_room_id">Beds24 Room ID</Label>
+                  <Input
+                    id="beds24_room_id"
+                    placeholder="e.g., 123456"
+                    value={room.beds24_room_id || ""}
+                    onChange={(e) => handleInputChange("beds24_room_id", e.target.value)}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    The ID of the room in Beds24. Required for availability synchronization.
+                  </p>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="tagline">Tagline</Label>
@@ -453,12 +489,12 @@ export default function RoomEditor({ slug }: RoomEditorProps) {
                         setRoom((r) =>
                           r
                             ? {
-                                ...r,
-                                rating: {
-                                  ...r.rating,
-                                  review: e.target.value,
-                                } as any,
-                              }
+                              ...r,
+                              rating: {
+                                ...r.rating,
+                                review: e.target.value,
+                              } as any,
+                            }
                             : null
                         )
                       }

@@ -1,79 +1,55 @@
-
 'use client';
 
-import React from 'react';
-import { usePathname } from 'next/navigation';
 import Header from '@/components/header';
 import Footer from '@/components/footer';
+import { usePathname } from 'next/navigation';
 import HeaderManager from '@/components/header-manager';
-import { cn } from '@/lib/utils';
-import { FirebaseClientProvider } from '@/firebase/client-provider';
-import { FirebaseErrorListener } from './FirebaseErrorListener';
-import { PayPalScriptProvider } from '@paypal/react-paypal-js';
 
-const PAYPAL_CLIENT_ID = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID!;
-const CURRENCY = 'USD';
-
-const pagesWithPadding = [
-  '/faqs',
-  '/privacy',
-  '/rules',
-  '/terms',
-  '/terms/excursions',
-  '/terms/transfers',
-];
-
-export default function ClientLayout({ children }: { children: React.ReactNode }) {
+export default function ClientLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const pathname = usePathname();
-  const isAdminPage = pathname.startsWith('/admin');
-  const isTestPage = pathname === '/paypal-test';
-  
-  const isBookingFlowPage = [
-    '/laundry-service',
-    '/airport-transfer',
-    '/checkout',
-    '/checkout/excursions',
-    '/confirmation',
-    '/confirmation/excursions',
-    '/laundry-service/confirmation',
-    '/airport-transfer/confirmation',
-  ].some(p => pathname.startsWith(p));
 
+  // Check if we are in the booking flow or admin pages
+  const isBookingFlowPage = [
+    '/checkout',
+    '/booking-confirmation',
+    '/admin'
+  ].some(path => pathname?.startsWith(path));
+
+  // Check if we are on the search page (needs header)
+  const isSearchPage = pathname?.startsWith('/search');
+
+  // Admin pages have their own layout
+  if (pathname?.startsWith('/admin')) {
+    return <>{children}</>;
+  }
+
+  // Checkout pages might want a simplified header or no header
+  if (isBookingFlowPage && !isSearchPage) {
+    return (
+      <main className="flex-grow flex flex-col min-h-screen bg-shpc-sand">
+        {children}
+      </main>
+    );
+  }
 
   return (
-    <FirebaseClientProvider>
-      <PayPalScriptProvider options={{ 'client-id': PAYPAL_CLIENT_ID, currency: CURRENCY }}>
-        <FirebaseErrorListener />
-
-        {isAdminPage || isTestPage ? (
-          <main className="flex-grow">{children}</main>
-        ) : isBookingFlowPage ? (
-          <>
-            <Header />
-            <main
-              className="flex-grow bg-shpc-sand pt-[var(--header-height)]"
-            >
-              {children}
-            </main>
-            <Footer />
-          </>
-        ) : (
-          <>
-            <HeaderManager>
-              <Header />
-              <main
-                className={cn(
-                  "flex-grow bg-shpc-sand",
-                  pagesWithPadding.includes(pathname) && "pt-[var(--header-height)]"
-                )}
-              >
-                {children}
-              </main>
-            </HeaderManager>
-            <Footer />
-          </>
-        )}
-      </PayPalScriptProvider>
-    </FirebaseClientProvider>
+    <div className="flex flex-col min-h-screen">
+      <HeaderManager>
+        <div
+          id="main-header"
+          className="fixed top-0 left-0 right-0 z-[1000] bg-white transition-transform duration-300 ease-in-out will-change-transform"
+        >
+          <Header />
+        </div>
+        <main className="flex-grow flex flex-col min-h-screen pt-[var(--header-height)] bg-shpc-sand relative z-0">
+          {children}
+        </main>
+      </HeaderManager>
+      <Footer />
+    </div>
   );
 }

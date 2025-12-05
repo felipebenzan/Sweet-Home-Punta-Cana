@@ -3,3 +3,7 @@ node_modules/
 .env
 .env.local
 punta-cana-stays-firebase-adminsdk-fbsvc-a66d89a017.json
+/src/generated/prisma
+dev.db
+.env
+deploy_package.zip

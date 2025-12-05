@@ -18,6 +18,9 @@ export interface Room {
   };
   inventoryUnits?: number;
   cancellationPolicy?: string;
+  beds24_room_id?: string;
+  isAvailable?: boolean;
+  beds24Details?: any;
 }
 
 export interface Review {
@@ -137,6 +140,8 @@ export interface Reservation {
   totalPrice: number;
   status: 'Confirmed' | 'Pending' | 'Cancelled';
   createdAt: string;
+  serviceBookings?: ServiceBooking[];
+  guestPhone?: string;
   [key: string]: any;
 }
 
@@ -145,7 +150,7 @@ export interface ServiceBooking {
   guestName: string;
   email?: string;
   phone?: string;
-  serviceType: string;
+  serviceType?: string;
   date?: string;
   time?: string;
   qty?: number;
@@ -153,9 +158,11 @@ export interface ServiceBooking {
   total?: number;
   excursionId?: string;
   serviceId?: string;
-  accommodation?: string; 
-  bookingId?: string; 
-  [key: string]: any; 
+  accommodation?: string;
+  bookingId?: string;
+  reservationId?: string;
+  details?: string;
+  [key: string]: any;
 }
 
 
@@ -182,4 +189,9 @@ export interface BookingDetails {
     returnFlightNumber?: string;
     airport?: string;
   }
+}
+
+export interface PurchaseContext {
+  type: 'cart' | 'airportTransfer' | 'booking' | 'laundry' | string;
+  referenceId: string;
 }

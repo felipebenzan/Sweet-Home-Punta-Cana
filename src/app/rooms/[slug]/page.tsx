@@ -1,10 +1,26 @@
-import { getRoomBySlug, getRooms } from "@/server-actions";
 import type { Metadata } from "@/lib/types";
 import { notFound } from "next/navigation";
 import RoomClientPage from "./room-client-page";
 import { Room } from "@/lib/types";
+import { readFile } from "fs/promises";
+import { join } from "path";
 
 export const revalidate = 3600; // Revalidate page data every hour
+
+async function getRooms(): Promise<Room[]> {
+  try {
+    const roomsPath = join(process.cwd(), 'src', 'data', 'rooms.json');
+    const fileContent = await readFile(roomsPath, 'utf-8');
+    return JSON.parse(fileContent);
+  } catch (error) {
+    return [];
+  }
+}
+
+async function getRoomBySlug(slug: string): Promise<Room | null> {
+  const rooms = await getRooms();
+  return rooms.find(r => r.slug === slug) || null;
+}
 
 export async function generateMetadata({
   params,
@@ -35,7 +51,7 @@ export default async function RoomPage({
   params: { slug: string };
 }) {
   const { slug } = params;
-  
+
   // Fetch all required data in parallel on the server
   const [roomData, allRooms] = await Promise.all([
     getRoomBySlug(slug),

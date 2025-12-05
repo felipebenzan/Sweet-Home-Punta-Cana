@@ -1,0 +1,219 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// --------------------------------------------------
+// MODELS
+// --------------------------------------------------
+
+model Room {
+  id                 String   @id @default(uuid())
+  slug               String   @unique
+  beds24_room_id     String?
+  name               String
+  tagline            String?
+  description        String?
+  bedding            String
+  capacity           Int
+  price              Float
+  image              String
+  amenities          String   // Stored as JSON string
+  gallery            String?  // Stored as JSON string
+  inventoryUnits     Int      @default(1)
+  cancellationPolicy String?
+  
+  reservations       Reservation[]
+}
+
+model Excursion {
+  id            String   @id @default(uuid())
+  slug          String   @unique
+  title         String
+  tagline       String
+  description   String
+  image         String
+  icon          String?
+  priceAdult    Float
+  inclusions    String   // Stored as JSON string
+  
+  // Practical Info
+  departure     String
+  duration      String
+  pickup        String
+  pickupMapLink String?
+  notes         String   // Stored as JSON string
+  
+  gallery       String   // Stored as JSON string
+  
+  bookings      ServiceBooking[]
+}
+
+model Reservation {
+  id             String   @id @default(uuid())
+  roomId         String
+  room           Room     @relation(fields: [roomId], references: [id])
+  
+  guestName      String
+  guestEmail     String
+  guestPhone     String?
+  checkInDate    DateTime
+  checkOutDate   DateTime
+  numberOfGuests Int
+  totalPrice     Float
+  status         String   @default("Confirmed") // Confirmed, Pending, Cancelled
+  
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  serviceBookings ServiceBooking[]
+}
+
+model ServiceBooking {
+  id                  String   @id @default(uuid())
+  type                String   // excursion, airport_transfer, laundry
+  serviceType         String?  // e.g. "excursion" (redundant but matches existing types)
+  
+  // Excursion specific
+  excursionId         String?
+  excursion           Excursion? @relation(fields: [excursionId], references: [id])
+  
+  guestName           String
+  email               String?
+  phone               String?
+  
+  date                DateTime?
+  time                String?
+  qty                 Int?
+  pax                 String?  // e.g. "2 Adults"
+  
+  // Generic details for transfer/excursion specifics (JSON)
+  details             String? 
+
+  total               Float?
+  status              String   @default("Confirmed")
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  reservationId       String?
+  reservation         Reservation? @relation(fields: [reservationId], references: [id])
+}
+
+model User {
+  id          String   @id @default(uuid())
+  email       String   @unique
+  password    String   // Hashed
+  name        String?
+  role        String   @default("COLLABORATOR") // "ADMIN" or "COLLABORATOR"
+  permissions String   // JSON string: ["/admin/rooms", "/admin/bookings"]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// --------------------------------------------------
+// FINANCIAL COMMAND CENTER MODELS
+// --------------------------------------------------
+
+// Enums are not supported in SQLite, so we use Strings.
+// ProviderType: VENDOR, STAFF, PLATFORM
+// LineItemType: ACCOMMODATION, EXCURSION, TRANSPORT, SERVICE, FEE
+// CostMethod: FIXED_NET_RATE, PERCENTAGE_COMMISSION
+
+model Provider {
+  id          String       @id @default(uuid())
+  name        String
+  type        String       // ProviderType
+  email       String?
+  phone       String?
+  
+  // Default cost settings (optional, can be overridden per line item)
+  defaultCostMethod String? // CostMethod
+  defaultCostValue  Float?      // e.g. 50.00 or 0.20 (20%)
+  
+  lineItems   BookingLineItem[]
+  expenses    MonthlyExpense[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Booking {
+  id             String   @id @default(uuid())
+  
+  // Client Info
+  guestName      String
+  guestEmail     String?
+  guestPhone     String?
+  
+  // Booking Info
+  date           DateTime // Main date of service or check-in
+  status         String   @default("CONFIRMED") // CONFIRMED, CANCELLED, PENDING
+  source         String   @default("DIRECT")    // DIRECT, BOOKING_COM, EXPEDIA, etc.
+  
+  // Financials (Calculated from line items)
+  totalGross     Float    @default(0)
+  totalTax       Float    @default(0)
+  totalNet       Float    @default(0) // Gross - Tax - Cost
+  
+  lineItems      BookingLineItem[]
+  
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model BookingLineItem {
+  id             String       @id @default(uuid())
+  
+  bookingId      String
+  booking        Booking      @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  
+  type           String       // LineItemType
+  description    String       // e.g. "Deluxe Room - 2 Nights" or "Saona Island Excursion"
+  
+  // Provider Link
+  providerId     String?
+  provider       Provider?    @relation(fields: [providerId], references: [id])
+  
+  // Financials
+  quantity       Int          @default(1)
+  unitPrice      Float        // Gross price per unit (including tax)
+  
+  // Tax Logic
+  isTaxable      Boolean      @default(false)
+  taxRate        Float        @default(0.18) // 18% ITBIS
+  taxAmount      Float        @default(0)    // Calculated
+  
+  // Cost Logic (What we owe)
+  costMethod     String       @default("FIXED_NET_RATE") // CostMethod
+  costValue      Float        // The rate or % used
+  totalCost      Float        // The final amount owed to provider
+  
+  // Result
+  totalGross     Float        // quantity * unitPrice
+  
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model MonthlyExpense {
+  id          String   @id @default(uuid())
+  
+  providerId  String
+  provider    Provider @relation(fields: [providerId], references: [id])
+  
+  month       DateTime // First day of the month
+  amount      Float
+  ncf         String?  // Comprobante Fiscal
+  description String?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

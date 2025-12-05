@@ -51,7 +51,7 @@ export default function BookingWidget({ room }: BookingWidgetProps) {
         setAvailability('error');
         return;
       }
-      
+
       // This is a call to a server action for secure checking
       const result = await checkRoomAvailability(room.id, date.from, date.to);
 
@@ -83,11 +83,11 @@ export default function BookingWidget({ room }: BookingWidgetProps) {
 
     router.push(`/checkout?${params.toString()}`);
   };
-  
+
   // Reset availability state if dates change
   React.useEffect(() => {
-      setAvailability(null);
-      setTotalPrice(null);
+    setAvailability(null);
+    setTotalPrice(null);
   }, [date, guests]);
 
 
@@ -100,77 +100,77 @@ export default function BookingWidget({ room }: BookingWidgetProps) {
 
   return (
     <div className="space-y-4 p-4 border rounded-lg bg-white">
-        {/* Date and Guest Pickers */}
-        <div className="grid grid-cols-1 gap-2">
-            <Popover open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
-                <PopoverTrigger asChild>
-                    <Button id="date" variant={'outline'} className={cn('w-full justify-start text-left font-normal h-12', !date && 'text-muted-foreground')}>
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {date?.from ? (
-                            date.to ? `${format(date.from, 'LLL dd, y')} - ${format(date.to, 'LLL dd, y')}` : format(date.from, 'LLL dd, y')
-                        ) : ( <span>Select dates</span> )}
-                    </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                        initialFocus
-                        mode="range"
-                        defaultMonth={date?.from}
-                        selected={date}
-                        onSelect={setDate}
-                        numberOfMonths={2}
-                        disabled={getDisabledDays()}
-                    />
-                </PopoverContent>
-            </Popover>
-            <Popover>
-                <PopoverTrigger asChild>
-                    <Button variant={'outline'} className="w-full justify-start text-left font-normal h-12">
-                        <Users className="mr-2 h-4 w-4" />
-                        <span>{guests} {guests === 1 ? 'Guest' : 'Guests'}</span>
-                    </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-48">
-                    <div className="flex items-center justify-between">
-                        <Button variant="ghost" size="icon" onClick={() => setGuests(Math.max(1, guests - 1))}><Minus className="h-4 w-4" /></Button>
-                        <span>{guests}</span>
-                        <Button variant="ghost" size="icon" onClick={() => setGuests(Math.min(room.capacity, guests + 1))}><Plus className="h-4 w-4" /></Button>
-                    </div>
-                </PopoverContent>
-            </Popover>
-        </div>
+      {/* Date and Guest Pickers */}
+      <div className="grid grid-cols-1 gap-2">
+        <Popover open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
+          <PopoverTrigger asChild>
+            <Button id="date" variant={'outline'} className={cn('w-full justify-start text-left font-normal h-12', !date && 'text-muted-foreground')}>
+              <CalendarIcon className="mr-2 h-4 w-4" />
+              {date?.from ? (
+                date.to ? `${format(date.from, 'LLL dd, y')} - ${format(date.to, 'LLL dd, y')}` : format(date.from, 'LLL dd, y')
+              ) : (<span>Select dates</span>)}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              initialFocus
+              mode="range"
+              defaultMonth={date?.from}
+              selected={date}
+              onSelect={setDate}
+              numberOfMonths={2}
+              disabled={getDisabledDays()}
+            />
+          </PopoverContent>
+        </Popover>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant={'outline'} className="w-full justify-start text-left font-normal h-12">
+              <Users className="mr-2 h-4 w-4" />
+              <span>{guests} {guests === 1 ? 'Guest' : 'Guests'}</span>
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-48">
+            <div className="flex items-center justify-between">
+              <Button variant="ghost" size="icon" onClick={() => setGuests(Math.max(1, guests - 1))}><Minus className="h-4 w-4" /></Button>
+              <span>{guests}</span>
+              <Button variant="ghost" size="icon" onClick={() => setGuests(Math.min(room.capacity, guests + 1))}><Plus className="h-4 w-4" /></Button>
+            </div>
+          </PopoverContent>
+        </Popover>
+      </div>
 
-        {/* Dynamic Action Button */}
-        {availability === 'available' ? (
-            <Button size="lg" className="w-full h-12 text-base font-semibold" onClick={handleProceedToCheckout}>
-                Book Now
-            </Button>
-        ) : (
-            <Button size="lg" className="w-full h-12 text-base font-semibold" onClick={handleCheckAvailability} disabled={!date?.from || !date?.to || isLoading}>
-                {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                Check Availability
-            </Button>
+      {/* Dynamic Action Button */}
+      {availability === 'available' ? (
+        <Button size="lg" className="w-full h-12 text-base font-semibold bg-shpc-yellow text-shpc-ink hover:bg-shpc-yellow/90" onClick={handleProceedToCheckout}>
+          Book Now
+        </Button>
+      ) : (
+        <Button size="lg" className="w-full h-12 text-base font-semibold bg-shpc-yellow text-shpc-ink hover:bg-shpc-yellow/90" onClick={handleCheckAvailability} disabled={!date?.from || !date?.to || isLoading}>
+          {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+          Check Availability
+        </Button>
+      )}
+
+      {/* Availability & Price Display */}
+      <div className="text-center min-h-[60px] flex flex-col justify-center">
+        {isLoading && <p className="text-sm text-muted-foreground">Checking...</p>}
+        {availability === 'available' && totalPrice !== null && (
+          <div className='text-green-600 font-semibold flex items-center justify-center gap-2'>
+            <CircleCheck className='h-5 w-5' />
+            <div>
+              <p>This room is available!</p>
+              <p className='text-lg'>Total: ${totalPrice.toFixed(2)} for {nights} {nights === 1 ? 'night' : 'nights'}</p>
+            </div>
+          </div>
         )}
-
-        {/* Availability & Price Display */}
-        <div className="text-center min-h-[60px] flex flex-col justify-center">
-            {isLoading && <p className="text-sm text-muted-foreground">Checking...</p>}
-            {availability === 'available' && totalPrice !== null && (
-                <div className='text-green-600 font-semibold flex items-center justify-center gap-2'>
-                    <CircleCheck className='h-5 w-5'/> 
-                    <div>
-                        <p>This room is available!</p>
-                        <p className='text-lg'>Total: ${totalPrice.toFixed(2)} for {nights} {nights === 1 ? 'night' : 'nights'}</p>
-                    </div>
-                </div>
-            )}
-            {availability === 'booked' && (
-                <p className="text-sm text-red-500 font-semibold flex items-center justify-center gap-2"><CircleX className='h-5 w-5'/> Sorry, this room is booked for these dates.</p>
-            )}
-            {availability === 'error' && (
-                 <p className="text-sm text-red-500 font-semibold flex items-center justify-center gap-2"><CircleX className='h-5 w-5'/> Please select a valid date range.</p>
-            )}
-        </div>
+        {availability === 'booked' && (
+          <p className="text-sm text-red-500 font-semibold flex items-center justify-center gap-2"><CircleX className='h-5 w-5' /> Sorry, this room is booked for these dates.</p>
+        )}
+        {availability === 'error' && (
+          <p className="text-sm text-red-500 font-semibold flex items-center justify-center gap-2"><CircleX className='h-5 w-5' /> Please select a valid date range.</p>
+        )}
+      </div>
     </div>
   );
 }

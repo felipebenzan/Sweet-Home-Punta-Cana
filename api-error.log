@@ -1,0 +1,98 @@
+[2025-11-26T21:49:55.915Z] Error: 
+Invalid `prisma.serviceBooking.count()` invocation:
+
+
+error: Error validating datasource `db`: the URL must start with the protocol `file:`.
+  -->  schema.prisma:10
+   | 
+ 9 |   provider = "sqlite"
+10 |   url      = env("DATABASE_URL")
+   | 
+
+Validation Error Count: 1
+Stack: PrismaClientInitializationError: 
+Invalid `prisma.serviceBooking.count()` invocation:
+
+
+error: Error validating datasource `db`: the URL must start with the protocol `file:`.
+  -->  schema.prisma:10
+   | 
+ 9 |   provider = "sqlite"
+10 |   url      = env("DATABASE_URL")
+   | 
+
+Validation Error Count: 1
+    at $n.handleRequestError (/Users/felipebenzan/Desktop/Sweet home antigravity/Sweet-Home-Punta-Cana/node_modules/@prisma/client/runtime/library.js:121:7615)
+    at $n.handleAndLogRequestError (/Users/felipebenzan/Desktop/Sweet home antigravity/Sweet-Home-Punta-Cana/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/felipebenzan/Desktop/Sweet home antigravity/Sweet-Home-Punta-Cana/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/felipebenzan/Desktop/Sweet home antigravity/Sweet-Home-Punta-Cana/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async checkDailyLimit (webpack-internal:///(rsc)/./src/lib/settings.ts:69:17)
+    at async POST (webpack-internal:///(rsc)/./src/app/api/bookings/route.ts:21:38)
+    at async /Users/felipebenzan/Desktop/Sweet home antigravity/Sweet-Home-Punta-Cana/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:53446
+    at async e_.execute (/Users/felipebenzan/Desktop/Sweet home antigravity/Sweet-Home-Punta-Cana/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:44747)
+    at async e_.handle (/Users/felipebenzan/Desktop/Sweet home antigravity/Sweet-Home-Punta-Cana/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:54700)
+    at async doRender (/Users/felipebenzan/Desktop/Sweet home antigravity/Sweet-Home-Punta-Cana/node_modules/next/dist/server/base-server.js:1377:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/felipebenzan/Desktop/Sweet home antigravity/Sweet-Home-Punta-Cana/node_modules/next/dist/server/base-server.js:1599:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/felipebenzan/Desktop/Sweet home antigravity/Sweet-Home-Punta-Cana/node_modules/next/dist/server/base-server.js:1507:28)
+    at async DevServer.renderPageComponent (/Users/felipebenzan/Desktop/Sweet home antigravity/Sweet-Home-Punta-Cana/node_modules/next/dist/server/base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (/Users/felipebenzan/Desktop/Sweet home antigravity/Sweet-Home-Punta-Cana/node_modules/next/dist/server/base-server.js:1962:32)
+    at async DevServer.pipeImpl (/Users/felipebenzan/Desktop/Sweet home antigravity/Sweet-Home-Punta-Cana/node_modules/next/dist/server/base-server.js:920:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/felipebenzan/Desktop/Sweet home antigravity/Sweet-Home-Punta-Cana/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/felipebenzan/Desktop/Sweet home antigravity/Sweet-Home-Punta-Cana/node_modules/next/dist/server/base-server.js:816:17)
+    at async /Users/felipebenzan/Desktop/Sweet home antigravity/Sweet-Home-Punta-Cana/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/felipebenzan/Desktop/Sweet home antigravity/Sweet-Home-Punta-Cana/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/felipebenzan/Desktop/Sweet home antigravity/Sweet-Home-Punta-Cana/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/felipebenzan/Desktop/Sweet home antigravity/Sweet-Home-Punta-Cana/node_modules/next/dist/server/lib/router-server.js:174:21)
+    at async handleRequest (/Users/felipebenzan/Desktop/Sweet home antigravity/Sweet-Home-Punta-Cana/node_modules/next/dist/server/lib/router-server.js:353:24)
+    at async requestHandlerImpl (/Users/felipebenzan/Desktop/Sweet home antigravity/Sweet-Home-Punta-Cana/node_modules/next/dist/server/lib/router-server.js:377:13)
+    at async Server.requestListener (/Users/felipebenzan/Desktop/Sweet home antigravity/Sweet-Home-Punta-Cana/node_modules/next/dist/server/lib/start-server.js:141:13)
+
+[2025-11-26T21:50:03.837Z] Error: 
+Invalid `prisma.serviceBooking.count()` invocation:
+
+
+error: Error validating datasource `db`: the URL must start with the protocol `file:`.
+  -->  schema.prisma:10
+   | 
+ 9 |   provider = "sqlite"
+10 |   url      = env("DATABASE_URL")
+   | 
+
+Validation Error Count: 1
+Stack: PrismaClientInitializationError: 
+Invalid `prisma.serviceBooking.count()` invocation:
+
+
+error: Error validating datasource `db`: the URL must start with the protocol `file:`.
+  -->  schema.prisma:10
+   | 
+ 9 |   provider = "sqlite"
+10 |   url      = env("DATABASE_URL")
+   | 
+
+Validation Error Count: 1
+    at $n.handleRequestError (/Users/felipebenzan/Desktop/Sweet home antigravity/Sweet-Home-Punta-Cana/node_modules/@prisma/client/runtime/library.js:121:7615)
+    at $n.handleAndLogRequestError (/Users/felipebenzan/Desktop/Sweet home antigravity/Sweet-Home-Punta-Cana/node_modules/@prisma/client/runtime/library.js:121:6623)
+    at $n.request (/Users/felipebenzan/Desktop/Sweet home antigravity/Sweet-Home-Punta-Cana/node_modules/@prisma/client/runtime/library.js:121:6307)
+    at async l (/Users/felipebenzan/Desktop/Sweet home antigravity/Sweet-Home-Punta-Cana/node_modules/@prisma/client/runtime/library.js:130:9633)
+    at async checkDailyLimit (webpack-internal:///(rsc)/./src/lib/settings.ts:69:17)
+    at async POST (webpack-internal:///(rsc)/./src/app/api/bookings/route.ts:21:38)
+    at async /Users/felipebenzan/Desktop/Sweet home antigravity/Sweet-Home-Punta-Cana/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:53446
+    at async e_.execute (/Users/felipebenzan/Desktop/Sweet home antigravity/Sweet-Home-Punta-Cana/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:44747)
+    at async e_.handle (/Users/felipebenzan/Desktop/Sweet home antigravity/Sweet-Home-Punta-Cana/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:6:54700)
+    at async doRender (/Users/felipebenzan/Desktop/Sweet home antigravity/Sweet-Home-Punta-Cana/node_modules/next/dist/server/base-server.js:1377:42)
+    at async cacheEntry.responseCache.get.routeKind (/Users/felipebenzan/Desktop/Sweet home antigravity/Sweet-Home-Punta-Cana/node_modules/next/dist/server/base-server.js:1599:28)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/felipebenzan/Desktop/Sweet home antigravity/Sweet-Home-Punta-Cana/node_modules/next/dist/server/base-server.js:1507:28)
+    at async DevServer.renderPageComponent (/Users/felipebenzan/Desktop/Sweet home antigravity/Sweet-Home-Punta-Cana/node_modules/next/dist/server/base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (/Users/felipebenzan/Desktop/Sweet home antigravity/Sweet-Home-Punta-Cana/node_modules/next/dist/server/base-server.js:1962:32)
+    at async DevServer.pipeImpl (/Users/felipebenzan/Desktop/Sweet home antigravity/Sweet-Home-Punta-Cana/node_modules/next/dist/server/base-server.js:920:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/felipebenzan/Desktop/Sweet home antigravity/Sweet-Home-Punta-Cana/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/felipebenzan/Desktop/Sweet home antigravity/Sweet-Home-Punta-Cana/node_modules/next/dist/server/base-server.js:816:17)
+    at async /Users/felipebenzan/Desktop/Sweet home antigravity/Sweet-Home-Punta-Cana/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/felipebenzan/Desktop/Sweet home antigravity/Sweet-Home-Punta-Cana/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/felipebenzan/Desktop/Sweet home antigravity/Sweet-Home-Punta-Cana/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/felipebenzan/Desktop/Sweet home antigravity/Sweet-Home-Punta-Cana/node_modules/next/dist/server/lib/router-server.js:174:21)
+    at async handleRequest (/Users/felipebenzan/Desktop/Sweet home antigravity/Sweet-Home-Punta-Cana/node_modules/next/dist/server/lib/router-server.js:353:24)
+    at async requestHandlerImpl (/Users/felipebenzan/Desktop/Sweet home antigravity/Sweet-Home-Punta-Cana/node_modules/next/dist/server/lib/router-server.js:377:13)
+    at async Server.requestListener (/Users/felipebenzan/Desktop/Sweet home antigravity/Sweet-Home-Punta-Cana/node_modules/next/dist/server/lib/start-server.js:141:13)
+

@@ -14,24 +14,24 @@ import {
 } from "date-fns";
 import { ChevronLeft, Minus, Plus, Loader2, Bed } from "lucide-react";
 import type { Room, Reservation } from "@/lib/types";
-import {
-  getFirestore,
-  collection,
-  query,
-  where,
-  onSnapshot,
-  doc,
-  writeBatch,
-  Timestamp,
-  getDoc,
-} from "firebase/firestore";
-import {
-  useFirestore,
-  useMemoFirebase,
-  useCollection,
-  errorEmitter,
-  FirestorePermissionError,
-} from "@/firebase";
+// import {
+//   getFirestore,
+//   collection,
+//   query,
+//   where,
+//   onSnapshot,
+//   doc,
+//   writeBatch,
+//   Timestamp,
+//   getDoc,
+// } from "firebase/firestore";
+// import {
+//   useFirestore,
+//   useMemoFirebase,
+//   useCollection,
+//   errorEmitter,
+//   FirestorePermissionError,
+// } from "@/firebase";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -70,7 +70,7 @@ type CalendarData = Record<string, DayData>;
 export default function RoomAvailabilityEditor({
   slug,
 }: RoomAvailabilityEditorProps) {
-  const db = useFirestore();
+  // const db = useFirestore(); // REMOVED: Firebase dependency
   const { toast } = useToast();
   const [room, setRoom] = React.useState<Room | null>(null);
   const [allReservations, setAllReservations] = React.useState<Reservation[]>(
@@ -128,17 +128,11 @@ export default function RoomAvailabilityEditor({
   const monthStart = startOfMonth(currentMonth);
   const monthEnd = endOfMonth(currentMonth);
 
-  // 2. Fetch Real-time Rates
-  const ratesQuery = useMemoFirebase(() => {
-    if (!db || !room?.id) return null;
-    return query(
-      collection(db, `rates/${room.id}/calendar`),
-      where("date", ">=", format(monthStart, "yyyy-MM-dd")),
-      where("date", "<=", format(monthEnd, "yyyy-MM-dd"))
-    );
-  }, [db, room?.id, currentMonth]);
-
-  const { data: rates, isLoading: isLoadingRates } = useCollection(ratesQuery);
+  // 2. Fetch Real-time Rates (MOCKED)
+  // const ratesQuery = useMemoFirebase(() => { ... });
+  // const { data: rates, isLoading: isLoadingRates } = useCollection(ratesQuery);
+  const rates: any[] = []; // Mocked empty rates
+  const isLoadingRates = false;
 
   // 3. Process all data into a unified calendar view
   const calendarData = React.useMemo(() => {
@@ -210,7 +204,7 @@ export default function RoomAvailabilityEditor({
   }, [selectedDates, calendarData, room]);
 
   const handleSave = async () => {
-    if (!draftData || !room || !db || selectedDates.length === 0) {
+    if (!draftData || !room || selectedDates.length === 0) {
       toast({
         title: "Save Aborted",
         description: "Missing required data to save.",
@@ -222,45 +216,20 @@ export default function RoomAvailabilityEditor({
     setIsSaving(true);
     setSaveError(null);
 
-    const batch = writeBatch(db);
-
-    for (const date of selectedDates) {
-      const dateKey = format(date, "yyyy-MM-dd");
-      const rateDocRef = doc(db, `rates/${room.id}/calendar/${dateKey}`);
-
-      const rateData = {
-        roomId: room.id,
-        slug: room.slug,
-        date: dateKey,
-        price: draftData.price,
-        available: draftData.available,
-        closed: draftData.closed,
-        source: "manual",
-        updatedAt: Timestamp.now(),
-      };
-
-      batch.set(rateDocRef, rateData, { merge: true });
-    }
+    // MOCKED SAVE
+    console.log("Mock saving rates:", { selectedDates, draftData });
+    await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate delay
 
     try {
-      await batch.commit();
+      // await batch.commit();
       toast({
-        title: "Success",
-        description: "Availability updated successfully.",
+        title: "Success (Mock)",
+        description: "Availability updated successfully (Mock).",
       });
       setSelectedDates([]);
     } catch (error: any) {
-      const permissionError = new FirestorePermissionError({
-        path: `rates/${room.id}/calendar`,
-        operation: "write",
-        requestResourceData: {
-          closed: draftData.closed,
-          available: draftData.available,
-          price: draftData.price,
-        },
-      });
-      errorEmitter.emit("permission-error", permissionError);
-      setSaveError(permissionError.message); // Set the detailed error message
+      // ... error handling
+      setSaveError("Mock error");
       toast({
         title: "Save Failed",
         description: "Check diagnostics for details.",

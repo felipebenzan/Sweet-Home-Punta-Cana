@@ -1,0 +1,192 @@
+[
+    {
+        "confirmationId": "SHPC-DEMO-001",
+        "type": "room",
+        "guestName": "John Smith",
+        "guestEmail": "john@example.com",
+        "customer": {
+            "name": "John Smith",
+            "email": "john@example.com",
+            "phone": "+1-555-0101"
+        },
+        "dates": {
+            "checkIn": "2025-11-25",
+            "checkOut": "2025-11-28"
+        },
+        "rooms": [
+            {
+                "name": "Deluxe King Room",
+                "slug": "deluxe-king"
+            }
+        ],
+        "guests": 2,
+        "totalPrice": 255,
+        "createdAt": "2025-11-20T10:00:00Z",
+        "status": "confirmed"
+    },
+    {
+        "confirmationId": "SHPC-DEMO-002",
+        "type": "room",
+        "guestName": "Maria Garcia",
+        "guestEmail": "maria@example.com",
+        "customer": {
+            "name": "Maria Garcia",
+            "email": "maria@example.com",
+            "phone": "+1-555-0102"
+        },
+        "dates": {
+            "checkIn": "2025-11-26",
+            "checkOut": "2025-11-30"
+        },
+        "rooms": [
+            {
+                "name": "Queen Garden View",
+                "slug": "queen-garden"
+            }
+        ],
+        "guests": 2,
+        "totalPrice": 340,
+        "createdAt": "2025-11-21T14:30:00Z",
+        "status": "confirmed"
+    },
+    {
+        "confirmationId": "SHPC-DEMO-003",
+        "type": "room",
+        "guestName": "David Lee",
+        "guestEmail": "david@example.com",
+        "customer": {
+            "name": "David Lee",
+            "email": "david@example.com",
+            "phone": "+1-555-0103"
+        },
+        "dates": {
+            "checkIn": "2025-11-28",
+            "checkOut": "2025-12-02"
+        },
+        "rooms": [
+            {
+                "name": "Standard Double Room",
+                "slug": "standard-double"
+            }
+        ],
+        "guests": 2,
+        "totalPrice": 300,
+        "createdAt": "2025-11-22T09:15:00Z",
+        "status": "confirmed"
+    },
+    {
+        "confirmationId": "SHPC-TRANSFER-001",
+        "type": "transfer",
+        "guestName": "Sarah Johnson",
+        "guestEmail": "sarah@example.com",
+        "customer": {
+            "name": "Sarah Johnson",
+            "email": "sarah@example.com",
+            "phone": "+1-555-0201"
+        },
+        "details": {
+            "direction": "arrival",
+            "arrivalDate": "2025-11-27",
+            "arrivalFlight": "AA1234",
+            "arrivalTime": "14:30"
+        },
+        "totalPrice": 40,
+        "createdAt": "2025-11-23T08:00:00Z",
+        "status": "confirmed"
+    },
+    {
+        "confirmationId": "SHPC-TRANSFER-002",
+        "type": "transfer",
+        "guestName": "Michael Brown",
+        "guestEmail": "michael@example.com",
+        "customer": {
+            "name": "Michael Brown",
+            "email": "michael@example.com",
+            "phone": "+1-555-0202"
+        },
+        "details": {
+            "direction": "departure",
+            "departureDate": "2025-11-29",
+            "departureTime": "10:00"
+        },
+        "totalPrice": 40,
+        "createdAt": "2025-11-24T11:30:00Z",
+        "status": "confirmed"
+    },
+    {
+        "confirmationId": "SHPC-LAUNDRY-001",
+        "type": "laundry",
+        "guestName": "Emma Wilson",
+        "guestEmail": "emma@example.com",
+        "customer": {
+            "name": "Emma Wilson",
+            "email": "emma@example.com",
+            "phone": "+1-555-0301"
+        },
+        "date": "2025-11-26",
+        "details": {
+            "bags": 2,
+            "pricePerBag": 6
+        },
+        "totalPrice": 12,
+        "createdAt": "2025-11-25T09:00:00Z",
+        "status": "confirmed"
+    },
+    {
+        "confirmationId": "SHPC-LAUNDRY-002",
+        "type": "laundry",
+        "guestName": "James Davis",
+        "guestEmail": "james@example.com",
+        "customer": {
+            "name": "James Davis",
+            "email": "james@example.com",
+            "phone": "+1-555-0302"
+        },
+        "date": "2025-11-28",
+        "details": {
+            "bags": 3,
+            "pricePerBag": 6
+        },
+        "totalPrice": 18,
+        "createdAt": "2025-11-25T10:30:00Z",
+        "status": "confirmed"
+    },
+    {
+        "confirmationId": "SHPC-EXCURSION-001",
+        "type": "excursion",
+        "guestName": "Olivia Martinez",
+        "guestEmail": "olivia@example.com",
+        "customer": {
+            "name": "Olivia Martinez",
+            "email": "olivia@example.com",
+            "phone": "+1-555-0401"
+        },
+        "date": "2025-11-27",
+        "details": {
+            "title": "Saona Island Paradise",
+            "guests": 2
+        },
+        "totalPrice": 178,
+        "createdAt": "2025-11-24T15:00:00Z",
+        "status": "confirmed"
+    },
+    {
+        "confirmationId": "SHPC-EXCURSION-002",
+        "type": "excursion",
+        "guestName": "William Taylor",
+        "guestEmail": "william@example.com",
+        "customer": {
+            "name": "William Taylor",
+            "email": "william@example.com",
+            "phone": "+1-555-0402"
+        },
+        "date": "2025-11-29",
+        "details": {
+            "title": "Saona Island Paradise",
+            "guests": 4
+        },
+        "totalPrice": 356,
+        "createdAt": "2025-11-25T12:00:00Z",
+        "status": "confirmed"
+    }
+]

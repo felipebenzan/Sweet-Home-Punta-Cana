@@ -1,0 +1,127 @@
+[
+  {
+    "id": "saona-island",
+    "slug": "saona-island",
+    "title": "Saona Island Paradise",
+    "tagline": "Caribbean's most beautiful island",
+    "description": "Escape to Saona Island, a pristine Caribbean paradise with crystal-clear turquoise waters and powdery white sand beaches. This full-day excursion includes a catamaran ride, beach time, snorkeling, and a delicious Dominican lunch buffet. Swim in the natural pool, relax under palm trees, and experience the untouched beauty of this protected national park.",
+    "image": "https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=1200&h=800&fit=crop",
+    "icon": "Sailboat",
+    "priceAdult": 89,
+    "inclusions": [
+      "Round-trip transportation from your hotel",
+      "Catamaran or speedboat ride",
+      "Open bar on the boat",
+      "Dominican buffet lunch",
+      "Snorkeling equipment",
+      "Professional guide",
+      "Natural pool stop",
+      "Beach time on Saona Island"
+    ],
+    "departure": "7:30 AM",
+    "duration": "Full day (approx. 9 hours)",
+    "pickup": "Hotel lobby",
+    "pickupMapLink": null,
+    "notes": "[\"Bring swimwear, towel, sunscreen, and camera\",\"Wear comfortable shoes\",\"Not recommended for pregnant women or people with back problems\",\"Minimum 2 people required\"]",
+    "gallery": [
+      "https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=1200&h=800&fit=crop",
+      "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=1200&h=800&fit=crop",
+      "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&h=800&fit=crop"
+    ],
+    "practicalInfo": {
+      "departure": "7:30 AM",
+      "duration": "Full day (approx. 9 hours)",
+      "pickup": "Hotel lobby",
+      "pickupMapLink": "https://maps.app.goo.gl/MdoeJm3TCWjcJyxEA",
+      "notes": [
+        "Bring swimwear, towel, sunscreen, and camera",
+        "Wear comfortable shoes",
+        "Not recommended for pregnant women or people with back problems",
+        "Minimum 2 people required"
+      ]
+    },
+    "price": {
+      "adult": 89
+    }
+  },
+  {
+    "id": "buggy-adventure",
+    "slug": "buggy-adventure",
+    "title": "Buggy Adventure Tour",
+    "tagline": "Off-road thrills through Dominican countryside",
+    "description": "Get your adrenaline pumping on this exciting buggy adventure through the Dominican countryside! Drive through muddy trails, visit a traditional Dominican home, swim in a cenote, and explore Macao Beach. This half-day tour combines adventure, culture, and natural beauty for an unforgettable experience.",
+    "image": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&h=800&fit=crop",
+    "icon": "Bike",
+    "price": {
+      "adult": 75
+    },
+    "inclusions": [
+      "Hotel pickup and drop-off",
+      "Buggy rental (2-seater)",
+      "Safety equipment and briefing",
+      "Professional guide",
+      "Visit to Dominican home",
+      "Cenote swimming stop",
+      "Macao Beach visit",
+      "Refreshments"
+    ],
+    "practicalInfo": {
+      "departure": "8:00 AM or 2:00 PM",
+      "duration": "4 hours",
+      "pickup": "Hotel lobby",
+      "pickupMapLink": "",
+      "notes": [
+        "Valid driver's license required",
+        "Minimum age 18 to drive, 6 to ride",
+        "Bring change of clothes and towel",
+        "Expect to get muddy!",
+        "Closed-toe shoes required"
+      ]
+    },
+    "gallery": [
+      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&h=800&fit=crop",
+      "https://images.unsplash.com/photo-1533587851505-d119e13fa0d7?w=1200&h=800&fit=crop",
+      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=800&fit=crop"
+    ]
+  },
+  {
+    "id": "snorkeling-catalina",
+    "slug": "snorkeling-catalina",
+    "title": "Catalina Island Snorkeling",
+    "tagline": "Underwater paradise awaits",
+    "description": "Discover the vibrant underwater world of Catalina Island, one of the best snorkeling spots in the Dominican Republic. This tour takes you to pristine coral reefs teeming with colorful tropical fish, sea turtles, and rays. Enjoy a beach BBQ lunch and relax on the beautiful island beach.",
+    "image": "https://images.unsplash.com/photo-1544551763-92d2b789a1ca?w=1200&h=800&fit=crop",
+    "icon": "Waves",
+    "price": {
+      "adult": 95
+    },
+    "inclusions": [
+      "Hotel pickup and drop-off",
+      "Boat transportation to Catalina Island",
+      "Snorkeling equipment",
+      "Professional snorkeling guide",
+      "Beach BBQ lunch",
+      "Open bar (rum, beer, soft drinks)",
+      "Beach time",
+      "Life jackets"
+    ],
+    "practicalInfo": {
+      "departure": "7:00 AM",
+      "duration": "Full day (approx. 8 hours)",
+      "pickup": "Hotel lobby",
+      "pickupMapLink": "",
+      "notes": [
+        "Basic swimming skills required",
+        "Bring underwater camera",
+        "Biodegradable sunscreen only",
+        "Not suitable for non-swimmers",
+        "Weather dependent"
+      ]
+    },
+    "gallery": [
+      "https://images.unsplash.com/photo-1544551763-92d2b789a1ca?w=1200&h=800&fit=crop",
+      "https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=1200&h=800&fit=crop",
+      "https://images.unsplash.com/photo-1583212292454-1fe6229603b7?w=1200&h=800&fit=crop"
+    ]
+  }
+]

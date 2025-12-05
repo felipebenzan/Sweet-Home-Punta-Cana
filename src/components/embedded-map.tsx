@@ -15,7 +15,7 @@ interface EmbeddedMapProps {
 const getDirectionsFromUrl = (url: string): { origin: string | null; destination: string | null; mode: string | null } => {
   try {
     const urlObj = new URL(url);
-    
+
     // Handles URLs like: /maps/dir/Origin/Destination
     if (urlObj.pathname.includes('/dir/')) {
       const parts = urlObj.pathname.split('/dir/')[1].split('/');
@@ -32,15 +32,15 @@ const getDirectionsFromUrl = (url: string): { origin: string | null; destination
     const origin = urlObj.searchParams.get('origin');
     const destination = urlObj.searchParams.get('destination');
     if (origin && destination) {
-        return {
-          origin,
-          destination,
-          mode: urlObj.searchParams.get('travelmode'),
-        };
+      return {
+        origin,
+        destination,
+        mode: urlObj.searchParams.get('travelmode'),
+      };
     }
 
     return { origin: null, destination: null, mode: null };
-    
+
   } catch (e) {
     console.error("Error parsing map URL:", e);
     return { origin: null, destination: null, mode: null };
@@ -62,13 +62,13 @@ const getPlaceQueryFromUrl = (url: string): string | null => {
     }
     // Handle search URLs
     if (urlObj.pathname.includes('/maps/search/')) {
-        const parts = urlObj.pathname.split('/maps/search/');
-        if (parts[1]) {
-            return decodeURIComponent(parts[1].split('/')[0]);
-        }
+      const parts = urlObj.pathname.split('/maps/search/');
+      if (parts[1]) {
+        return decodeURIComponent(parts[1].split('/')[0]);
+      }
     }
     // Fallback for simple query parameter
-    return urlObj.searchParams.get('q');
+    return urlObj.searchParams.get('q') || urlObj.searchParams.get('query');
   } catch (error) {
     console.error("Invalid map URL", error);
     return null;
@@ -82,7 +82,15 @@ export default function EmbeddedMap({ mapUrl, origin: propOrigin, mode: propMode
     console.error("Google Maps API key is missing.");
     return <div className="text-red-500 text-xs">Map cannot be displayed: Missing API Key.</div>;
   }
-  
+
+  if (mapUrl.includes('goo.gl') || mapUrl.includes('maps.app.goo.gl')) {
+    return (
+      <div className="w-full h-full flex items-center justify-center bg-neutral-100 text-neutral-500 text-sm p-4 text-center">
+        Map cannot be displayed. Please use the full Google Maps URL, not a short link.
+      </div>
+    );
+  }
+
   let embedUrl;
   const directions = getDirectionsFromUrl(mapUrl);
 

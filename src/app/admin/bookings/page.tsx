@@ -1,380 +1,169 @@
-"use client";
+import { verifySession } from '@/lib/auth';
+import { redirect } from 'next/navigation';
+import { readFile } from 'fs/promises';
+import { join } from 'path';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ArrowLeft, Home, Plane, Shirt, Calendar } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
-import * as React from "react";
-import { getReservations } from "@/server-actions";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import {
-  Bed,
-  Calendar as CalendarIcon,
-  User,
-  ArrowRight,
-  Home,
-} from "lucide-react";
-import {
-  format,
-  parseISO,
-  isSameDay,
-  startOfDay,
-  eachDayOfInterval,
-} from "date-fns";
-import type { Reservation } from "@/lib/types";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Calendar } from "@/components/ui/calendar";
-import { Day, type DayProps } from "react-day-picker";
-import { cn } from "@/lib/utils";
-import { Skeleton } from "@/components/ui/skeleton";
-
-type BookingEventType = "check-in" | "stay-over" | "check-out";
-
-interface BookingEvent {
-  type: BookingEventType;
-  reservation: Reservation;
+async function getBookings() {
+  try {
+    const bookingsPath = join(process.cwd(), 'src', 'data', 'bookings.json');
+    const fileContent = await readFile(bookingsPath, 'utf-8');
+    const bookings = JSON.parse(fileContent);
+    // Sort by most recent first
+    return bookings.sort((a: any, b: any) =>
+      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+  } catch (error) {
+    return [];
+  }
 }
 
-type BookingsByDate = Record<string, BookingEvent[]>;
-type EventsByDate = Record<string, Set<BookingEventType>>;
-
-const eventTypeColors: Record<BookingEventType, string> = {
-  "check-in": "bg-green-500",
-  "stay-over": "bg-blue-500",
-  "check-out": "bg-red-500",
-};
-
-const eventTypeLabels: Record<BookingEventType, string> = {
-  "check-in": "Check-ins",
-  "stay-over": "Stay-overs",
-  "check-out": "Check-outs",
-};
-
-export default function BookingsPage() {
-  const [reservations, setReservations] = React.useState<Reservation[]>([]);
-  const [isLoading, setIsLoading] = React.useState(true);
-  const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(
-    new Date()
-  );
-  const [currentMonth, setCurrentMonth] = React.useState(new Date());
-
-  React.useEffect(() => {
-    async function fetchReservations() {
-      try {
-        const resData = await getReservations();
-        console.log("Fetched Reservations:", resData);
-        setReservations(resData);
-      } catch (error) {
-        console.error("Failed to fetch reservations:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    fetchReservations();
-  }, []);
-
-  const { bookingsByDate, eventsByDate } = React.useMemo(() => {
-    const bbd: BookingsByDate = {};
-    const ebd: EventsByDate = {};
-
-    for (const res of reservations) {
-      try {
-        const checkInDate = startOfDay(parseISO(res.checkInDate));
-        const checkOutDate = startOfDay(parseISO(res.checkOutDate));
-
-        const interval = eachDayOfInterval({
-          start: checkInDate,
-          end: checkOutDate,
-        });
-
-        interval.forEach((day, index) => {
-          const dateKey = format(day, "yyyy-MM-dd");
-          if (!bbd[dateKey]) bbd[dateKey] = [];
-          if (!ebd[dateKey]) ebd[dateKey] = new Set();
-
-          let eventType: BookingEventType;
-          if (isSameDay(day, checkInDate)) {
-            eventType = "check-in";
-          } else if (isSameDay(day, checkOutDate)) {
-            eventType = "check-out";
-          } else {
-            eventType = "stay-over";
-          }
-
-          bbd[dateKey].push({ type: eventType, reservation: res });
-          ebd[dateKey].add(eventType);
-        });
-      } catch (e) {
-        console.error(`Could not parse dates for reservation ${res.id}`, e);
-      }
-    }
-    return { bookingsByDate: bbd, eventsByDate: ebd };
-  }, [reservations]);
-
-  const selectedDayEvents = React.useMemo(() => {
-    if (!selectedDate) return null;
-    const dateKey = format(selectedDate, "yyyy-MM-dd");
-    const events = bookingsByDate[dateKey] || [];
-
-    // Group events by type
-    return events.reduce((acc, event) => {
-      if (!acc[event.type]) {
-        acc[event.type] = [];
-      }
-      acc[event.type].push(event.reservation);
-      return acc;
-    }, {} as Record<BookingEventType, Reservation[]>);
-  }, [selectedDate, bookingsByDate]);
-
-  function DayWithDots(props: DayProps) {
-    const dateKey = format(props.date, "yyyy-MM-dd");
-    const events = eventsByDate[dateKey];
-    return (
-      <div className="relative flex flex-col items-center justify-center h-full">
-        <Day {...props} />
-        {events && (
-          <div className="absolute bottom-1 flex gap-0.5">
-            {Array.from(events)
-              .sort()
-              .map((eventType) => (
-                <div
-                  key={eventType}
-                  className={cn(
-                    "h-1.5 w-1.5 rounded-full",
-                    eventTypeColors[eventType]
-                  )}
-                />
-              ))}
-          </div>
-        )}
-      </div>
-    );
+function getTypeIcon(type: string) {
+  switch (type) {
+    case 'room': return <Home className="h-4 w-4" />;
+    case 'transfer': return <Plane className="h-4 w-4" />;
+    case 'laundry': return <Shirt className="h-4 w-4" />;
+    case 'excursion': return <Calendar className="h-4 w-4" />;
+    default: return null;
   }
+}
+
+function getTypeBadge(type: string) {
+  const colors: Record<string, string> = {
+    room: 'bg-blue-100 text-blue-800',
+    transfer: 'bg-green-100 text-green-800',
+    laundry: 'bg-purple-100 text-purple-800',
+    excursion: 'bg-orange-100 text-orange-800',
+  };
 
   return (
-    <div className="p-4 sm:p-6 bg-shpc-sand min-h-full">
-      <header className="flex flex-wrap items-center justify-between gap-4 mb-6">
-        <div>
-          <h1 className="text-3xl font-bold text-shpc-ink">Bookings</h1>
-          <p className="text-muted-foreground">
-            A live list of all guest room reservations.
-          </p>
-        </div>
-      </header>
+    <Badge className={colors[type] || 'bg-gray-100 text-gray-800'}>
+      {getTypeIcon(type)}
+      <span className="ml-1 capitalize">{type}</span>
+    </Badge>
+  );
+}
 
-      <Tabs defaultValue="list">
-        <div className="flex justify-between items-center">
-          <TabsList>
-            <TabsTrigger value="list">List View</TabsTrigger>
-            <TabsTrigger value="calendar">Calendar View</TabsTrigger>
-          </TabsList>
-          <div className="flex gap-2 text-xs text-muted-foreground items-center">
-            <span className="flex items-center gap-1.5">
-              <div className="h-2 w-2 rounded-full bg-green-500" />
-              Check-in
-            </span>
-            <span className="flex items-center gap-1.5">
-              <div className="h-2 w-2 rounded-full bg-blue-500" />
-              Stay-over
-            </span>
-            <span className="flex items-center gap-1.5">
-              <div className="h-2 w-2 rounded-full bg-red-500" />
-              Check-out
-            </span>
-          </div>
+export default async function AdminBookingsPage() {
+  const session = await verifySession();
+
+  if (!session) {
+    redirect('/admin/login');
+  }
+
+  const bookings = await getBookings();
+
+  return (
+    <div className="min-h-screen bg-shpc-sand p-8">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="mb-8">
+          <Link href="/admin">
+            <Button variant="ghost" className="mb-4">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Dashboard
+            </Button>
+          </Link>
+          <h1 className="text-3xl font-bold">All Bookings</h1>
+          <p className="text-muted-foreground">View all reservations and services</p>
         </div>
 
-        <TabsContent value="list" className="mt-6">
-          <Card className="shadow-soft rounded-2xl">
-            <CardHeader>
-              <CardTitle>All Reservations</CardTitle>
-              <CardDescription>
-                This list is updated in real-time.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {isLoading ? (
-                <div className="space-y-2">
-                  <Skeleton className="h-12 w-full" />
-                  <Skeleton className="h-12 w-full" />
-                  <Skeleton className="h-12 w-full" />
-                </div>
-              ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Guest</TableHead>
-                      <TableHead>Dates</TableHead>
-                      <TableHead className="hidden md:table-cell">
-                        Room
-                      </TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {reservations.length === 0 ? (
-                      <TableRow>
-                        <TableCell colSpan={5} className="h-24 text-center">
-                          No reservations found yet.
-                        </TableCell>
-                      </TableRow>
-                    ) : (
-                      reservations.map((res) => (
-                        <TableRow key={res.id}>
-                          <TableCell className="font-medium flex items-center gap-2">
-                            <User className="h-4 w-4 text-muted-foreground" />
-                            {res.guestName}
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex items-center gap-2">
-                              <CalendarIcon className="h-4 w-4 text-muted-foreground" />
-                              <span>
-                                {format(
-                                  new Date(res.checkInDate),
-                                  "MMM dd, yyyy"
-                                )}{" "}
-                                -{" "}
-                                {format(
-                                  new Date(res.checkOutDate),
-                                  "MMM dd, yyyy"
-                                )}
-                              </span>
-                            </div>
-                          </TableCell>
-                          <TableCell className="hidden md:table-cell">
-                            <div className="flex items-center gap-2">
-                              <Bed className="h-4 w-4 text-muted-foreground" />
-                              {res.roomName}
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <Badge
-                              variant={
-                                res.status.toLowerCase() === "confirmed"
-                                  ? "default"
-                                  : "secondary"
-                              }
-                            >
-                              {res.status}
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <Button asChild variant="outline" size="sm">
-                              <Link href={`/admin/bookings/${res.id}`}>
-                                View <ArrowRight className="ml-2 h-4 w-4" />
-                              </Link>
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      ))
-                    )}
-                  </TableBody>
-                </Table>
-              )}
+        {/* Bookings List */}
+        {bookings.length === 0 ? (
+          <Card>
+            <CardContent className="p-12 text-center">
+              <p className="text-muted-foreground">No bookings yet</p>
             </CardContent>
           </Card>
-        </TabsContent>
-
-        <TabsContent value="calendar" className="mt-6">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <Card className="lg:col-span-2 shadow-soft rounded-2xl p-2">
-              {isLoading ? (
-                <Skeleton className="w-full h-96" />
-              ) : (
-                <Calendar
-                  mode="single"
-                  selected={selectedDate}
-                  onSelect={setSelectedDate}
-                  month={currentMonth}
-                  onMonthChange={setCurrentMonth}
-                  className="w-full"
-                  components={{ Day: DayWithDots }}
-                />
-              )}
-            </Card>
-            <div className="lg:col-span-1">
-              <Card className="shadow-soft rounded-2xl">
+        ) : (
+          <div className="space-y-4">
+            {bookings.map((booking: any) => (
+              <Card key={booking.confirmationId} className="hover:shadow-lg transition-shadow">
                 <CardHeader>
-                  <CardTitle>
-                    {selectedDate
-                      ? format(selectedDate, "MMMM dd, yyyy")
-                      : "No date selected"}
-                  </CardTitle>
-                  <CardDescription>Bookings for this day.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {isLoading ? (
-                    <Skeleton className="w-full h-40" />
-                  ) : selectedDayEvents &&
-                    Object.keys(selectedDayEvents).length > 0 ? (
-                    <div className="space-y-4">
-                      {(
-                        [
-                          "check-in",
-                          "stay-over",
-                          "check-out",
-                        ] as BookingEventType[]
-                      ).map(
-                        (eventType) =>
-                          selectedDayEvents[eventType] && (
-                            <div key={eventType}>
-                              <h4 className="font-semibold text-sm mb-2 flex items-center gap-2">
-                                <div
-                                  className={cn(
-                                    "h-2.5 w-2.5 rounded-full",
-                                    eventTypeColors[eventType]
-                                  )}
-                                />
-                                {eventTypeLabels[eventType]}
-                              </h4>
-                              <ul className="space-y-2">
-                                {selectedDayEvents[eventType].map((res) => (
-                                  <li key={res.id}>
-                                    <Link
-                                      href={`/admin/bookings/${res.id}`}
-                                      className="block text-sm p-2 rounded-lg hover:bg-muted/50"
-                                    >
-                                      <p className="font-medium flex justify-between items-center">
-                                        {res.guestName}
-                                        <ArrowRight className="h-3 w-3 text-muted-foreground" />
-                                      </p>
-                                      <p className="text-xs text-muted-foreground flex items-center gap-1.5">
-                                        <Home className="h-3 w-3" />
-                                        {res.roomName}
-                                      </p>
-                                    </Link>
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          )
+                  <div className="flex justify-between items-start">
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        {getTypeBadge(booking.type)}
+                        <span className="text-sm text-muted-foreground">
+                          {new Date(booking.createdAt).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                        </span>
+                      </div>
+                      <CardTitle className="text-lg">
+                        {booking.guestName || booking.customer?.name || 'Guest'}
+                      </CardTitle>
+                      <p className="text-sm text-muted-foreground">
+                        {booking.guestEmail || booking.customer?.email}
+                      </p>
+                      {booking.customer?.phone && (
+                        <p className="text-sm text-muted-foreground">
+                          📱 {booking.customer.phone}
+                        </p>
                       )}
                     </div>
-                  ) : (
-                    <div className="text-center text-sm text-muted-foreground py-10">
-                      No booking activity for this day.
+                    <div className="text-right">
+                      <p className="text-2xl font-bold">${booking.totalPrice?.toFixed(2)}</p>
+                      <p className="text-xs text-muted-foreground">
+                        ID: {booking.confirmationId}
+                      </p>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  {/* Room Details */}
+                  {booking.type === 'room' && booking.dates && (
+                    <div className="space-y-2 text-sm">
+                      <p><strong>Check-in:</strong> {booking.dates.checkIn}</p>
+                      <p><strong>Check-out:</strong> {booking.dates.checkOut}</p>
+                      <p><strong>Guests:</strong> {booking.guests}</p>
+                      {booking.rooms && (
+                        <p><strong>Rooms:</strong> {booking.rooms.map((r: any) => r.name).join(', ')}</p>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Transfer Details */}
+                  {booking.type === 'transfer' && booking.details && (
+                    <div className="space-y-2 text-sm">
+                      <p><strong>Direction:</strong> {booking.details.direction}</p>
+                      {booking.details.arrivalDate && (
+                        <p><strong>Arrival:</strong> {booking.details.arrivalDate} - Flight {booking.details.arrivalFlight}</p>
+                      )}
+                      {booking.details.departureDate && (
+                        <p><strong>Departure:</strong> {booking.details.departureDate} at {booking.details.departureTime}</p>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Laundry Details */}
+                  {booking.type === 'laundry' && booking.details && (
+                    <div className="space-y-2 text-sm">
+                      <p><strong>Bags:</strong> {booking.details.bags}</p>
+                      <p><strong>Price per bag:</strong> ${booking.details.pricePerBag}</p>
+                    </div>
+                  )}
+
+                  {/* PayPal Info */}
+                  {booking.paypalTransactionId && (
+                    <div className="mt-4 pt-4 border-t text-xs text-muted-foreground">
+                      <p>PayPal Transaction: {booking.paypalTransactionId}</p>
                     </div>
                   )}
                 </CardContent>
               </Card>
-            </div>
+            ))}
           </div>
-        </TabsContent>
-      </Tabs>
+        )}
+      </div>
     </div>
   );
 }

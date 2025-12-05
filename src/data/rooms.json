@@ -1,0 +1,87 @@
+[
+    {
+        "id": "deluxe-king",
+        "slug": "deluxe-king",
+        "name": "Deluxe King Room",
+        "tagline": "Spacious comfort with king-size luxury",
+        "description": "Welcome to the Deluxe King Room, a sanctuary of comfort and style designed for the modern traveler. This room is perfect for couples seeking a serene base to explore the vibrant life of Punta Cana. The space is thoughtfully appointed with a plush California King bed, ensuring a restful night's sleep after a day of sun and sand.\n\nEvery detail has been considered for your convenience, from the sleek, private bathroom with hot water to the high-speed Wi-Fi and Netflix-equipped Smart TV for your entertainment. Step out onto your private balcony to enjoy the tropical breeze.",
+        "bedding": "California King",
+        "capacity": 2,
+        "price": 85,
+        "image": "https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=800&h=600&fit=crop",
+        "amenities": [
+            "Air conditioning",
+            "Free Wi-Fi",
+            "Smart TV with Netflix",
+            "Private bathroom",
+            "Private balcony",
+            "Mini fridge",
+            "Wardrobe",
+            "Daily cleaning",
+            "Hot water",
+            "Towels & toiletries"
+        ],
+        "gallery": [
+            "https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=1200&h=800&fit=crop",
+            "https://images.unsplash.com/photo-1590490360182-c33d57733427?w=1200&h=800&fit=crop",
+            "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=1200&h=800&fit=crop"
+        ],
+        "inventoryUnits": 2
+    },
+    {
+        "id": "queen-garden",
+        "slug": "queen-garden",
+        "name": "Queen Garden View",
+        "tagline": "Cozy retreat with garden views",
+        "description": "The Queen Garden View room offers a perfect blend of comfort and tranquility. Wake up to the sounds of tropical birds and enjoy your morning coffee while overlooking our lush garden patio. This room features a comfortable queen bed and all the amenities you need for a relaxing stay.\n\nIdeal for solo travelers or couples who appreciate a quieter, more intimate setting. The room includes access to our shared kitchen and common areas.",
+        "bedding": "Queen",
+        "capacity": 2,
+        "price": 75,
+        "image": "https://images.unsplash.com/photo-1598928506311-c55ded91a20c?w=800&h=600&fit=crop",
+        "amenities": [
+            "Air conditioning",
+            "Free Wi-Fi",
+            "Smart TV with Netflix",
+            "Private bathroom",
+            "Patio access",
+            "Mini fridge",
+            "Wardrobe",
+            "Daily cleaning",
+            "Hot water",
+            "Towels & toiletries"
+        ],
+        "gallery": [
+            "https://images.unsplash.com/photo-1598928506311-c55ded91a20c?w=1200&h=800&fit=crop",
+            "https://images.unsplash.com/photo-1560185893-a55cbc8c57e8?w=1200&h=800&fit=crop",
+            "https://images.unsplash.com/photo-1566665797739-1674de7a421a?w=1200&h=800&fit=crop"
+        ],
+        "inventoryUnits": 2
+    },
+    {
+        "id": "standard-double",
+        "slug": "standard-double",
+        "name": "Standard Double",
+        "tagline": "Comfortable and affordable",
+        "description": "Our Standard Double room provides excellent value without compromising on comfort. Perfect for budget-conscious travelers who still want a clean, comfortable place to rest after exploring Punta Cana's attractions.\n\nThe room features a full-size bed, private bathroom, and all essential amenities. You'll have access to our shared kitchen, garden patio, and all common areas.",
+        "bedding": "Full",
+        "capacity": 2,
+        "price": 65,
+        "image": "https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?w=800&h=600&fit=crop",
+        "amenities": [
+            "Air conditioning",
+            "Free Wi-Fi",
+            "Smart TV with Netflix",
+            "Private bathroom",
+            "Patio access",
+            "Wardrobe",
+            "Daily cleaning",
+            "Hot water",
+            "Towels & toiletries"
+        ],
+        "gallery": [
+            "https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?w=1200&h=800&fit=crop",
+            "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=1200&h=800&fit=crop"
+        ],
+        "inventoryUnits": 1
+    }
+]

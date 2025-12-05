@@ -2,7 +2,6 @@
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { format, differenceInDays, parseISO } from "date-fns";
-import { getRooms, checkRoomAvailability } from "@/server-actions";
 import type { Room } from "@/lib/types";
 import RoomCard from "@/components/room-card";
 import {
@@ -14,61 +13,72 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import DateSearch from "@/components/date-search";
+import BookingBar from "@/components/booking-bar";
 import { ArrowRight, Info } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
-import { useHeaderState } from "@/components/header-manager";
-
 function SearchResults() {
-  const isHeaderHidden = useHeaderState();
   const router = useRouter();
   const searchParams = useSearchParams();
   const { toast } = useToast();
 
-  const from = searchParams.get("from");
-  const to = searchParams.get("to");
-  const guests = Number(searchParams.get("guests") || "1");
+  const from = searchParams.get("arrival");
+  const to = searchParams.get("departure");
+  const guests = Number(searchParams.get("numAdults") || "1");
   const requestedRoomSlug = searchParams.get("room");
 
-  const [allRooms, setAllRooms] = useState<Room[]>([]);
   const [availableRooms, setAvailableRooms] = useState<Room[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedRooms, setSelectedRooms] = useState<Room[]>([]);
+  const [searchMessage, setSearchMessage] = useState<{ type: 'success' | 'error' | 'info', text: string } | null>(null);
 
   useEffect(() => {
-    async function fetchAndFilterRooms() {
+    async function fetchAvailability() {
       if (!from || !to) {
         setIsLoading(false);
         return;
       }
       setIsLoading(true);
+      setSearchMessage(null);
 
       try {
-        console.log('try block start')
-        const [roomsData, availableRoomIds] = await Promise.all([
-          getRooms(),
-          checkRoomAvailability({ from, to }),
-        ]);
-        console.log('room data',roomsData)
-        console.log('room availability',availableRoomIds)
-        
-        const filteredRooms = roomsData.filter((room) =>
-          availableRoomIds.includes(room.id)
-        );
+        const params = new URLSearchParams({
+          arrival: from,
+          departure: to,
+          numAdults: guests.toString(),
+        });
 
-        setAllRooms(roomsData);
-        setAvailableRooms(filteredRooms);
-
-        // Handle pre-selection
         if (requestedRoomSlug) {
-          const room = filteredRooms.find((r) => r.slug === requestedRoomSlug);
-          if (room) {
-            setSelectedRooms([room]);
-          }
+          params.append('preferred_room_id', requestedRoomSlug);
         }
+
+        const res = await fetch(`/api/availability?${params.toString()}`);
+        const data = await res.json();
+
+        if (data.status === 'success' || data.status === 'preferred_available') {
+          setAvailableRooms(data.rooms);
+          if (data.message && data.status === 'preferred_available') {
+            setSearchMessage({ type: 'success', text: data.message });
+          }
+        } else if (data.status === 'preferred_unavailable') {
+          setAvailableRooms(data.rooms);
+          setSearchMessage({ type: 'error', text: data.message });
+        } else if (data.status === 'fully_booked') {
+          setAvailableRooms([]);
+          setSearchMessage({ type: 'info', text: data.message });
+        } else {
+          // Fallback
+          setAvailableRooms(data.rooms || []);
+        }
+
+        // Handle pre-selection if preferred room is available
+        if (requestedRoomSlug && (data.status === 'preferred_available')) {
+          const room = data.rooms.find((r: Room) => r.slug === requestedRoomSlug || r.id === requestedRoomSlug);
+          if (room) setSelectedRooms([room]);
+        }
+
       } catch (error) {
-        console.error("Failed to fetch or filter rooms:", error);
+        console.error("Failed to fetch availability:", error);
         toast({
           title: "Error",
           description: "Could not load room availability. Please try again.",
@@ -79,8 +89,8 @@ function SearchResults() {
       }
     }
 
-    fetchAndFilterRooms();
-  }, [from, to, requestedRoomSlug, toast]);
+    fetchAvailability();
+  }, [from, to, requestedRoomSlug, guests, toast]);
 
   const minRoomsRequired = Math.ceil(guests / 2);
 
@@ -170,15 +180,8 @@ function SearchResults() {
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-12">
-      <div
-        className={cn(
-          "sticky z-40 transition-all duration-300 ease-in-out mb-8 -mt-6",
-          isHeaderHidden ? "top-0" : "top-[var(--header-height)]"
-        )}
-      >
-        <div className="p-4 rounded-2xl shadow-soft bg-background/80 backdrop-blur-sm border border-shpc-edge">
-          <DateSearch />
-        </div>
+      <div className="mb-12">
+        <BookingBar />
       </div>
 
       <div className="text-center mb-12">
@@ -211,6 +214,18 @@ function SearchResults() {
           one room.
         </p>
       </div>
+
+      {searchMessage && (
+        <div className={cn(
+          "mb-8 p-4 rounded-xl border flex items-center gap-3",
+          searchMessage.type === 'success' ? "bg-green-50 border-green-200 text-green-800" :
+            searchMessage.type === 'error' ? "bg-red-50 border-red-200 text-red-800" :
+              "bg-blue-50 border-blue-200 text-blue-800"
+        )}>
+          <Info className="h-5 w-5" />
+          <p className="font-medium text-sm">{searchMessage.text}</p>
+        </div>
+      )}
 
       {availableRooms.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

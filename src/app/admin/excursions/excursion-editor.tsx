@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { saveExcursion } from "@/server-actions";
+// import { saveExcursion } from "@/server-actions"; // TODO: Replace with API call
 import type { Excursion } from "@/lib/types";
 import { ChevronLeft, Trash2, Link2, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -132,23 +132,33 @@ export default function ExcursionEditor({
 
     setIsSaving(true);
     try {
-      const { id } = await saveExcursion(excursion as Excursion);
-      setExcursion((prev) => (prev ? { ...prev, id } : { id }));
-
-      toast({
-        title: "Success!",
-        description: "Excursion saved successfully.",
+      const response = await fetch('/api/admin/excursions', {
+        method: isNew ? 'POST' : 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(excursion),
       });
-      if (isNew && excursion.slug) {
-        router.push(`/admin/excursions/edit/${excursion.slug}`);
-        router.refresh();
+
+      const result = await response.json();
+
+      if (result.success) {
+        setExcursion(result.excursion);
+        toast({
+          title: "Success!",
+          description: "Excursion saved successfully.",
+        });
+
+        if (isNew && excursion.slug) {
+          router.push(`/admin/excursions/edit/${excursion.slug}`);
+          router.refresh();
+        }
+      } else {
+        throw new Error(result.error || 'Failed to save excursion');
       }
     } catch (error) {
       toast({
         title: "Error",
-        description: `Failed to save excursion. ${
-          error instanceof Error ? error.message : ""
-        }`,
+        description: `Failed to save excursion. ${error instanceof Error ? error.message : ""
+          }`,
         variant: "destructive",
       });
     } finally {
@@ -455,7 +465,7 @@ export default function ExcursionEditor({
                   <Label htmlFor="pickup-map">Pickup Map Link</Label>
                   <Input
                     id="pickup-map"
-                    placeholder="https://maps.app.goo.gl/..."
+                    placeholder="https://www.google.com/maps/place/..."
                     value={excursion.practicalInfo?.pickupMapLink || ""}
                     onChange={(e) =>
                       handleInputChange(
@@ -464,6 +474,9 @@ export default function ExcursionEditor({
                       )
                     }
                   />
+                  <p className="text-xs text-muted-foreground">
+                    IMPORTANT: Copy the full URL from your browser's address bar (e.g., https://www.google.com/maps/place/...). Do not use the 'Share' button short link (goo.gl).
+                  </p>
                 </div>
                 <div className="space-y-4">
                   <Label>Inclusions</Label>

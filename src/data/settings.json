@@ -1,0 +1,16 @@
+{
+    "serviceLimits": {
+        "airportTransfer": {
+            "maxPerDay": 4,
+            "enabled": true
+        },
+        "laundry": {
+            "maxLoadsPerDay": 4,
+            "enabled": true
+        }
+    },
+    "businessHours": {
+        "start": "08:00",
+        "end": "20:00"
+    }
+}

@@ -2,7 +2,7 @@
 import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { firestore } from "@/lib/firebase-admin";
+import { getRooms } from "@/app/server-actions.readonly";
 import type { Room } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
@@ -16,10 +16,6 @@ import GuestServicesCarousel from "@/components/guest-services-carousel";
 
 export const revalidate = 3600; // Re-fetch room data every hour
 
-async function getRooms(): Promise<Room[]> {
-    const snapshot = await firestore.collection('rooms').get();
-    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Room));
-}
 
 export default async function RoomsPage() {
   let rooms: Room[] = [];
@@ -56,12 +52,12 @@ export default async function RoomsPage() {
 
       <div className="max-w-6xl mx-auto px-6 py-16 sm:py-24">
         {fetchError ? (
-           <div className="text-center py-12">
-             <p className="text-lg text-destructive">{fetchError}</p>
-             <Button asChild variant="outline" className="mt-4">
-                <Link href="/">Return to Homepage</Link>
-             </Button>
-           </div>
+          <div className="text-center py-12">
+            <p className="text-lg text-destructive">{fetchError}</p>
+            <Button asChild variant="outline" className="mt-4">
+              <Link href="/">Return to Homepage</Link>
+            </Button>
+          </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {rooms.map((room) => (
