@@ -28,9 +28,9 @@ export async function GET(request: NextRequest) {
             .filter((id): id is string => !!id);
 
         // 3. Call Beds24 API
-        // NOTE: We read env vars here to ensure detailed control and debug visibility
-        const apiKey = process.env.BEDS24_API_KEY;
-        const propKey = process.env.BEDS24_PROP_KEY || process.env.BEDS24_PROP_ID;
+        // NOTE: Temporarily hardcoding to bypass Vercel Env Var propagation issue
+        const apiKey = "SweetHome2025SecretKeyX99";
+        const propKey = "303042"; // Using PROP_ID from screenshot as key fallback
 
         const { data: beds24Data, debug: beds24Debug } = await Beds24.getAvailability({
             arrival,
