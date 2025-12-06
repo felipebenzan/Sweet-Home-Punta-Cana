@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Save, Settings as SettingsIcon } from 'lucide-react';
+import { Loader2, Save, Settings as SettingsIcon, Mail, Send } from 'lucide-react';
 
 interface Settings {
     serviceLimits: {
@@ -31,6 +31,9 @@ export default function SettingsPage() {
     const [settings, setSettings] = useState<Settings | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
+
+    const [testEmail, setTestEmail] = useState('');
+    const [isSendingTestEmail, setIsSendingTestEmail] = useState(false);
 
     useEffect(() => {
         loadSettings();
@@ -92,6 +95,46 @@ export default function SettingsPage() {
         }
     };
 
+    const handleSendTestEmail = async () => {
+        if (!testEmail) {
+            toast({
+                title: "Email Required",
+                description: "Please enter a valid email address.",
+                variant: "destructive"
+            });
+            return;
+        }
+
+        setIsSendingTestEmail(true);
+
+        try {
+            const response = await fetch('/api/test-email', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: testEmail }),
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                toast({
+                    title: "Email Sent Successfully",
+                    description: "Check your inbox. If distinct, check Spam folder.",
+                });
+            } else {
+                throw new Error(result.error);
+            }
+        } catch (error: any) {
+            toast({
+                title: "Failed to Send Email",
+                description: error.message || "Unknown error occurred.",
+                variant: "destructive"
+            });
+        } finally {
+            setIsSendingTestEmail(false);
+        }
+    };
+
     if (isLoading) {
         return (
             <div className="flex items-center justify-center min-h-screen">
@@ -121,6 +164,48 @@ export default function SettingsPage() {
             </header>
 
             <div className="max-w-2xl space-y-6">
+                {/* Email System Debugging */}
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <Mail className="h-5 w-5" /> Email System
+                        </CardTitle>
+                        <CardDescription>
+                            Verify your email configuration (Resend API)
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="flex flex-col space-y-2">
+                            <Label htmlFor="test-email">Send Test Email</Label>
+                            <div className="flex gap-2">
+                                <Input
+                                    id="test-email"
+                                    type="email"
+                                    placeholder="your-email@example.com"
+                                    value={testEmail}
+                                    onChange={(e) => setTestEmail(e.target.value)}
+                                />
+                                <Button
+                                    onClick={handleSendTestEmail}
+                                    disabled={isSendingTestEmail}
+                                    variant="secondary"
+                                >
+                                    {isSendingTestEmail ? (
+                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                    ) : (
+                                        <>
+                                            Send <Send className="ml-2 h-4 w-4" />
+                                        </>
+                                    )}
+                                </Button>
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                                Use this to verify that the Resend API Key is valid and the domain is verified.
+                            </p>
+                        </div>
+                    </CardContent>
+                </Card>
+
                 {/* Service Limits */}
                 <Card>
                     <CardHeader>
