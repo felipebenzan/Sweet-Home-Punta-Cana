@@ -59,7 +59,6 @@ export async function POST(request: NextRequest) {
       success: true,
       message: 'Test email sent successfully',
       emailId: result.data?.id,
-      keyUsed: (process.env.RESEND_API_KEY || '').substring(0, 5) + '...',
       details: result,
     });
 
