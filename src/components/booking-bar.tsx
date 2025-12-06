@@ -20,9 +20,17 @@ export default function BookingBar() {
         const arrival = searchParams?.get('arrival');
         const departure = searchParams?.get('departure');
         if (arrival && departure) {
+            // Parse YYYY-MM-DD as local start of day to avoid timezone shifts
+            const parseDate = (str: string) => {
+                const parts = str.split('-');
+                if (parts.length === 3) {
+                    return new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+                }
+                return new Date(str);
+            };
             return {
-                from: new Date(arrival),
-                to: new Date(departure)
+                from: parseDate(arrival),
+                to: parseDate(departure)
             };
         }
         return undefined;

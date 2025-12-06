@@ -28,9 +28,17 @@ export default function DateSearch({ className, roomSlug }: DateSearchProps) {
     const from = searchParams.get("arrival");
     const to = searchParams.get("departure");
     if (from && to) {
+      // Parse YYYY-MM-DD as local start of day to avoid timezone shifts
+      const parseDate = (str: string) => {
+        const parts = str.split('-');
+        if (parts.length === 3) {
+          return new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+        }
+        return new Date(str);
+      };
       return {
-        from: new Date(from),
-        to: new Date(to),
+        from: parseDate(from),
+        to: parseDate(to),
       };
     }
     return undefined;
