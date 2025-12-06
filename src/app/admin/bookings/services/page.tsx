@@ -1,39 +1,42 @@
 import { verifySession } from '@/lib/auth';
 import { redirect } from 'next/navigation';
-import { readFile } from 'fs/promises';
-import { join } from 'path';
 import Link from 'next/link';
+import { prisma } from '@/lib/prisma';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, Plane, Shirt, Calendar as CalendarIcon, MapPin } from 'lucide-react';
+import { ArrowLeft, Plane, Shirt, Calendar as CalendarIcon, MapPin, Briefcase } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { DeleteBookingButton } from '../delete-booking-button';
 
 async function getBookings() {
     try {
-        const bookingsPath = join(process.cwd(), 'src', 'data', 'bookings.json');
-        const fileContent = await readFile(bookingsPath, 'utf-8');
-        const bookings = JSON.parse(fileContent);
-        // Filter only service bookings (transfer, laundry, excursion)
-        return bookings
-            .filter((b: any) => ['transfer', 'laundry', 'excursion'].includes(b.type))
-            .sort((a: any, b: any) =>
-                new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-            );
+        const bookings = await prisma.serviceBooking.findMany({
+            orderBy: {
+                createdAt: 'desc'
+            },
+            include: {
+                excursion: true
+            }
+        });
+        return bookings;
     } catch (error) {
+        console.error('Failed to fetch service bookings:', error);
         return [];
     }
 }
 
 function getServiceIcon(type: string) {
     switch (type) {
-        case 'transfer': return <Plane className="h-4 w-4" />;
+        case 'transfer':
+        case 'airport_transfer': return <Briefcase className="h-4 w-4" />;
         case 'laundry': return <Shirt className="h-4 w-4" />;
-        case 'excursion': return <MapPin className="h-4 w-4" />;
+        case 'excursion': return <Plane className="h-4 w-4" />; // Or Tree
         default: return null;
     }
 }
 
 function getServiceBadge(type: string) {
+    const normalizedType = type === 'airport_transfer' ? 'transfer' : type;
     const colors: Record<string, string> = {
         transfer: 'bg-green-100 text-green-800',
         laundry: 'bg-purple-100 text-purple-800',
@@ -41,9 +44,9 @@ function getServiceBadge(type: string) {
     };
 
     return (
-        <Badge className={colors[type] || 'bg-gray-100 text-gray-800'}>
-            {getServiceIcon(type)}
-            <span className="ml-1 capitalize">{type}</span>
+        <Badge className={colors[normalizedType] || 'bg-gray-100 text-gray-800'}>
+            {getServiceIcon(normalizedType)}
+            <span className="ml-1 capitalize">{normalizedType}</span>
         </Badge>
     );
 }
@@ -84,87 +87,93 @@ export default async function ServiceBookingsPage() {
                 <Card>
                     <CardContent className="p-12 text-center">
                         <Plane className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                        <p className="text-muted-foreground">No service bookings yet</p>
+                        <p className="text-muted-foreground">No service bookings found</p>
                     </CardContent>
                 </Card>
             ) : (
                 <div className="space-y-4">
-                    {bookings.map((booking: any) => (
-                        <Card key={booking.confirmationId} className="hover:shadow-lg transition-shadow">
-                            <CardHeader>
-                                <div className="flex justify-between items-start">
-                                    <div className="space-y-2">
-                                        <div className="flex items-center gap-2">
-                                            {getServiceBadge(booking.type)}
-                                            <span className="text-sm text-muted-foreground">
-                                                {new Date(booking.createdAt).toLocaleDateString('en-US', {
-                                                    month: 'short',
-                                                    day: 'numeric',
-                                                    year: 'numeric',
-                                                    hour: '2-digit',
-                                                    minute: '2-digit'
-                                                })}
-                                            </span>
+                    {bookings.map((booking) => {
+                        // Parse details if it's a string, or use as is if it's an object/null
+                        // Prisma types details as Json, which can be any valid JSON value
+                        const details: any = typeof booking.details === 'string'
+                            ? JSON.parse(booking.details)
+                            : booking.details || {};
+
+                        const total = booking.total ?? 0;
+
+                        return (
+                            <Card key={booking.id} className="hover:shadow-lg transition-shadow group relative">
+                                <CardHeader>
+                                    <div className="flex justify-between items-start">
+                                        <div className="space-y-2">
+                                            <div className="flex items-center gap-2">
+                                                {getServiceBadge(booking.type)}
+                                                <span className="text-sm text-muted-foreground">
+                                                    {new Date(booking.createdAt).toLocaleDateString('en-US', {
+                                                        month: 'short',
+                                                        day: 'numeric',
+                                                        year: 'numeric',
+                                                        hour: '2-digit',
+                                                        minute: '2-digit'
+                                                    })}
+                                                </span>
+                                            </div>
+
+                                            <Link href={`/admin/bookings/${booking.id}`} className="block">
+                                                <CardTitle className="text-lg text-blue-600 group-hover:underline cursor-pointer">
+                                                    {booking.guestName || 'Guest'}
+                                                </CardTitle>
+                                            </Link>
+
+                                            <div className="text-sm text-muted-foreground space-y-1">
+                                                <p>{booking.email}</p>
+                                                {booking.phone && <p>📱 {booking.phone}</p>}
+                                            </div>
                                         </div>
-                                        <CardTitle className="text-lg">
-                                            {booking.guestName || booking.customer?.name || 'Guest'}
-                                        </CardTitle>
-                                        <p className="text-sm text-muted-foreground">
-                                            {booking.guestEmail || booking.customer?.email}
-                                        </p>
-                                        {booking.customer?.phone && (
-                                            <p className="text-sm text-muted-foreground">
-                                                📱 {booking.customer.phone}
+                                        <div className="text-right flex flex-col items-end gap-2">
+                                            <p className="text-2xl font-bold">${total.toFixed(2)}</p>
+                                            <p className="text-xs text-muted-foreground">
+                                                ID: {booking.id.substring(0, 8)}...
                                             </p>
+                                            <DeleteBookingButton bookingId={booking.id} bookingType={booking.type} />
+                                        </div>
+                                    </div>
+                                </CardHeader>
+                                <CardContent>
+                                    <Link href={`/admin/bookings/${booking.id}`} className="block">
+                                        {/* Transfer Details */}
+                                        {(booking.type === 'transfer' || booking.type === 'airport_transfer') && details && (
+                                            <div className="space-y-2 text-sm text-gray-600">
+                                                <p><strong>Direction:</strong> {details.direction}</p>
+                                                {details.arrivalDate && (
+                                                    <p><strong>Arrival:</strong> {details.arrivalDate} - Flight {details.arrivalFlight}</p>
+                                                )}
+                                                {details.departureDate && (
+                                                    <p><strong>Departure:</strong> {details.departureDate} at {details.departureTime}</p>
+                                                )}
+                                            </div>
                                         )}
-                                    </div>
-                                    <div className="text-right">
-                                        <p className="text-2xl font-bold">${booking.totalPrice?.toFixed(2)}</p>
-                                        <p className="text-xs text-muted-foreground">
-                                            ID: {booking.confirmationId}
-                                        </p>
-                                    </div>
-                                </div>
-                            </CardHeader>
-                            <CardContent>
-                                {/* Transfer Details */}
-                                {booking.type === 'transfer' && booking.details && (
-                                    <div className="space-y-2 text-sm">
-                                        <p><strong>Direction:</strong> {booking.details.direction}</p>
-                                        {booking.details.arrivalDate && (
-                                            <p><strong>Arrival:</strong> {booking.details.arrivalDate} - Flight {booking.details.arrivalFlight}</p>
+
+                                        {/* Laundry Details */}
+                                        {booking.type === 'laundry' && details && (
+                                            <div className="space-y-2 text-sm text-gray-600">
+                                                <p><strong>Bags:</strong> {details.bags}</p>
+                                                <p><strong>Pickup:</strong> {details.pickupTime || 'Not specified'}</p>
+                                            </div>
                                         )}
-                                        {booking.details.departureDate && (
-                                            <p><strong>Departure:</strong> {booking.details.departureDate} at {booking.details.departureTime}</p>
+
+                                        {/* Excursion Details */}
+                                        {booking.type === 'excursion' && details && (
+                                            <div className="space-y-2 text-sm text-gray-600">
+                                                <p><strong>Tour:</strong> {details.title || booking.excursion?.title || 'Excursion'}</p>
+                                                {booking.date && <p><strong>Date:</strong> {new Date(booking.date).toLocaleDateString()}</p>}
+                                            </div>
                                         )}
-                                    </div>
-                                )}
-
-                                {/* Laundry Details */}
-                                {booking.type === 'laundry' && booking.details && (
-                                    <div className="space-y-2 text-sm">
-                                        <p><strong>Bags:</strong> {booking.details.bags}</p>
-                                        <p><strong>Price per bag:</strong> ${booking.details.pricePerBag}</p>
-                                    </div>
-                                )}
-
-                                {/* Excursion Details */}
-                                {booking.type === 'excursion' && booking.details && (
-                                    <div className="space-y-2 text-sm">
-                                        <p><strong>Tour:</strong> {booking.details.title || 'Excursion'}</p>
-                                        {booking.details.date && <p><strong>Date:</strong> {booking.details.date}</p>}
-                                        {booking.details.guests && <p><strong>Guests:</strong> {booking.details.guests}</p>}
-                                    </div>
-                                )}
-
-                                {booking.paypalTransactionId && (
-                                    <div className="mt-4 pt-4 border-t text-xs text-muted-foreground">
-                                        <p>PayPal Transaction: {booking.paypalTransactionId}</p>
-                                    </div>
-                                )}
-                            </CardContent>
-                        </Card>
-                    ))}
+                                    </Link>
+                                </CardContent>
+                            </Card>
+                        );
+                    })}
                 </div>
             )}
         </div>

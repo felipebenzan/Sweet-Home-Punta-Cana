@@ -41,3 +41,42 @@ export async function GET(
         return NextResponse.json({ success: false, error: 'Internal Server Error' }, { status: 500 });
     }
 }
+
+export async function DELETE(
+    request: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    const { id } = await params;
+
+    if (!id) {
+        return NextResponse.json({ success: false, error: 'Missing ID' }, { status: 400 });
+    }
+
+    try {
+        // Try to delete from ServiceBooking first
+        try {
+            await prisma.serviceBooking.delete({
+                where: { id }
+            });
+            return NextResponse.json({ success: true, message: 'Service booking deleted' });
+        } catch (e) {
+            // Not found in ServiceBooking, try Reservation
+        }
+
+        // Try to delete from Reservation
+        try {
+            await prisma.reservation.delete({
+                where: { id }
+            });
+            return NextResponse.json({ success: true, message: 'Reservation deleted' });
+        } catch (e) {
+            // Not found in Reservation either
+        }
+
+        return NextResponse.json({ success: false, error: 'Booking not found' }, { status: 404 });
+
+    } catch (error) {
+        console.error('Error deleting booking:', error);
+        return NextResponse.json({ success: false, error: 'Internal Server Error' }, { status: 500 });
+    }
+}
