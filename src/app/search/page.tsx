@@ -55,6 +55,10 @@ function SearchResults() {
         const res = await fetch(`/api/availability?${params.toString()}`);
         const data = await res.json();
 
+        if (data.debug) {
+          console.log('[Availability Debug]:', data.debug);
+        }
+
         if (data.status === 'success' || data.status === 'preferred_available') {
           setAvailableRooms(data.rooms);
           if (data.message && data.status === 'preferred_available') {

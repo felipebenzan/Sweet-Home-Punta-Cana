@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
             .filter((id): id is string => !!id);
 
         // 3. Call Beds24 API
-        const beds24Data = await Beds24.getAvailability({
+        const { data: beds24Data, debug } = await Beds24.getAvailability({
             arrival,
             departure,
             numAdults,
@@ -87,7 +87,8 @@ export async function GET(request: NextRequest) {
                     return NextResponse.json({
                         status: 'preferred_available',
                         rooms: [preferredRoom, ...others],
-                        message: `Good news! ${preferredRoom.name} is available.`
+                        message: `Good news! ${preferredRoom.name} is available.`,
+                        debug
                     });
                 } else {
                     // IF UNAVAILABLE: Show error + others
@@ -95,7 +96,8 @@ export async function GET(request: NextRequest) {
                         status: 'preferred_unavailable',
                         rooms: availableRooms, // Just the others
                         preferredRoomName: preferredRoom.name,
-                        message: `Sorry, ${preferredRoom.name} is not available for these dates.`
+                        message: `Sorry, ${preferredRoom.name} is not available for these dates.`,
+                        debug
                     });
                 }
             }
@@ -106,14 +108,16 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({
                 status: 'fully_booked',
                 rooms: [],
-                message: 'Sorry, we are fully booked for these dates.'
+                message: 'Sorry, we are fully booked for these dates.',
+                debug
             });
         }
 
         return NextResponse.json({
             status: 'success',
             rooms: availableRooms,
-            message: 'Select your accommodation'
+            message: 'Select your accommodation',
+            debug
         });
 
     } catch (error) {

@@ -17,14 +17,22 @@ interface Beds24Request {
 /**
  * Beds24 API Client
  */
+// Debug interface
+export interface Beds24DebugInfo {
+    source: 'real' | 'mock';
+    rawCount?: number;
+    error?: string;
+}
+
 export const Beds24 = {
-    getAvailability: async ({ arrival, departure, numAdults, roomIds }: Beds24Request): Promise<Record<string, Beds24Availability>> => {
+    getAvailability: async ({ arrival, departure, numAdults, roomIds }: Beds24Request): Promise<{ data: Record<string, Beds24Availability>, debug: Beds24DebugInfo }> => {
         const apiKey = process.env.BEDS24_API_KEY;
         const propKey = process.env.BEDS24_PROP_KEY;
 
         if (!apiKey) {
             console.warn("[Beds24] No API Key found. Using mock data.");
-            return getMockAvailability({ arrival, departure, numAdults, roomIds });
+            const mock = await getMockAvailability({ arrival, departure, numAdults, roomIds });
+            return { data: mock, debug: { source: 'mock', error: 'No API Key' } };
         }
 
         try {
@@ -75,7 +83,7 @@ export const Beds24 = {
 
             if (data.error) {
                 console.error("[Beds24] API returned error:", data.error);
-                return {};
+                return { data: {}, debug: { source: 'real', error: JSON.stringify(data.error) } };
             }
 
             // Transform Beds24 response
@@ -216,11 +224,19 @@ export const Beds24 = {
                 });
             }
 
-            return availabilityMap;
+            return {
+                data: availabilityMap,
+                debug: {
+                    source: 'real',
+                    rawCount: Array.isArray(data) ? data.length : Object.keys(data).length
+                }
+            };
 
         } catch (error) {
             console.error("[Beds24] Request failed:", error);
-            return {};
+            // On hard failure, we return empty data but mark as 'real' attempt failed
+            // or should we fallback to mock? safer to fail closed (unavailable).
+            return { data: {}, debug: { source: 'real', error: String(error) } };
         }
     }
 };
