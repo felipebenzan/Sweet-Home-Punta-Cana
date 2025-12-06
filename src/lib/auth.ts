@@ -20,7 +20,8 @@ export async function createSession(payload: any) {
         .setExpirationTime('24h')
         .sign(SECRET_KEY);
 
-    cookies().set('admin_session', token, {
+    const cookieStore = await cookies();
+    cookieStore.set('admin_session', token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
@@ -29,7 +30,8 @@ export async function createSession(payload: any) {
 }
 
 export async function verifySession() {
-    const cookie = cookies().get('admin_session');
+    const cookieStore = await cookies();
+    const cookie = cookieStore.get('admin_session');
     if (!cookie?.value) return null;
 
     try {
@@ -43,5 +45,6 @@ export async function verifySession() {
 }
 
 export async function clearAdminSession() {
-    cookies().delete('admin_session');
+    const cookieStore = await cookies();
+    cookieStore.delete('admin_session');
 }
