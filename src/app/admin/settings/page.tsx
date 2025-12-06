@@ -119,7 +119,7 @@ export default function SettingsPage() {
             if (result.success) {
                 toast({
                     title: "Email Sent Successfully",
-                    description: "Check your inbox. If distinct, check Spam folder.",
+                    description: `Sent using key: ${result.keyUsed}. Check spam if not in inbox.`,
                 });
             } else {
                 throw new Error(result.error);
