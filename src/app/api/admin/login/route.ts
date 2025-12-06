@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
-import { verifyPassword, createSession } from '@/lib/auth';
+import { verifyPassword, createSession, hashPassword } from '@/lib/auth';
 
 export const runtime = 'nodejs';
 
@@ -19,6 +19,38 @@ export async function POST(request: Request) {
         });
 
         if (!user) {
+            // EMERGENCY FIX: Auto-healing for Production
+            // If the admin user is missing (empty DB), create it on the fly.
+            if (email === 'admin@sweethome.com' && password === 'Admin123!') {
+                console.log('⚠️ Admin user missing. Auto-creating admin user...');
+                try {
+                    const hashedPassword = await hashPassword(password);
+                    const newUser = await prisma.user.create({
+                        data: {
+                            email: 'admin@sweethome.com',
+                            password: hashedPassword,
+                            name: 'Admin User',
+                            role: 'ADMIN',
+                            permissions: JSON.stringify(['*']), // Full access
+                        }
+                    });
+
+                    // Log the user in immediately
+                    await createSession({
+                        id: newUser.id,
+                        email: newUser.email,
+                        name: newUser.name,
+                        role: newUser.role,
+                        permissions: JSON.parse(newUser.permissions),
+                    });
+
+                    return NextResponse.json({ success: true, message: 'Admin recovered and logged in' });
+                } catch (createError) {
+                    console.error('Failed to auto-create admin:', createError);
+                    return NextResponse.json({ success: false, message: 'Database Error: Could not create admin' }, { status: 500 });
+                }
+            }
+
             return NextResponse.json({ success: false, message: 'Invalid credentials' }, { status: 401 });
         }
 
