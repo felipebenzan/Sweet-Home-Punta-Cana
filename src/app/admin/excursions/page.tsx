@@ -2,22 +2,33 @@ import { verifySession } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 import { redirect } from 'next/navigation';
-import { readFile } from 'fs/promises';
-import { join } from 'path';
-import Link from 'next/link';
-import Image from 'next/image';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { PlusCircle, FilePenLine } from 'lucide-react';
-import type { Excursion } from '@/lib/types';
+import { prisma } from '@/lib/prisma';
+
+// Helper to map Prisma Excursion to Frontend Excursion type
+function mapExcursion(excursion: any): Excursion {
+  return {
+    ...excursion,
+    inclusions: JSON.parse(excursion.inclusions),
+    practicalInfo: {
+      departure: excursion.departure,
+      duration: excursion.duration,
+      pickup: excursion.pickup,
+      pickupMapLink: excursion.pickupMapLink,
+      notes: JSON.parse(excursion.notes),
+    },
+    gallery: JSON.parse(excursion.gallery),
+    price: { adult: excursion.priceAdult },
+    // Promo is not in schema yet, handling gracefully if needed or ignoring
+    promo: { headline: "", subheadline: "" }
+  };
+}
 
 async function getExcursions(): Promise<Excursion[]> {
   try {
-    const excursionsPath = join(process.cwd(), 'src', 'data', 'excursions.json');
-    const fileContent = await readFile(excursionsPath, 'utf-8');
-    return JSON.parse(fileContent);
+    const excursions = await prisma.excursion.findMany();
+    return excursions.map(mapExcursion);
   } catch (error) {
+    console.warn("Build fetch bypassed or DB error:", error);
     return [];
   }
 }

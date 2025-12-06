@@ -1,23 +1,77 @@
 import { verifySession } from '@/lib/auth';
 import { redirect } from 'next/navigation';
-import { readFile } from 'fs/promises';
-import { join } from 'path';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, Home, Plane, Shirt, Calendar } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { prisma } from '@/lib/prisma';
 
 async function getBookings() {
   try {
-    const bookingsPath = join(process.cwd(), 'src', 'data', 'bookings.json');
-    const fileContent = await readFile(bookingsPath, 'utf-8');
-    const bookings = JSON.parse(fileContent);
-    // Sort by most recent first
-    return bookings.sort((a: any, b: any) =>
+    // Fetch all bookings (reservations + service bookings)
+    const reservations = await prisma.reservation.findMany({
+      include: { room: true },
+      orderBy: { createdAt: 'desc' }
+    });
+
+    const serviceBookings = await prisma.serviceBooking.findMany({
+      orderBy: { createdAt: 'desc' }
+    });
+
+    // Map reservations to common structure
+    const mappedReservations = reservations.map(r => ({
+      confirmationId: r.id,
+      type: 'room',
+      guestName: r.guestName,
+      guestEmail: r.guestEmail,
+      customer: {
+        name: r.guestName,
+        email: r.guestEmail,
+        phone: r.guestPhone
+      },
+      date: r.checkInDate.toISOString().split('T')[0],
+      createdAt: r.createdAt.toISOString(),
+      totalPrice: r.totalPrice,
+      details: {
+        checkIn: r.checkInDate.toISOString().split('T')[0],
+        checkOut: r.checkOutDate.toISOString().split('T')[0],
+        guests: r.numberOfGuests,
+        roomName: r.room.name
+      },
+      status: r.status
+    }));
+
+    // Map service bookings to common structure
+    const mappedServiceBookings = serviceBookings.map(sb => {
+      let details = {};
+      try {
+        details = sb.details ? JSON.parse(sb.details) : {};
+      } catch (e) {
+        console.error('Error parsing details for booking', sb.id);
+      }
+
+      return {
+        confirmationId: sb.id,
+        type: sb.type === 'airport_transfer' ? 'transfer' : sb.type,
+        guestName: sb.guestName,
+        guestEmail: sb.email,
+        customer: {
+          name: sb.guestName,
+          email: sb.email,
+          phone: sb.phone
+        },
+        date: sb.date ? sb.date.toISOString().split('T')[0] : undefined,
+        createdAt: sb.createdAt.toISOString(),
+        totalPrice: sb.total,
+        details: details,
+        status: sb.status
+      };
+    });
+
+    const allBookings = [...mappedReservations, ...mappedServiceBookings].sort((a, b) =>
       new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
+
+    return allBookings;
+
   } catch (error) {
+    console.warn("Build fetch bypassed or DB error:", error);
     return [];
   }
 }
