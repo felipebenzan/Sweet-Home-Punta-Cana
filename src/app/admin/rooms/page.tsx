@@ -10,6 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { PlusCircle, FilePenLine } from 'lucide-react';
 import type { Room } from '@/lib/types';
+import { DeleteRoomButton } from './delete-room-button';
 
 import { prisma } from '@/lib/prisma';
 // ... imports
@@ -112,12 +113,15 @@ export default async function AdminRoomsPage() {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button asChild variant="outline" size="sm">
-                        <Link href={`/admin/rooms/edit/${room.slug}`}>
-                          <FilePenLine className="mr-2 h-4 w-4" />
-                          Edit
-                        </Link>
-                      </Button>
+                      <div className="flex items-center justify-end gap-2">
+                        <Button asChild variant="outline" size="sm">
+                          <Link href={`/admin/rooms/edit/${room.slug}`}>
+                            <FilePenLine className="mr-2 h-4 w-4" />
+                            Edit
+                          </Link>
+                        </Button>
+                        <DeleteRoomButton id={room.id} roomName={room.name} />
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))
