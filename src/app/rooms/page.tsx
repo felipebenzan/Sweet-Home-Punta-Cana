@@ -14,7 +14,7 @@ import GuestServicesCarousel from "@/components/guest-services-carousel";
 
 // This is now a Server Component.
 
-export const revalidate = 3600; // Re-fetch room data every hour
+export const revalidate = 0; // Always fetch fresh data
 
 
 export default async function RoomsPage() {
