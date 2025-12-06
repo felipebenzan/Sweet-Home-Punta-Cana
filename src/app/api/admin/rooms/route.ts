@@ -74,6 +74,7 @@ export async function POST(request: NextRequest) {
                 gallery: JSON.stringify(roomData.gallery || []),
                 inventoryUnits: roomData.inventoryUnits || 1,
                 cancellationPolicy: roomData.cancellationPolicy,
+                beds24_room_id: roomData.beds24_room_id,
             },
         });
 
@@ -113,6 +114,7 @@ export async function PUT(request: NextRequest) {
                 gallery: JSON.stringify(roomData.gallery || []),
                 inventoryUnits: roomData.inventoryUnits,
                 cancellationPolicy: roomData.cancellationPolicy,
+                beds24_room_id: roomData.beds24_room_id,
             },
         });
 
