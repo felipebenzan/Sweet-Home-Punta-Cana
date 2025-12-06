@@ -77,29 +77,27 @@ async function main() {
     }
 
     // Seed Admin User
-    const adminEmail = 'admin@sweethome.com';
-    const existingAdmin = await prisma.user.findUnique({
+    const adminEmail = 'admin@sweethome.com'; // Use a consistent email
+    const bcrypt = await import('bcryptjs');
+    const hashedPassword = await bcrypt.hash('Admin123!', 10); // Specific password requested
+
+    console.log('Upserting admin user...');
+    await prisma.user.upsert({
         where: { email: adminEmail },
+        update: {
+            password: hashedPassword,
+            role: 'ADMIN',
+            permissions: JSON.stringify(['*']),
+        },
+        create: {
+            email: adminEmail,
+            password: hashedPassword,
+            name: 'Admin User',
+            role: 'ADMIN',
+            permissions: JSON.stringify(['*']),
+        },
     });
-
-    if (!existingAdmin) {
-        console.log('Creating admin user...');
-        const bcrypt = await import('bcryptjs');
-        const hashedPassword = await bcrypt.hash('admin123', 10);
-
-        await prisma.user.create({
-            data: {
-                email: adminEmail,
-                password: hashedPassword,
-                name: 'Admin User',
-                role: 'ADMIN',
-                permissions: JSON.stringify(['*']),
-            },
-        });
-        console.log('Admin user created: admin@sweethome.com / admin123');
-    } else {
-        console.log('Admin user already exists.');
-    }
+    console.log('Admin user ensured: admin@sweethome.com / Admin123!');
 
     // Seed Mock Reservations and Service Bookings
     console.log('Seeding mock bookings...');
