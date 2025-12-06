@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { verifyPassword, createSession } from '@/lib/auth';
 
+export const runtime = 'nodejs';
+
 const prisma = new PrismaClient();
 
 export async function POST(request: Request) {
@@ -36,8 +38,11 @@ export async function POST(request: Request) {
         });
 
         return NextResponse.json({ success: true });
-    } catch (error) {
-        console.error('Login error:', error);
-        return NextResponse.json({ success: false, message: 'Internal server error' }, { status: 500 });
+    } catch (error: any) {
+        console.error('Login error details:', error);
+        return NextResponse.json({
+            success: false,
+            message: `Login Error: ${error?.message || 'Unknown error'}`
+        }, { status: 500 });
     }
 }
