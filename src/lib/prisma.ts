@@ -2,12 +2,17 @@ import { PrismaClient } from '@prisma/client';
 
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
 
-// Fallback for build time if environment variables are missing
-const databaseUrl = process.env.POSTGRES_PRISMA_URL || process.env.POSTGRES_URL || 'postgresql://build:build@localhost:5432/build';
+const prismaClientSingleton = () => {
+    // If in production/runtime with valid env, let Prisma read from schema (supports directUrl automatically)
+    if (process.env.POSTGRES_PRISMA_URL) {
+        return new PrismaClient({
+            log: ['query'],
+        });
+    }
 
-export const prisma =
-    globalForPrisma.prisma ||
-    new PrismaClient({
+    // Fallback for build time if environment variables are missing
+    const databaseUrl = 'postgresql://build:build@localhost:5432/build';
+    return new PrismaClient({
         log: ['query'],
         datasources: {
             db: {
@@ -15,5 +20,8 @@ export const prisma =
             },
         },
     });
+};
+
+export const prisma = globalForPrisma.prisma || prismaClientSingleton();
 
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
