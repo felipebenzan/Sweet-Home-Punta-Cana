@@ -1,4 +1,22 @@
 import { verifySession } from '@/lib/auth';
+import type { Excursion } from '@/lib/types';
+import Link from 'next/link';
+import Image from 'next/image';
+import { Button } from '@/components/ui/button';
+import { PlusCircle, FilePenLine } from 'lucide-react';
+import {
+  Card,
+  CardContent,
+} from '@/components/ui/card';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { DeleteExcursionButton } from './delete-excursion-button';
 
 export const dynamic = 'force-dynamic';
 import { redirect } from 'next/navigation';
@@ -94,12 +112,15 @@ export default async function AdminExcursionsPage() {
                       <span className="font-semibold">${excursion.price.adult.toFixed(2)}</span>
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button asChild variant="outline" size="sm">
-                        <Link href={`/admin/excursions/edit/${excursion.slug}`}>
-                          <FilePenLine className="mr-2 h-4 w-4" />
-                          Edit
-                        </Link>
-                      </Button>
+                      <div className="flex items-center justify-end gap-2">
+                        <Button asChild variant="outline" size="sm">
+                          <Link href={`/admin/excursions/edit/${excursion.slug}`}>
+                            <FilePenLine className="mr-2 h-4 w-4" />
+                            Edit
+                          </Link>
+                        </Button>
+                        <DeleteExcursionButton id={excursion.id} title={excursion.title} />
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))

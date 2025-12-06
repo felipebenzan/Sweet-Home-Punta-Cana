@@ -7,13 +7,13 @@ import { Button } from '@/components/ui/button';
 import { ArrowRight, Clock, Sun } from 'lucide-react';
 import type { Excursion } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
-import { readFile } from 'fs/promises';
-import { join } from 'path';
+import { getExcursions } from '@/app/server-actions.readonly';
+import { revalidatePath } from 'next/cache';
+
+export const revalidate = 0; // Disable cache for instant updates
 
 export default async function ExcursionsPage() {
-  const excursionsPath = join(process.cwd(), 'src', 'data', 'excursions.json');
-  const fileContent = await readFile(excursionsPath, 'utf-8');
-  const allExcursions: Excursion[] = JSON.parse(fileContent);
+  const allExcursions = await getExcursions();
 
   return (
     <div className="bg-shpc-sand">
