@@ -28,11 +28,16 @@ export async function GET(request: NextRequest) {
             .filter((id): id is string => !!id);
 
         // 3. Call Beds24 API
+        // NOTE: We read env vars here to ensure detailed control and debug visibility
+        const apiKey = process.env.BEDS24_API_KEY;
+        const propKey = process.env.BEDS24_PROP_KEY || process.env.BEDS24_PROP_ID;
+
         const { data: beds24Data, debug: beds24Debug } = await Beds24.getAvailability({
             arrival,
             departure,
             numAdults,
-            roomIds: beds24Ids
+            roomIds: beds24Ids,
+            auth: { apiKey, propKey }
         });
 
         // Debug: List all available env keys to verify runtime environment
