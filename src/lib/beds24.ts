@@ -61,27 +61,22 @@ export const Beds24 = {
             console.log(`[Beds24] Fetching availability for ${arrival} to ${departure}`);
 
             // Beds24 JSON API Endpoint
-            const endpoint = "https://api.beds24.com/json/getAvailability";
+            // Correct endpoint is getAvailabilities (plural)
+            const endpoint = "https://api.beds24.com/json/getAvailabilities";
 
             // Prepare payload
-            // Note: Beds24 API expects specific structure. 
-            // We generally request for the property or specific rooms.
-            // If roomIds are provided (Beds24 IDs), we filter relevant data.
+            // Beds24 getAvailabilities expects checkIn, checkOut, and propId (or roomId)
             const payload = {
-                authentication: {
-                    apiKey: apiKey,
-                    propKey: propKey
-                },
-                arrival: arrival,
-                departure: departure,
-                numAdults: numAdults,
-                // If we want to filter by specific rooms in the request, we can add 'roomId'
-                // But usually getting all for property is easier then filtering.
-                // However, if roomIds is passed, it might be internal UUIDs, so we shouldn't pass them directly to Beds24 
-                // unless they are mapped to beds24RoomId.
-                // For this implementation, we'll fetch all and let the caller map/filter.
+                // Authentication is supposedly not required for getAvailabilities if public,
+                // but passing keys prevents permission issues if private.
+                // However, standard getAvailabilities structure is flatter.
+                checkIn: arrival,
+                checkOut: departure,
+                // propId is likely what we have in 'propKey' variable (303042 is an ID)
+                propId: propKey,
+                numAdult: numAdults,
                 options: {
-                    // Add any specific options here if needed, e.g. "includePrice": true
+                    // "includePrice": true 
                 }
             };
 
