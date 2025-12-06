@@ -15,11 +15,12 @@ export async function sendBookingConfirmation(data: BookingEmailData) {
   const { guestName, guestEmail, bookingType, bookingDetails, confirmationId, totalPrice } = data;
 
   // Use different sender addresses for different booking types
+  // DEBUG: Temporarily using onboarding@resend.dev to rule out domain verification issues
   const fromAddresses = {
-    room: 'Sweet Home Punta Cana <bookings@sweethomepc.com>',
-    transfer: 'Sweet Home Airport Transfer <airporttransfer@sweethomepc.com>',
-    laundry: 'Sweet Home Laundry Service <laundry@sweethomepc.com>',
-    excursion: 'Sweet Home Excursions <excursions@sweethomepc.com>',
+    room: 'Sweet Home Punta Cana <onboarding@resend.dev>',
+    transfer: 'Sweet Home Airport Transfer <onboarding@resend.dev>',
+    laundry: 'Sweet Home Laundry Service <onboarding@resend.dev>',
+    excursion: 'Sweet Home Excursions <onboarding@resend.dev>',
   };
 
   const fromAddress = fromAddresses[bookingType] || fromAddresses.room;

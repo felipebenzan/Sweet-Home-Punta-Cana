@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
 
     // Send test email
     const result = await resend.emails.send({
-      from: 'Sweet Home Punta Cana <bookings@sweethomepc.com>',
+      from: 'Sweet Home Punta Cana <onboarding@resend.dev>',
       to: [email],
       bcc: [
         'info@sweethomepuntacana.com',
