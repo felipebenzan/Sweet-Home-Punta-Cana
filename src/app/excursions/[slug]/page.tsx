@@ -1,19 +1,21 @@
 import {
   getExcursionBySlug,
   getExcursions,
-} from "@/server-actions";
-import type { Metadata } from "@/lib/types";
+} from "@/app/server-actions.readonly";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import ExcursionClientPage from "./excursion-client-page";
 
 export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export async function generateMetadata({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
-  const excursion = await getExcursionBySlug(params.slug);
+  const { slug } = await params;
+  const excursion = await getExcursionBySlug(slug);
 
   if (!excursion) {
     return {
@@ -36,9 +38,9 @@ export async function generateMetadata({
 export default async function ExcursionPage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
-  const { slug } = params;
+  const { slug } = await params;
   const excursionData = await getExcursionBySlug(slug);
 
   if (!excursionData) {
