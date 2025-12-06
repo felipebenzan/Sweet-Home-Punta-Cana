@@ -11,12 +11,27 @@ import { Badge } from '@/components/ui/badge';
 import { PlusCircle, FilePenLine } from 'lucide-react';
 import type { Room } from '@/lib/types';
 
+import { prisma } from '@/lib/prisma';
+// ... imports
+
 async function getRooms(): Promise<Room[]> {
   try {
-    const roomsPath = join(process.cwd(), 'src', 'data', 'rooms.json');
-    const fileContent = await readFile(roomsPath, 'utf-8');
-    return JSON.parse(fileContent);
+    const rawRooms = await prisma.room.findMany({
+      orderBy: { name: 'asc' }
+    });
+
+    return rawRooms.map((room) => ({
+      ...room,
+      tagline: room.tagline || undefined, // Coerce null to undefined
+      description: room.description || undefined, // Coerce null to undefined
+      beds24_room_id: room.beds24_room_id || undefined, // Coerce null to undefined
+      bedding: room.bedding as any, // Cast to match strict enum
+      cancellationPolicy: room.cancellationPolicy || undefined,
+      amenities: JSON.parse(room.amenities),
+      gallery: room.gallery ? JSON.parse(room.gallery) : [],
+    }));
   } catch (error) {
+    console.error('Failed to fetch rooms from DB:', error);
     return [];
   }
 }
