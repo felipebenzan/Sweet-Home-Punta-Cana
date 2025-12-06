@@ -27,12 +27,28 @@ export interface Beds24DebugInfo {
 export const Beds24 = {
     getAvailability: async ({ arrival, departure, numAdults, roomIds }: Beds24Request): Promise<{ data: Record<string, Beds24Availability>, debug: Beds24DebugInfo }> => {
         const apiKey = process.env.BEDS24_API_KEY;
-        const propKey = process.env.BEDS24_PROP_KEY;
+        // Support both names as user screenshot showed PROP_ID
+        const propKey = process.env.BEDS24_PROP_KEY || process.env.BEDS24_PROP_ID;
+
+        // Enhanced Debugging for Env Vars
+        const debugEnv = {
+            hasApiKey: !!apiKey,
+            apiKeyLength: apiKey ? apiKey.length : 0,
+            hasPropKey: !!propKey,
+            propKeySource: process.env.BEDS24_PROP_KEY ? 'PROP_KEY' : (process.env.BEDS24_PROP_ID ? 'PROP_ID' : 'NONE')
+        };
+        console.log("[Beds24] Env Debug:", JSON.stringify(debugEnv));
 
         if (!apiKey) {
             console.warn("[Beds24] No API Key found. Using mock data.");
             const mock = await getMockAvailability({ arrival, departure, numAdults, roomIds });
-            return { data: mock, debug: { source: 'mock', error: 'No API Key' } };
+            return {
+                data: mock,
+                debug: {
+                    source: 'mock',
+                    error: `No API Key. Env state: ${JSON.stringify(debugEnv)}`
+                }
+            };
         }
 
         try {
