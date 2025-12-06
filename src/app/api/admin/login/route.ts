@@ -14,43 +14,48 @@ export async function POST(request: Request) {
             return NextResponse.json({ success: false, message: 'Missing credentials' }, { status: 400 });
         }
 
+        // 1. Check if ANY user exists (First Run Pattern)
+        const userCount = await prisma.user.count();
+
+        if (userCount === 0) {
+            console.log('🚀 First Run: No users in DB. Creating first Admin...');
+            try {
+                const hashedPassword = await hashPassword(password);
+                const newUser = await prisma.user.create({
+                    data: {
+                        email,
+                        password: hashedPassword,
+                        name: 'Admin', // Default name, can be changed later
+                        role: 'ADMIN',
+                        permissions: JSON.stringify(['*']),
+                    }
+                });
+
+                // Login immediately
+                await createSession({
+                    id: newUser.id,
+                    email: newUser.email,
+                    name: newUser.name,
+                    role: newUser.role,
+                    permissions: JSON.parse(newUser.permissions),
+                });
+
+                return NextResponse.json({
+                    success: true,
+                    message: `Setup Complete! Account created for ${email}.`
+                });
+            } catch (setupError) {
+                console.error('Setup failed:', setupError);
+                return NextResponse.json({ success: false, message: 'Setup failed' }, { status: 500 });
+            }
+        }
+
+        // 2. Normal Login Flow
         const user = await prisma.user.findUnique({
             where: { email },
         });
 
         if (!user) {
-            // EMERGENCY FIX: Auto-healing for Production
-            // If the admin user is missing (empty DB), create it on the fly.
-            if (email === 'admin@sweethome.com' && password === 'Admin123!') {
-                console.log('⚠️ Admin user missing. Auto-creating admin user...');
-                try {
-                    const hashedPassword = await hashPassword(password);
-                    const newUser = await prisma.user.create({
-                        data: {
-                            email: 'admin@sweethome.com',
-                            password: hashedPassword,
-                            name: 'Admin User',
-                            role: 'ADMIN',
-                            permissions: JSON.stringify(['*']), // Full access
-                        }
-                    });
-
-                    // Log the user in immediately
-                    await createSession({
-                        id: newUser.id,
-                        email: newUser.email,
-                        name: newUser.name,
-                        role: newUser.role,
-                        permissions: JSON.parse(newUser.permissions),
-                    });
-
-                    return NextResponse.json({ success: true, message: 'Admin recovered and logged in' });
-                } catch (createError) {
-                    console.error('Failed to auto-create admin:', createError);
-                    return NextResponse.json({ success: false, message: 'Database Error: Could not create admin' }, { status: 500 });
-                }
-            }
-
             return NextResponse.json({ success: false, message: 'Invalid credentials' }, { status: 401 });
         }
 
