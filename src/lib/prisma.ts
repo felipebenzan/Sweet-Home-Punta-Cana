@@ -3,8 +3,8 @@ import { PrismaClient } from '@prisma/client';
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
 
 const prismaClientSingleton = () => {
-    // If in production/runtime with valid env, let Prisma read from schema (supports directUrl automatically)
-    if (process.env.POSTGRES_PRISMA_URL) {
+    // If in production/runtime with valid env, let Prisma read from schema
+    if (process.env.DATABASE_URL) {
         return new PrismaClient({
             log: ['query'],
         });
