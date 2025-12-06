@@ -28,12 +28,24 @@ export async function GET(request: NextRequest) {
             .filter((id): id is string => !!id);
 
         // 3. Call Beds24 API
-        const { data: beds24Data, debug } = await Beds24.getAvailability({
+        const { data: beds24Data, debug: beds24Debug } = await Beds24.getAvailability({
             arrival,
             departure,
             numAdults,
             roomIds: beds24Ids
         });
+
+        // Debug: List all available env keys to verify runtime environment
+        const availableEnvKeys = Object.keys(process.env).filter(k => !k.includes('SECRET') && !k.includes('KEY') && !k.includes('TOKEN')).concat(
+            // Explicitly check for our keys (security: boolean only)
+            `BEDS24_API_KEY_EXISTS:${!!process.env.BEDS24_API_KEY}`,
+            `BEDS24_PROP_KEY_EXISTS:${!!process.env.BEDS24_PROP_KEY}`
+        );
+
+        const debug = {
+            ...beds24Debug,
+            envKeys: availableEnvKeys
+        };
 
         // 4. Merge Data
         const mergedRooms = localRooms.map(room => {
