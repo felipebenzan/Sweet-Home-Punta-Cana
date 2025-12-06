@@ -39,9 +39,12 @@ export async function GET(request: NextRequest) {
         const mergedRooms = localRooms.map(room => {
             const b24 = room.beds24_room_id ? beds24Data[room.beds24_room_id] : null;
 
-            // If we have Beds24 data, use it. Otherwise fallback to local data (or assume available for dev)
-            // In production, missing Beds24 data might mean "not connected" or "unavailable"
-            const isAvailable = b24 ? b24.available : true; // Fallback to true for dev if no ID
+            // If we have Beds24 data, use it. 
+            // If we have a beds24_room_id but NO data, assume UNAVAILABLE (safer).
+            // If no beds24_room_id, assume available (legacy/dev).
+            const isAvailable = room.beds24_room_id
+                ? (b24 ? b24.available : false)
+                : true;
             const finalPrice = b24 ? b24.price : room.price;
 
             let parsedAmenities: string[] = [];

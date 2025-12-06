@@ -71,7 +71,7 @@ export const Beds24 = {
             const data = await response.json();
 
             // Log response for debugging (remove in production if too verbose)
-            // console.log("[Beds24] Response:", JSON.stringify(data).substring(0, 200) + "...");
+            console.log("[Beds24] Response:", JSON.stringify(data).substring(0, 500) + "...");
 
             if (data.error) {
                 console.error("[Beds24] API returned error:", data.error);
@@ -159,7 +159,61 @@ export const Beds24 = {
                     processRoom(b24RoomId, data[b24RoomId]);
                 }
             } else if (Array.isArray(data)) {
-                console.warn("[Beds24] array response not fully supported yet in this helper");
+                // Enhanced Array Parsing Logic for JSON output
+                // Example: [{ roomId: "123", checkIn: "2024-01-01", ..., quantity: 1 }, ...]
+                // Or grouped by room.
+
+                // NOTE: Beds24 JSON output varies by options.
+                // Assuming standard flat list of daily availabilities or room summaries.
+
+                data.forEach((item: any) => {
+                    // Check for Room ID
+                    const rId = item.roomId || item.roomID || (item.room && item.room.id);
+                    if (rId) {
+                        const strId = String(rId);
+
+                        // If we haven't seen this room yet, init
+                        if (!availabilityMap[strId]) {
+                            availabilityMap[strId] = {
+                                roomId: strId,
+                                available: true,
+                                price: 0,
+                                minStay: 1
+                            };
+                        }
+
+                        // Logic to aggregate daily data?
+                        // If data is a list of rooms with SUMMARY, we can just take it.
+                        // But usually it's daily.
+
+                        // Check availability flag/quantity
+                        // If any day in the range is unavailable, the room is unavailable.
+                        // WARNING: If the API returns one object per room (summary), then check 'quantity'.
+                        // If it returns one object per DAY per room, we need to be careful.
+
+                        // Heuristic: If item has 'date', it's daily data.
+                        if (item.date) {
+                            if (item.quantity !== undefined && item.quantity <= 0) {
+                                availabilityMap[strId].available = false;
+                            }
+                            // Add price? Simple sum roughly ok for display "Total"
+                            if (item.price) {
+                                availabilityMap[strId].price += parseFloat(item.price);
+                            }
+                        } else {
+                            // Assume it's a room summary
+                            if (item.quantity !== undefined && item.quantity <= 0) {
+                                availabilityMap[strId].available = false;
+                            }
+                            if (item.price) {
+                                // If it's a summary, price might be total or nightly.
+                                // Let's assume total if no date range specified in item, or nightly?
+                                // Safest is to take it.
+                                availabilityMap[strId].price = parseFloat(item.price);
+                            }
+                        }
+                    }
+                });
             }
 
             return availabilityMap;
