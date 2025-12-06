@@ -5,9 +5,17 @@ const globalForPrisma = global as unknown as { prisma: PrismaClient };
 const prismaClientSingleton = () => {
     const url = process.env.DATABASE_URL;
 
-    // Explicit check to confirm if Vercel is injecting the variable
+    // If we are in a build environment (no URL), use a dummy connection string
+    // to prevent the build from crashing. 
     if (!url) {
-        throw new Error("CRITICAL ERROR: DATABASE_URL is missing from runtime environment variables.");
+        console.warn("WARN: DATABASE_URL is missing. Using dummy connection for build/static generation.");
+        return new PrismaClient({
+            datasources: {
+                db: {
+                    url: 'postgresql://build:build@localhost:5432/build',
+                },
+            },
+        });
     }
 
     return new PrismaClient({
