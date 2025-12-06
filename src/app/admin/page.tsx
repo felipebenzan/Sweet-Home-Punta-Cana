@@ -7,13 +7,55 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calendar, DollarSign, Package, Plane, Shirt, Home, LogOut } from 'lucide-react';
 
-async function getBookings() {
+import { prisma } from '@/lib/prisma';
+// ... other imports
+
+async function getStats() {
   try {
-    const bookingsPath = join(process.cwd(), 'src', 'data', 'bookings.json');
-    const fileContent = await readFile(bookingsPath, 'utf-8');
-    return JSON.parse(fileContent);
+    const reservationCount = await prisma.reservation.count();
+
+    // Group service bookings by type
+    const serviceCounts = await prisma.serviceBooking.groupBy({
+      by: ['type'],
+      _count: {
+        type: true
+      }
+    });
+
+    const transferCount = serviceCounts.find(s => s.type === 'airport_transfer')?._count.type || 0;
+    const laundryCount = serviceCounts.find(s => s.type === 'laundry')?._count.type || 0;
+    const excursionCount = serviceCounts.find(s => s.type === 'excursion')?._count.type || 0;
+
+    // Calculate revenue
+    const reservationRevenue = await prisma.reservation.aggregate({
+      _sum: { totalPrice: true }
+    });
+
+    const serviceRevenue = await prisma.serviceBooking.aggregate({
+      _sum: { total: true }
+    });
+
+    const totalRevenue = (reservationRevenue._sum.totalPrice || 0) + (serviceRevenue._sum.total || 0);
+    const totalBookings = reservationCount + transferCount + laundryCount + excursionCount;
+
+    return {
+      totalBookings,
+      roomBookings: reservationCount,
+      transferBookings: transferCount,
+      laundryBookings: laundryCount,
+      excursionBookings: excursionCount,
+      totalRevenue
+    };
   } catch (error) {
-    return [];
+    console.warn('Failed to fetch stats from DB:', error);
+    return {
+      totalBookings: 0,
+      roomBookings: 0,
+      transferBookings: 0,
+      laundryBookings: 0,
+      excursionBookings: 0,
+      totalRevenue: 0
+    };
   }
 }
 
@@ -24,16 +66,9 @@ export default async function AdminDashboard() {
     redirect('/admin/login');
   }
 
-  const bookings = await getBookings();
-
-  // Calculate stats
-  const totalBookings = bookings.length;
-  const roomBookings = bookings.filter((b: any) => b.type === 'room').length;
-  const transferBookings = bookings.filter((b: any) => b.type === 'transfer').length;
-  const laundryBookings = bookings.filter((b: any) => b.type === 'laundry').length;
-  const excursionBookings = bookings.filter((b: any) => b.type === 'excursion').length;
-
-  const totalRevenue = bookings.reduce((sum: number, b: any) => sum + (b.totalPrice || 0), 0);
+  const stats = await getStats();
+  // Destructure for easier use in JSX
+  const { totalBookings, roomBookings, transferBookings, laundryBookings, excursionBookings, totalRevenue } = stats;
 
   return (
     <div className="min-h-screen bg-shpc-sand p-8">
