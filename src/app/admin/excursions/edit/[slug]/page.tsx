@@ -7,9 +7,10 @@ export const revalidate = 0; // Ensures data is always fresh
 export default async function EditExcursionPage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
-  const excursion = await getExcursionBySlug(params.slug);
+  const { slug } = await params;
+  const excursion = await getExcursionBySlug(slug);
 
   if (!excursion) {
     notFound();
