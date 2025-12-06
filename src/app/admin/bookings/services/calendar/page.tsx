@@ -217,7 +217,7 @@ export default function ServiceBookingsCalendar() {
                             </div>
                             <div className="space-y-2">
                                 {transfers.map(booking => (
-                                    <Link href={`/admin/bookings/services/${booking.confirmationId}`} key={booking.confirmationId}>
+                                    <Link href={`/admin/bookings/${booking.confirmationId}`} key={booking.confirmationId}>
                                         <div className={`p-3 rounded-lg border ${getServiceBgColor('transfer')} hover:shadow-md transition-shadow cursor-pointer`}>
                                             <div className="flex justify-between items-start">
                                                 <div>
@@ -252,7 +252,7 @@ export default function ServiceBookingsCalendar() {
                             </div>
                             <div className="space-y-2">
                                 {laundry.map(booking => (
-                                    <Link href={`/admin/bookings/services/${booking.confirmationId}`} key={booking.confirmationId}>
+                                    <Link href={`/admin/bookings/${booking.confirmationId}`} key={booking.confirmationId}>
                                         <div className={`p-3 rounded-lg border ${getServiceBgColor('laundry')} hover:shadow-md transition-shadow cursor-pointer`}>
                                             <div className="flex justify-between items-start">
                                                 <div>
@@ -282,7 +282,7 @@ export default function ServiceBookingsCalendar() {
                             </div>
                             <div className="space-y-2">
                                 {excursions.map(booking => (
-                                    <Link href={`/admin/bookings/services/${booking.confirmationId}`} key={booking.confirmationId}>
+                                    <Link href={`/admin/bookings/${booking.confirmationId}`} key={booking.confirmationId}>
                                         <div className={`p-3 rounded-lg border ${getServiceBgColor('excursion')} hover:shadow-md transition-shadow cursor-pointer`}>
                                             <div className="flex justify-between items-start">
                                                 <div>
