@@ -6,6 +6,8 @@ import type { Metadata } from "@/lib/types";
 import { notFound } from "next/navigation";
 import ExcursionClientPage from "./excursion-client-page";
 
+export const dynamic = 'force-dynamic';
+
 export async function generateMetadata({
   params,
 }: {

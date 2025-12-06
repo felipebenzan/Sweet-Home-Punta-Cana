@@ -8,28 +8,33 @@ import { ArrowLeft, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 import { AssignProviderDropdown } from './assign-provider-dropdown';
 
+export const dynamic = 'force-dynamic';
+
+async function getUnassignedData() {
+    try {
+        const [unassignedItems, providers] = await Promise.all([
+            prisma.bookingLineItem.findMany({
+                where: {
+                    providerId: null,
+                    type: { not: 'ACCOMMODATION' }
+                },
+                include: { booking: true },
+                orderBy: { booking: { date: 'desc' } }
+            }),
+            prisma.provider.findMany({ orderBy: { name: 'asc' } })
+        ]);
+        return { unassignedItems, providers };
+    } catch (e) {
+        console.warn('Build-time DB fetch failed', e);
+        return { unassignedItems: [], providers: [] };
+    }
+}
+
 export default async function UnassignedServicesPage() {
     const session = await verifySession();
     if (!session) redirect('/admin/login');
 
-    // Fetch unassigned line items (excluding Accommodation which is usually internal/Octorate)
-    // We assume ACCOMMODATION type doesn't need a provider assignment flow here unless specified
-    const unassignedItems = await prisma.bookingLineItem.findMany({
-        where: {
-            providerId: null,
-            type: { not: 'ACCOMMODATION' } // Filter out rooms if desired, or keep them if you assign housekeepers
-        },
-        include: {
-            booking: true
-        },
-        orderBy: {
-            booking: { date: 'desc' }
-        }
-    });
-
-    const providers = await prisma.provider.findMany({
-        orderBy: { name: 'asc' }
-    });
+    const { unassignedItems, providers } = await getUnassignedData();
 
     return (
         <div className="p-6 bg-gray-50 min-h-screen">

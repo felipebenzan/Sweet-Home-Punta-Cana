@@ -8,6 +8,32 @@ import { ArrowUpRight, ArrowDownRight, DollarSign, Wallet, Users, Building, Aler
 import Link from 'next/link';
 import { MonthFilter } from './month-filter';
 
+export const dynamic = 'force-dynamic';
+
+async function getFinancialData(startDate: Date, endDate: Date) {
+    try {
+        const [bookings, monthlyExpenses, unassignedCount] = await Promise.all([
+            prisma.booking.findMany({
+                where: { date: { gte: startDate, lte: endDate } },
+                include: { lineItems: { include: { provider: true } } },
+                orderBy: { date: 'desc' }
+            }),
+            prisma.monthlyExpense.findMany({
+                where: { month: { gte: startDate, lte: endDate } },
+                include: { provider: true },
+                orderBy: { month: 'desc' }
+            }),
+            prisma.bookingLineItem.count({
+                where: { providerId: null, type: { not: 'ACCOMMODATION' } }
+            })
+        ]);
+        return { bookings, monthlyExpenses, unassignedCount, error: null };
+    } catch (error) {
+        console.error("Failed to fetch financial data:", error);
+        return { bookings: [], monthlyExpenses: [], unassignedCount: 0, error };
+    }
+}
+
 export default async function FinancialDashboard({ searchParams }: { searchParams: { month?: string } }) {
     const session = await verifySession();
     if (!session) redirect('/admin/login');
@@ -21,40 +47,8 @@ export default async function FinancialDashboard({ searchParams }: { searchParam
     const startDate = new Date(year, month - 1, 1);
     const endDate = new Date(year, month, 0, 23, 59, 59); // Last day of month
 
-    // Fetch Data Filtered by Date
-    const bookings = await prisma.booking.findMany({
-        where: {
-            date: {
-                gte: startDate,
-                lte: endDate
-            }
-        },
-        include: {
-            lineItems: {
-                include: { provider: true }
-            }
-        },
-        orderBy: { date: 'desc' }
-    });
-
-    const monthlyExpenses = await prisma.monthlyExpense.findMany({
-        where: {
-            month: {
-                gte: startDate,
-                lte: endDate
-            }
-        },
-        include: { provider: true },
-        orderBy: { month: 'desc' }
-    });
-
-    // Check for unassigned items (global check, not just this month, to alert user)
-    const unassignedCount = await prisma.bookingLineItem.count({
-        where: {
-            providerId: null,
-            type: { not: 'ACCOMMODATION' }
-        }
-    });
+    // Fetch Data Safely
+    const { bookings, monthlyExpenses, unassignedCount } = await getFinancialData(startDate, endDate);
 
     // Calculations & Provider Breakdown
     let totalIncome = 0;

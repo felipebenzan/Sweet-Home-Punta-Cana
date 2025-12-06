@@ -4,10 +4,17 @@ import { notFound } from 'next/navigation';
 
 const prisma = new PrismaClient();
 
+export const dynamic = 'force-dynamic';
+
 export default async function EditUserPage({ params }: { params: { id: string } }) {
-    const user = await prisma.user.findUnique({
-        where: { id: params.id },
-    });
+    let user = null;
+    try {
+        user = await prisma.user.findUnique({
+            where: { id: params.id },
+        });
+    } catch (e) {
+        console.warn('Build-time DB fetch failed', e);
+    }
 
     if (!user) {
         notFound();

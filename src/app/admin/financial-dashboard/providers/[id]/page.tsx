@@ -6,15 +6,33 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft, Download } from 'lucide-react';
 import Link from 'next/link';
 
+export const dynamic = 'force-dynamic';
+
+async function getProviderData(providerId: string, startDate: Date, endDate: Date) {
+    try {
+        const [provider, lineItems] = await Promise.all([
+            prisma.provider.findUnique({ where: { id: providerId } }),
+            prisma.bookingLineItem.findMany({
+                where: {
+                    providerId: providerId,
+                    booking: {
+                        date: { gte: startDate, lte: endDate }
+                    }
+                },
+                include: { booking: true },
+                orderBy: { booking: { date: 'asc' } }
+            })
+        ]);
+        return { provider, lineItems };
+    } catch (e) {
+        console.warn('Build-time DB fetch failed', e);
+        return { provider: null, lineItems: [] };
+    }
+}
+
 export default async function ProviderDetailPage({ params, searchParams }: { params: { id: string }, searchParams: { month?: string } }) {
     const session = await verifySession();
     if (!session) redirect('/admin/login');
-
-    const provider = await prisma.provider.findUnique({
-        where: { id: params.id }
-    });
-
-    if (!provider) return <div>Provider not found</div>;
 
     // Date Filtering
     const today = new Date();
@@ -25,24 +43,9 @@ export default async function ProviderDetailPage({ params, searchParams }: { par
     const startDate = new Date(year, month - 1, 1);
     const endDate = new Date(year, month, 0, 23, 59, 59);
 
-    // Fetch Line Items for this Provider in this Month
-    const lineItems = await prisma.bookingLineItem.findMany({
-        where: {
-            providerId: provider.id,
-            booking: {
-                date: {
-                    gte: startDate,
-                    lte: endDate
-                }
-            }
-        },
-        include: {
-            booking: true
-        },
-        orderBy: {
-            booking: { date: 'asc' }
-        }
-    });
+    const { provider, lineItems } = await getProviderData(params.id, startDate, endDate);
+
+    if (!provider) return <div>Provider not found</div>;
 
     const totalOwed = lineItems.reduce((sum, item) => sum + item.totalCost, 0);
 

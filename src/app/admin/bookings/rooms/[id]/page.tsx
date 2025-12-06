@@ -7,6 +7,21 @@ import { Button } from '@/components/ui/button';
 import { ChevronLeft, Bed, Calendar, User, Mail, Phone, CreditCard, Users } from 'lucide-react';
 import Link from 'next/link';
 
+export const dynamic = 'force-dynamic';
+
+async function getRoomReservation(id: string) {
+    try {
+        const booking = await prisma.reservation.findUnique({
+            where: { id },
+            include: { room: true }
+        });
+        return booking;
+    } catch (e) {
+        console.warn('Build-time DB fetch failed or Reservation not found', e);
+        return null;
+    }
+}
+
 export default async function RoomBookingDetailPage({ params }: { params: { id: string } }) {
     const session = await verifySession();
 
@@ -14,10 +29,7 @@ export default async function RoomBookingDetailPage({ params }: { params: { id: 
         redirect('/admin/login');
     }
 
-    const booking = await prisma.reservation.findUnique({
-        where: { id: params.id },
-        include: { room: true }
-    });
+    const booking = await getRoomReservation(params.id);
 
     if (!booking) {
         return (

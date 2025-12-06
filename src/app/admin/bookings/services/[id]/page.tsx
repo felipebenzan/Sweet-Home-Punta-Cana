@@ -7,6 +7,20 @@ import { Button } from '@/components/ui/button';
 import { ChevronLeft, Plane, Shirt, MapPin, Calendar, Clock, User, Mail, Phone, CreditCard } from 'lucide-react';
 import Link from 'next/link';
 
+export const dynamic = 'force-dynamic';
+
+async function getServiceBooking(id: string) {
+    try {
+        const booking = await prisma.serviceBooking.findUnique({
+            where: { id },
+        });
+        return booking;
+    } catch (e) {
+        console.warn('Build-time DB fetch failed or Booking not found', e);
+        return null;
+    }
+}
+
 export default async function ServiceBookingDetailPage({ params }: { params: { id: string } }) {
     const session = await verifySession();
 
@@ -14,9 +28,7 @@ export default async function ServiceBookingDetailPage({ params }: { params: { i
         redirect('/admin/login');
     }
 
-    const booking = await prisma.serviceBooking.findUnique({
-        where: { id: params.id },
-    });
+    const booking = await getServiceBooking(params.id);
 
     if (!booking) {
         return (
