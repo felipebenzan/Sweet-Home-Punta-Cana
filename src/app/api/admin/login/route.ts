@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/prisma'; // Use singleton
 import { verifyPassword, createSession, hashPassword } from '@/lib/auth';
 
 export const runtime = 'nodejs';
 
-const prisma = new PrismaClient();
+// const prisma = new PrismaClient(); // Removed in favor of singleton import
 
 export async function POST(request: Request) {
     try {
