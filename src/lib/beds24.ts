@@ -113,133 +113,34 @@ export const Beds24 = {
 
             const availabilityMap: Record<string, Beds24Availability> = {};
 
-            // Helper to process a single room entry
-            const processRoom = (b24RoomId: string, roomData: any) => {
-                // Check availability. 
-                // formatting: check 'quantity' or specific availability flags.
-                // getAvailability often returns { date: { status: '1', price: ... } }
-                // We need to aggregate across the date range.
-                // If any date in range has status 0 or quantity 0, it's unavailable.
 
-                // If the API returns a summary or we need to calculate it?
-                // Using "getAvailability" usually returns daily data.
-                // WE NEED TO CHECK IF ALL DAYS ARE AVAILABLE.
 
-                // SIMPLIFICATION: If usage of this function assumes checkAvailability endpoint returns
-                // a summary or we parse it. 
-                // Let's assume we are using a simplified view or specific Beds24 endpoint for checking a range.
-                // Actually, https://api.beds24.com/json/getAvailability returns keys by room ID.
-                // Inside is dates.
+            // Response from getAvailabilities is flat object with keys as roomIds
+            // Example: { "632028": { "roomId": "632028", "roomsavail": "0" }, ... }
 
-                let isAvailable = true;
-                let totalPrice = 0;
-                let minStay = 1;
+            // Iterate over all keys that look like Room IDs (numeric)
+            Object.keys(data).forEach(key => {
+                // Skip non-room keys like "checkIn", "propId" etc.
+                if (!key.match(/^\d+$/)) return;
 
-                // Iterate over dates in response for this room
-                // roomData might look like: { "2023-10-27": { number: 1, price: 50, ... }, ... }
+                const roomData = data[key];
+                const strId = String(roomData.roomId || key);
 
-                // Get all date keys
-                const dateKeys = Object.keys(roomData).filter(k => k.match(/^\d{4}-\d{2}-\d{2}$/));
+                // Parse availability
+                // 'roomsavail' can be "0" (string) or 1 (number)
+                const roomsAvail = parseInt(String(roomData.roomsavail || '0'));
+                const isAvailable = roomsAvail > 0;
 
-                // Filter only requested range (though API should have filtered)
-                // Just check all returned dates?
+                // Parse price
+                const price = parseFloat(String(roomData.price || '0'));
 
-                if (dateKeys.length === 0) {
-                    isAvailable = false; // No data returned
-                }
-
-                for (const d of dateKeys) {
-                    const dayData = roomData[d];
-                    // Check inventory/status
-                    // 'number' usually means inventory count remaining
-                    if (dayData.number !== undefined && dayData.number <= 0) {
-                        isAvailable = false;
-                    }
-                    if (dayData.price) {
-                        totalPrice += parseFloat(dayData.price);
-                    }
-                    if (dayData.minStay) {
-                        minStay = Math.max(minStay, parseInt(dayData.minStay));
-                    }
-                }
-
-                // Sanity check: if range requested was 5 days, did we get 5 days?
-                // Ideally yes.
-
-                if (isAvailable && dateKeys.length > 0) {
-                    availabilityMap[b24RoomId] = {
-                        roomId: b24RoomId,
-                        available: true,
-                        price: totalPrice,
-                        minStay: minStay
-                    };
-                }
-            };
-
-            // Standard Beds24 JSON structure often:
-            // { "12345": { "2025-01-01": {...}, "2025-01-02": {...} }, "67890": ... }
-            if (typeof data === 'object' && !Array.isArray(data)) {
-                for (const b24RoomId of Object.keys(data)) {
-                    // Check if it looks like room data (keys are dates)
-                    processRoom(b24RoomId, data[b24RoomId]);
-                }
-            } else if (Array.isArray(data)) {
-                // Enhanced Array Parsing Logic for JSON output
-                // Example: [{ roomId: "123", checkIn: "2024-01-01", ..., quantity: 1 }, ...]
-                // Or grouped by room.
-
-                // NOTE: Beds24 JSON output varies by options.
-                // Assuming standard flat list of daily availabilities or room summaries.
-
-                data.forEach((item: any) => {
-                    // Check for Room ID
-                    const rId = item.roomId || item.roomID || (item.room && item.room.id);
-                    if (rId) {
-                        const strId = String(rId);
-
-                        // If we haven't seen this room yet, init
-                        if (!availabilityMap[strId]) {
-                            availabilityMap[strId] = {
-                                roomId: strId,
-                                available: true,
-                                price: 0,
-                                minStay: 1
-                            };
-                        }
-
-                        // Logic to aggregate daily data?
-                        // If data is a list of rooms with SUMMARY, we can just take it.
-                        // But usually it's daily.
-
-                        // Check availability flag/quantity
-                        // If any day in the range is unavailable, the room is unavailable.
-                        // WARNING: If the API returns one object per room (summary), then check 'quantity'.
-                        // If it returns one object per DAY per room, we need to be careful.
-
-                        // Heuristic: If item has 'date', it's daily data.
-                        if (item.date) {
-                            if (item.quantity !== undefined && item.quantity <= 0) {
-                                availabilityMap[strId].available = false;
-                            }
-                            // Add price? Simple sum roughly ok for display "Total"
-                            if (item.price) {
-                                availabilityMap[strId].price += parseFloat(item.price);
-                            }
-                        } else {
-                            // Assume it's a room summary
-                            if (item.quantity !== undefined && item.quantity <= 0) {
-                                availabilityMap[strId].available = false;
-                            }
-                            if (item.price) {
-                                // If it's a summary, price might be total or nightly.
-                                // Let's assume total if no date range specified in item, or nightly?
-                                // Safest is to take it.
-                                availabilityMap[strId].price = parseFloat(item.price);
-                            }
-                        }
-                    }
-                });
-            }
+                availabilityMap[strId] = {
+                    roomId: strId,
+                    available: isAvailable,
+                    price: price,
+                    minStay: 1 // API v1 getAvailabilities doesn't seem to return minStay easily, default to 1
+                };
+            });
 
             return {
                 data: availabilityMap,
