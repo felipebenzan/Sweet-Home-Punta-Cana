@@ -45,6 +45,7 @@ import { Textarea } from "@/components/ui/textarea";
 
 interface RoomEditorProps {
   slug?: string;
+  initialData?: Room | null;
 }
 
 const initialAmenities = [
@@ -61,12 +62,29 @@ const initialAmenities = [
   "Daily cleaning",
 ];
 
-export default function RoomEditor({ slug }: RoomEditorProps) {
+const emptyRoom: Partial<Room> = {
+  name: "",
+  slug: "",
+  tagline: "",
+  description: "",
+  amenities: [],
+  gallery: [],
+  price: 0,
+  capacity: 2,
+  inventoryUnits: 1,
+  beds24_room_id: undefined,
+};
+
+export default function RoomEditor({ slug, initialData }: RoomEditorProps) {
   const router = useRouter();
   const { toast } = useToast();
-  // const db = useFirestore(); // Removed Firebase
-  const [room, setRoom] = React.useState<Partial<Room> | null>(null);
-  const [isLoading, setIsLoading] = React.useState(!!slug);
+
+  // Initialize state with initialData if available, otherwise null (loading) or empty (new)
+  const [room, setRoom] = React.useState<Partial<Room> | null>(
+    initialData || (slug ? null : emptyRoom)
+  );
+
+  const [isLoading, setIsLoading] = React.useState(!!slug && !initialData);
   const [isSaving, setIsSaving] = React.useState(false);
   const isNew = !slug;
 
@@ -74,52 +92,41 @@ export default function RoomEditor({ slug }: RoomEditorProps) {
   const [newAmenityLabel, setNewAmenityLabel] = React.useState("");
 
   React.useEffect(() => {
-    async function fetchRoom() {
-      if (!slug) {
-        setRoom({
-          name: "",
-          slug: "",
-          tagline: "",
-          description: "",
-          amenities: [],
-          gallery: [],
-          price: 0,
-          capacity: 2,
-          inventoryUnits: 1,
-        });
-        setIsLoading(false);
-        return;
-      }
+    // Only fetch client-side if we have a slug BUT no initialData
+    if (slug && !initialData && !room) {
+      async function fetchRoom() {
+        setIsLoading(true);
+        try {
+          const response = await fetch('/api/admin/rooms?slug=' + slug);
+          const data = await response.json();
 
-      setIsLoading(true);
-      try {
-        // Load from JSON file via server action
-        const response = await fetch('/api/admin/rooms?slug=' + slug);
-        const data = await response.json();
-
-        if (data.success && data.room) {
-          setRoom(data.room);
-        } else {
+          if (data.success && data.room) {
+            setRoom(data.room);
+          } else {
+            toast({
+              title: "Not Found",
+              description: "Room not found",
+              variant: "destructive",
+            });
+            router.push("/admin/rooms");
+          }
+        } catch (error) {
+          console.error("Failed to fetch room:", error);
           toast({
-            title: "Not Found",
-            description: "Room not found",
+            title: "Error",
+            description: "Could not load room data.",
             variant: "destructive",
           });
-          router.push("/admin/rooms");
+        } finally {
+          setIsLoading(false);
         }
-      } catch (error) {
-        console.error("Failed to fetch room:", error);
-        toast({
-          title: "Error",
-          description: "Could not load room data.",
-          variant: "destructive",
-        });
-      } finally {
-        setIsLoading(false);
       }
+      fetchRoom();
+    } else if (slug && initialData) {
+      // If we have initialData, just ensure loading is false
+      setIsLoading(false);
     }
-    fetchRoom();
-  }, [slug, router, toast]);
+  }, [slug, initialData, router, toast]);
 
   const handleInputChange = (field: keyof Room, value: any) => {
     setRoom((prev) => (prev ? { ...prev, [field]: value } : null));
@@ -152,7 +159,7 @@ export default function RoomEditor({ slug }: RoomEditorProps) {
         amenities: room.amenities || [],
         gallery: room.gallery || [],
         inventoryUnits: room.inventoryUnits || 1,
-        beds24_room_id: room.beds24_room_id || null,
+        beds24_room_id: room.beds24_room_id || undefined,
       };
 
       const response = await fetch('/api/admin/rooms', {
