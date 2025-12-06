@@ -1,33 +1,18 @@
-import type { Metadata } from "@/lib/types";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import RoomClientPage from "./room-client-page";
-import { Room } from "@/lib/types";
-import { readFile } from "fs/promises";
-import { join } from "path";
+import type { Room } from "@/lib/types";
+import { getRooms, getRoomBySlug } from "@/app/server-actions.readonly";
 
-export const revalidate = 3600; // Revalidate page data every hour
-
-async function getRooms(): Promise<Room[]> {
-  try {
-    const roomsPath = join(process.cwd(), 'src', 'data', 'rooms.json');
-    const fileContent = await readFile(roomsPath, 'utf-8');
-    return JSON.parse(fileContent);
-  } catch (error) {
-    return [];
-  }
-}
-
-async function getRoomBySlug(slug: string): Promise<Room | null> {
-  const rooms = await getRooms();
-  return rooms.find(r => r.slug === slug) || null;
-}
+export const revalidate = 0; // Disable cache for instant updates
 
 export async function generateMetadata({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
-  const room = await getRoomBySlug(params.slug);
+  const { slug } = await params;
+  const room = await getRoomBySlug(slug);
   if (!room) {
     return {
       title: "Room Not Found",
@@ -48,9 +33,9 @@ export async function generateMetadata({
 export default async function RoomPage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
-  const { slug } = params;
+  const { slug } = await params;
 
   // Fetch all required data in parallel on the server
   const [roomData, allRooms] = await Promise.all([
