@@ -47,7 +47,7 @@ export default function TheHousePage() {
       <section className="pt-16 lg:pt-24">
         <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
           <div className="relative aspect-square md:aspect-[3/4] rounded-2xl overflow-hidden shadow-soft">
-            <Image src="https://picsum.photos/600/800" alt="Path lined with palm trees" fill sizes="100vw" className="object-cover" data-ai-hint="palm tree path" />
+            <Image src="/perfectly-placed.jpg" alt="Path lined with palm trees" fill sizes="100vw" className="object-cover" data-ai-hint="palm tree path" />
           </div>
           <div className="text-left">
             <h2 className="text-5xl md:text-7xl font-playfair font-bold">Perfectly Placed.</h2>
