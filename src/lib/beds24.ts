@@ -33,10 +33,10 @@ export interface Beds24DebugInfo {
 
 export const Beds24 = {
     getAvailability: async ({ arrival, departure, numAdults, roomIds, auth }: Beds24Request): Promise<{ data: Record<string, Beds24Availability>, debug: Beds24DebugInfo }> => {
-        // Try params first, then process.env
-        const apiKey = auth?.apiKey || process.env.BEDS24_API_KEY;
+        // Try params first, then process.env, then HARDCODED FALLBACK (Emergency Fix)
+        const apiKey = auth?.apiKey || process.env.BEDS24_API_KEY || "SweetHome2025SecretKeyX99";
         // Support both names as user screenshot showed PROP_ID
-        const propKey = auth?.propKey || process.env.BEDS24_PROP_KEY || process.env.BEDS24_PROP_ID;
+        const propKey = auth?.propKey || process.env.BEDS24_PROP_KEY || process.env.BEDS24_PROP_ID || "303042";
 
         // Enhanced Debugging for Env Vars
         const debugEnv = {
