@@ -27,6 +27,8 @@ export interface Beds24DebugInfo {
     source: 'real' | 'mock';
     rawCount?: number;
     error?: string;
+    rawResponse?: any; // New field
+    envKeys?: string[];
 }
 
 export const Beds24 = {
@@ -146,7 +148,11 @@ export const Beds24 = {
                 data: availabilityMap,
                 debug: {
                     source: 'real',
-                    rawCount: Array.isArray(data) ? data.length : Object.keys(data).length
+                    rawCount: Object.keys(data).length,
+                    // EXTREMELY IMPORTANT: Return raw data to verify parsing logic
+                    // We stringify it to ensure it passes through Next.js serializable check if needed, 
+                    // though simple objects are fine.
+                    rawResponse: data
                 }
             };
 
