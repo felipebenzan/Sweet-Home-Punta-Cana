@@ -19,7 +19,7 @@ export default function TheHousePage() {
       {/* Hero Section */}
       <section className="relative h-auto min-h-[80vh] w-full flex items-center justify-center text-center text-white bg-black">
         <Image
-          src="https://picsum.photos/1600/900"
+          src="/home-hero.png"
           alt="Lush tropical garden of a guest house"
           fill
           sizes="100vw"
