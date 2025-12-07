@@ -19,10 +19,10 @@ export default async function DebugAvailabilityPage() {
         departure: checkOut,
         numAdults: 2,
         roomIds: dbRooms.map(r => r.beds24_room_id).filter(Boolean) as string[],
-        // Force auth with HARDCODED keys to bypass Env Var issues and prove API works
+        // Force auth just in case env vars are flickering, using confirmed user keys
         auth: {
-            apiKey: "SweetHome2025SecretKeyX99",
-            propKey: "303042"
+            apiKey: process.env.BEDS24_API_KEY,
+            propKey: process.env.BEDS24_PROP_KEY || process.env.BEDS24_PROP_ID
         }
     });
 
