@@ -84,7 +84,7 @@ export default function TheHousePage() {
             </div>
             <div className="text-center">
               <div className="relative aspect-square rounded-2xl overflow-hidden shadow-soft mb-4">
-                <Image src="https://picsum.photos/seed/wifi/602/602" alt="High-speed internet setup" fill sizes="100vw" className="object-cover" data-ai-hint="wifi router" />
+                <Image src="/high%20speed%20wifi.png" alt="High-speed internet setup" fill sizes="100vw" className="object-cover" data-ai-hint="wifi router" />
               </div>
               <h3 className="font-bold text-lg flex items-center justify-center gap-2">High-Speed Wi-Fi <Wifi className="h-5 w-5" /></h3>
               <p className="text-neutral-600 text-sm">Stream, work, or share your beach days without limits.</p>

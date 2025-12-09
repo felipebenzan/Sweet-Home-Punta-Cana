@@ -59,7 +59,7 @@
         "icon": "Wifi",
         "text": "Stream, work, or share your beach days without limits.",
         "image": {
-          "src": "https://picsum.photos/seed/wifi/602/602",
+          "src": "/high%20speed%20wifi.png",
           "alt": "High-speed internet setup",
           "hint": "wifi router"
         }
