@@ -70,7 +70,7 @@ const secondaryServices = [
         icon: <ShoppingBasket className="h-6 w-6 text-white" />,
         title: 'Mini-Market Delivery',
         description: 'Get groceries delivered right to your door.',
-        image: 'https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/Mini%20market%20delivery%20colmado%20sweet%20home%20punta%20cana.png?alt=media&token=447c4d2b-67f4-4389-b5e0-81bbc0b16af6',
+        image: '/Mini%20market%20delivery.png',
         imageHint: 'grocery delivery',
         href: '/minimarket-delivery',
         cta: 'See Options'
