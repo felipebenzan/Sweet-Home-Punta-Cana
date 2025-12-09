@@ -19,9 +19,9 @@ export default function Footer() {
   ];
 
   const socialLinks = [
-    { href: 'https://www.facebook.com/sweethomepc/', icon: <Image src="/facebook-logo-facebook-icon-transparent-free-png.png" alt="Facebook" width={48} height={48} className="h-12 w-12 object-contain" />, label: 'Facebook' },
-    { href: 'https://www.instagram.com/sweethome_puntacana/', icon: <Image src="/instagram.jpeg" alt="Instagram" width={40} height={40} className="h-10 w-10 object-contain" />, label: 'Instagram' },
-    { href: 'https://www.youtube.com/@IAMPUNTACANA', icon: <Image src="/youtube-logo-youtube-icon-transparent-free-png.png" alt="YouTube" width={56} height={40} className="h-10 w-14 object-contain" />, label: 'YouTube' },
+    { href: 'https://www.facebook.com/sweethomepc/', icon: <Image src="/facebook-logo-facebook-icon-transparent-free-png.png" alt="Facebook" width={40} height={40} className="w-[40px] h-[40px] object-contain" />, label: 'Facebook' },
+    { href: 'https://www.instagram.com/sweethome_puntacana/', icon: <Image src="/instagram.jpeg" alt="Instagram" width={40} height={40} className="w-[40px] h-[40px] object-contain" />, label: 'Instagram' },
+    { href: 'https://www.youtube.com/@IAMPUNTACANA', icon: <Image src="/youtube-logo-youtube-icon-transparent-free-png.png" alt="YouTube" width={40} height={40} className="w-[40px] h-[40px] object-contain" />, label: 'YouTube' },
   ];
 
   return (
@@ -77,7 +77,7 @@ export default function Footer() {
           </div>
           <div>
             <h4 className="font-semibold text-shpc-ink">Follow Us</h4>
-            <div className="mt-4 flex space-x-4">
+            <div className="mt-4 flex justify-center items-center gap-[20px]">
               {socialLinks.map((social) => (
                 <a key={social.label} href={social.href} target="_blank" rel="noopener noreferrer" className="text-neutral-500 hover:text-shpc-ink" aria-label={social.label}>
                   {social.icon}
