@@ -40,7 +40,7 @@ const services = [
         icon: <Shirt className="h-8 w-8 text-white" />,
         title: 'Laundry Service',
         description: 'Travel light. Schedule laundry pickup during your stay and free up more time for paradise.',
-        image: 'https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/laundry%20service%20guest%20services%20sweet%20home%20punta%20cana.png?alt=media&token=f82dc09e-4fe6-45f4-bb76-aaf099ec9de0',
+        image: '/Laundry%20Services.png',
         imageHint: 'laundry service',
         href: '/laundry-service',
         cta: 'Book Laundry Service'
