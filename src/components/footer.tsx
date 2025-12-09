@@ -20,7 +20,7 @@ export default function Footer() {
 
   const socialLinks = [
     { href: 'https://www.facebook.com/sweethomepc/', icon: '/facebook-logo-facebook-icon-transparent-free-png.png', label: 'Facebook' },
-    { href: 'https://www.instagram.com/sweethome_puntacana/', icon: '/instagram.jpeg', label: 'Instagram' },
+    { href: 'https://www.instagram.com/sweethome_puntacana/', icon: '/instagram.jpeg', label: 'Instagram', className: 'p-1' },
     { href: 'https://www.youtube.com/@IAMPUNTACANA', icon: '/youtube-logo-youtube-icon-transparent-free-png.png', label: 'YouTube' },
   ];
 
@@ -84,7 +84,7 @@ export default function Footer() {
                     src={social.icon}
                     alt={social.label}
                     fill
-                    className="object-contain"
+                    className={`object-contain ${social.className || ''}`}
                     sizes="40px"
                   />
                 </a>
