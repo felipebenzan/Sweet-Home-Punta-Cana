@@ -61,7 +61,7 @@ const secondaryServices = [
         icon: <Utensils className="h-6 w-6 text-white" />,
         title: 'Food Delivery',
         description: 'Order from your favorite apps like Uber Eats or PedidosYa.',
-        image: 'https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/food%20delivery%20uber%20eats%20pedidos%20ya%20sweet%20home%20punta%20cana.png?alt=media&token=8f8340a6-dc0e-4684-98eb-eeb7bf0b7d05',
+        image: '/food%20delivery.png',
         imageHint: 'food delivery',
         href: '/food-delivery',
         cta: 'See Options'
