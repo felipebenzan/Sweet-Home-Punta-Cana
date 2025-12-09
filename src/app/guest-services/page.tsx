@@ -31,7 +31,7 @@ const services = [
         icon: <ConciergeBell className="h-8 w-8 text-white" />,
         title: 'Excursion Booking',
         description: 'From Saona Island to hidden cenotes—discover the best tours and adventures, booked seamlessly online.',
-        image: 'https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/Excursion%20booking%20snorkeling%20sweet%20home%20punta%20cana%20guest%20services.png?alt=media&token=6015afee-578f-45cc-b8c4-ee2db9f7d311',
+        image: '/excursion%20bookin%20guest%20services.png',
         imageHint: 'vacation excursion',
         href: '/excursions',
         cta: 'Book Excursion'
