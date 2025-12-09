@@ -95,7 +95,7 @@ export default function TheHousePage() {
 
       {/* Island Life Section */}
       <section className="relative py-24 lg:py-32 bg-black text-white">
-        <Image src="https://picsum.photos/1600/800" alt="Aerial view of a tropical coastline" fill sizes="100vw" className="object-cover opacity-30" data-ai-hint="tropical coastline aerial" />
+        <Image src="/Island%20Life%20Simplified.png" alt="Aerial view of a tropical coastline" fill sizes="100vw" className="object-cover opacity-30" data-ai-hint="tropical coastline aerial" />
         <div className="relative z-10 max-w-6xl mx-auto px-6 text-center">
           <h2 className="text-5xl md:text-7xl font-playfair font-bold">Island Life, Simplified.</h2>
           <div className="mt-12 flex flex-wrap justify-center items-start gap-x-8 gap-y-6 max-w-5xl mx-auto text-lg">
