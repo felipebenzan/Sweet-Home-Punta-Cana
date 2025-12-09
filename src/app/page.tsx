@@ -70,7 +70,7 @@ export default function TheHousePage() {
           <div className="grid md:grid-cols-3 gap-8">
             <div className="text-center">
               <div className="relative aspect-square rounded-2xl overflow-hidden shadow-soft mb-4">
-                <Image src="https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/kitchen%20coock%20share%20dominican%20food%20sweet%20home%20punta%20cana.png?alt=media&token=7499ed20-a8e7-44f8-9548-a8ff87007327" alt="Modern home kitchen" fill sizes="100vw" className="object-cover" data-ai-hint="kitchen interior" />
+                <Image src="/home-kitchen.png" alt="Modern home kitchen" fill sizes="100vw" className="object-cover" data-ai-hint="kitchen interior" />
               </div>
               <h3 className="font-bold text-lg flex items-center justify-center gap-2">Home Kitchen <Utensils className="h-5 w-5" /></h3>
               <p className="text-neutral-600 text-sm">Cook, snack, or sip coffee your way.</p>
