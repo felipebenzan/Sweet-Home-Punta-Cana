@@ -19,9 +19,9 @@ export default function Footer() {
   ];
 
   const socialLinks = [
-    { href: 'https://www.facebook.com/sweethomepc/', icon: <Image src="/facebook-logo-facebook-icon-transparent-free-png.png" alt="Facebook" width={40} height={40} className="h-[40px] w-auto object-contain" />, label: 'Facebook' },
-    { href: 'https://www.instagram.com/sweethome_puntacana/', icon: <Image src="/instagram.jpeg" alt="Instagram" width={40} height={40} className="h-[40px] w-auto object-contain" />, label: 'Instagram' },
-    { href: 'https://www.youtube.com/@IAMPUNTACANA', icon: <Image src="/youtube-logo-youtube-icon-transparent-free-png.png" alt="YouTube" width={58} height={40} className="h-[40px] w-auto object-contain" />, label: 'YouTube' },
+    { href: 'https://www.facebook.com/sweethomepc/', icon: <Image src="/facebook-logo-facebook-icon-transparent-free-png.png" alt="Facebook" width={40} height={40} className="!w-[40px] !h-[40px] object-contain" />, label: 'Facebook' },
+    { href: 'https://www.instagram.com/sweethome_puntacana/', icon: <Image src="/instagram.jpeg" alt="Instagram" width={40} height={40} className="!w-[40px] !h-[40px] object-contain" />, label: 'Instagram' },
+    { href: 'https://www.youtube.com/@IAMPUNTACANA', icon: <Image src="/youtube-logo-youtube-icon-transparent-free-png.png" alt="YouTube" width={40} height={40} className="!w-[40px] !h-[40px] object-contain" />, label: 'YouTube' },
   ];
 
   return (
