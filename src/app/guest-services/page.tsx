@@ -21,7 +21,7 @@ const services = [
         icon: <Bike className="h-8 w-8 text-white" />,
         title: 'Bicycle & Scooter Rentals',
         description: 'Explore Punta Cana at your own pace—scooters, bicycles, and more, delivered to your door.',
-        image: 'https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/Bycicle%20Vespa%20Scooter%20rental%20sweet%20home%20punta%20cana.png?alt=media&token=776f9bd2-45e7-47fa-934e-a261a68af3fb',
+        image: '/scooters%20punta%20cana%20guest%20services.png',
         imageHint: 'scooter rental',
         href: 'https://www.scooterspc.com',
         target: '_blank',
