@@ -70,14 +70,14 @@ export default function TheHousePage() {
           <div className="grid md:grid-cols-3 gap-8">
             <div className="text-center">
               <div className="relative aspect-square rounded-2xl overflow-hidden shadow-soft mb-4">
-                <Image src="/home-kitchen.png" alt="Modern home kitchen" fill sizes="100vw" className="object-cover" data-ai-hint="kitchen interior" />
+                <Image src="/Home%20Kitchen.png" alt="Modern home kitchen" fill sizes="100vw" className="object-cover" data-ai-hint="kitchen interior" />
               </div>
               <h3 className="font-bold text-lg flex items-center justify-center gap-2">Home Kitchen <Utensils className="h-5 w-5" /></h3>
               <p className="text-neutral-600 text-sm">Cook, snack, or sip coffee your way.</p>
             </div>
             <div className="text-center">
               <div className="relative aspect-square rounded-2xl overflow-hidden shadow-soft mb-4">
-                <Image src="https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/Garden%20terrace%20coffee%20hamock%20sweet%20home%20punta%20cana.JPG?alt=media&token=fc113c14-a2d7-4a94-b381-ed62210a32ba" alt="Peaceful garden patio" fill sizes="100vw" className="object-cover" data-ai-hint="garden patio" />
+                <Image src="/House%20Garden.png" alt="Peaceful garden patio" fill sizes="100vw" className="object-cover" data-ai-hint="garden patio" />
               </div>
               <h3 className="font-bold text-lg flex items-center justify-center gap-2">Garden Patio <Sprout className="h-5 w-5" /></h3>
               <p className="text-neutral-600 text-sm">A quiet corner to read, chat, or simply breathe.</p>

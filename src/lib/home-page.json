@@ -39,7 +39,7 @@
         "icon": "Utensils",
         "text": "Cook, snack, or sip coffee your way.",
         "image": {
-          "src": "/home-kitchen.png",
+          "src": "/Home%20Kitchen.png",
           "alt": "Modern home kitchen",
           "hint": "kitchen interior"
         }
@@ -49,7 +49,7 @@
         "icon": "Sprout",
         "text": "A quiet corner to read, chat, or simply breathe.",
         "image": {
-          "src": "https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/Garden%20terrace%20coffee%20hamock%20sweet%20home%20punta%20cana.JPG?alt=media&token=fc113c14-a2d7-4a94-b381-ed62210a32ba",
+          "src": "/House%20Garden.png",
           "alt": "Peaceful garden patio",
           "hint": "garden patio"
         }
