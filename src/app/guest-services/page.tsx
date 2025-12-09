@@ -52,7 +52,7 @@ const secondaryServices = [
         icon: <Waves className="h-6 w-6 text-white" />,
         title: 'Beach Access',
         description: 'Enjoy easy access to the beautiful beaches of Punta Cana.',
-        image: 'https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/Bavaro%20beach%20access%20sweet%20home%20punta%20cana.png?alt=media&token=017d0f60-edfb-4c87-9f0d-74ff66c153ff',
+        image: '/access%20to%20bavaro%20beach.png',
         imageHint: 'beach access',
         href: '/beach-access',
         cta: 'Learn More'
