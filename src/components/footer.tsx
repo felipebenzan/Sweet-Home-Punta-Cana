@@ -19,9 +19,9 @@ export default function Footer() {
   ];
 
   const socialLinks = [
-    { href: 'https://www.facebook.com/sweethomepc/', icon: <Image src="https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/facebook%20sweet%20home%20punta%20cana%20guest%20house.png?alt=media&token=9576b0e2-0d2d-4c8f-89a5-d97e0bbd56a7" alt="Facebook" width={20} height={20} className="h-5 w-5 object-contain" />, label: 'Facebook' },
-    { href: 'https://www.instagram.com/sweethome_puntacana/', icon: <Image src="https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/instagram%20sweet%20home%20punta%20cana.png?alt=media&token=27380234-317d-49d1-ac8b-527d171308d1" alt="Instagram" width={20} height={20} className="h-5 w-5 object-contain" />, label: 'Instagram' },
-    { href: 'https://www.youtube.com/@IAMPUNTACANA', icon: <Image src="https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/youtube%20sweet%20home%20punta%20cana%20i%20am%20punta%20cana%20scooters%20punta%20cana.jpg?alt=media&token=f1eb40ef-feda-4780-b892-2e554237ae98" alt="YouTube" width={20} height={20} className="h-5 w-5 object-contain" />, label: 'YouTube' },
+    { href: 'https://www.facebook.com/sweethomepc/', icon: <Image src="/facebook-logo-facebook-icon-transparent-free-png.png" alt="Facebook" width={20} height={20} className="h-5 w-5 object-contain" />, label: 'Facebook' },
+    { href: 'https://www.instagram.com/sweethome_puntacana/', icon: <Image src="/instagram.jpeg" alt="Instagram" width={20} height={20} className="h-5 w-5 object-contain" />, label: 'Instagram' },
+    { href: 'https://www.youtube.com/@IAMPUNTACANA', icon: <Image src="/youtube-logo-youtube-icon-transparent-free-png.png" alt="YouTube" width={20} height={20} className="h-5 w-5 object-contain" />, label: 'YouTube' },
   ];
 
   return (
@@ -39,11 +39,11 @@ export default function Footer() {
                 priority
               />
             </Link>
-            
-             <address className="mt-4 not-italic text-neutral-600 space-y-2 text-sm">
+
+            <address className="mt-4 not-italic text-neutral-600 space-y-2 text-sm">
               <p>Punta Cana, Dominican Republic</p>
-              
-              
+
+
             </address>
           </div>
           <div>
@@ -68,14 +68,14 @@ export default function Footer() {
                   </Link>
                 </li>
               ))}
-               <li>
-                  <Link href="/admin/login" className="text-neutral-600 hover:text-shpc-ink text-sm">
-                    Admin
-                  </Link>
-                </li>
+              <li>
+                <Link href="/admin/login" className="text-neutral-600 hover:text-shpc-ink text-sm">
+                  Admin
+                </Link>
+              </li>
             </ul>
           </div>
-           <div>
+          <div>
             <h4 className="font-semibold text-shpc-ink">Follow Us</h4>
             <div className="mt-4 flex space-x-4">
               {socialLinks.map((social) => (
