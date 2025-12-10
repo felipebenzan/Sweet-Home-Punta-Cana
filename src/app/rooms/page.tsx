@@ -33,7 +33,7 @@ export default async function RoomsPage() {
       {/* Hero Section */}
       <section className="relative h-[50vh] w-full flex items-center justify-center text-center text-white bg-black">
         <Image
-          src="https://picsum.photos/1600/800"
+          src="/rooms hero.png"
           alt="Beautifully styled room with sunlight streaming in"
           fill
           priority
