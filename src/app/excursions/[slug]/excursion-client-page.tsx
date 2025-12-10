@@ -356,7 +356,7 @@ export default function ExcursionClientPage({ excursion, otherExcursions }: { ex
           <section>
             <div className="relative rounded-lg shadow-lg overflow-hidden bg-shpc-ink text-white">
               <Image
-                src="https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/vespa%20scooters%20rental%20sweet%20home%20punta%20cana.png?alt=media&token=3f42e248-bf5a-4979-8b2e-4f8dc746c4bf"
+                src="/scooters%20punta%20cana%20sweet%20home%20banner.png"
                 alt="Scooter against a tropical background"
                 fill
                 className="object-cover opacity-40"
