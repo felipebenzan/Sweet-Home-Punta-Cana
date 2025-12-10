@@ -1,7 +1,7 @@
 
-import type {NextConfig} from 'next';
+import type { NextConfig } from 'next';
 
-const nextConfig: NextConfig = {
+const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -37,6 +37,11 @@ const nextConfig: NextConfig = {
     ],
   },
   output: 'standalone',
+  env: {
+    BEDS24_API_KEY: process.env.BEDS24_API_KEY,
+    BEDS24_PROP_ID: process.env.BEDS24_PROP_ID,
+    BEDS24_PROP_KEY: process.env.BEDS24_PROP_KEY,
+  },
 };
 
 export default nextConfig;
