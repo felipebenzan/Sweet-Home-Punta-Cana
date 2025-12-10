@@ -102,7 +102,7 @@ export default function GuestServicesCarousel() {
                     opts={{ align: 'start', loop: true }}
                     plugins={[
                         Autoplay({
-                            delay: 5000,
+                            delay: 4000,
                             stopOnInteraction: true,
                             stopOnMouseEnter: true,
                         }),
