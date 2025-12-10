@@ -20,7 +20,7 @@ export default async function ExcursionsPage() {
       {/* Hero Section */}
       <section className="relative h-[50vh] w-full flex items-center justify-center text-center text-white bg-black">
         <Image
-          src="https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/tours%20and%20excursion%20sweet%20home%20punta%20cana.png?alt=media&token=d1f65e98-ebe8-4044-a7ec-c48338256155"
+          src="/excursions hero.png"
           alt="A collage of exciting excursions in Punta Cana"
           fill
           priority
