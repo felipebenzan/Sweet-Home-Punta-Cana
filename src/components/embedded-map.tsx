@@ -76,7 +76,8 @@ const getPlaceQueryFromUrl = (url: string): string | null => {
 }
 
 export default function EmbeddedMap({ mapUrl, origin: propOrigin, mode: propMode = 'driving', zoom = 15 }: EmbeddedMapProps) {
-  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+  // Fallback to hardcoded key to ensure maps work immediately if env var is delayed
+  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || 'AIzaSyCKYYBKsEQ-qvhlm0GnkU86yMuBSqIljZg';
 
   if (!apiKey) {
     console.error("Google Maps API key is missing.");
