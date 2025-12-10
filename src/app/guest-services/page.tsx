@@ -83,7 +83,7 @@ export default function GuestServicesPage() {
             {/* Hero Section */}
             <section className="relative h-[50vh] w-full flex items-center justify-center text-center text-white bg-black">
                 <Image
-                    src="https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/Guest%20services%20sweet%20home%20punta%20cana%20guest%20house%20hotel%20hostel%20adults%20only.png?alt=media&token=d1ac1b86-bd1b-4343-980b-426082136f4b"
+                    src="/guest services.png"
                     alt="Guest enjoying a cocktail by the pool"
                     fill
                     sizes="100vw"
