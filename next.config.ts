@@ -41,6 +41,7 @@ const nextConfig = {
     BEDS24_API_KEY: process.env.BEDS24_API_KEY,
     BEDS24_PROP_ID: process.env.BEDS24_PROP_ID,
     BEDS24_PROP_KEY: process.env.BEDS24_PROP_KEY,
+    NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
   },
 };
 
