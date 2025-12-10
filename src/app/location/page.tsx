@@ -40,7 +40,7 @@ export default function FindUsPage() {
       {/* Hero Section */}
       <section className="relative h-[50vh] w-full flex items-center justify-center text-center text-white bg-black">
         <Image
-          src="https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/find%20us%2C%20contact%20us%20location%20sweet%20home%20punta%20cana.png?alt=media&token=b2288844-f5b6-44f4-a40d-3179aa7a3f70"
+          src="/find%20us%20hero.jpg"
           alt="Aerial view of a tropical coastline in Punta Cana"
           fill
           priority
