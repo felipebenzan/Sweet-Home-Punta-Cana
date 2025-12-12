@@ -80,7 +80,7 @@ export default function FindUsPage() {
           <div className="mt-6 flex flex-wrap items-center justify-center gap-4">
             <Button asChild size="lg" className="rounded-full bg-green-500 hover:bg-green-600 text-white">
               <a href={`https://wa.me/${WHATSAPP_NUMBER.replace(/[^\d]/g, "")}`} target="_blank" rel="noopener noreferrer">
-                <Image src="/whatsapp-logo.png" alt="WhatsApp" width={24} height={24} className="mr-2 h-6 w-6 object-contain" /> WhatsApp
+                <Image src="/whatsapp-logo.png" alt="WhatsApp" width={48} height={48} className="mr-2 h-12 w-12 object-contain" /> WhatsApp
               </a>
             </Button>
             <Button asChild size="lg" variant="outline" className="rounded-full border-shpc-ink text-shpc-ink hover:bg-shpc-ink hover:text-white">
