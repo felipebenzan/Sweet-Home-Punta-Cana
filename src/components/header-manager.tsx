@@ -16,10 +16,21 @@ export default function HeaderManager({
 
       if (!header) return;
 
-      if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
+      // Always show at the very top to avoid getting stuck
+      if (currentScrollY < 50) {
+        header.classList.remove('nav-hidden');
+        document.documentElement.style.setProperty('--header-offset', 'var(--header-height)');
+        lastScrollY.current = currentScrollY;
+        return;
+      }
+
+      // Scrolling Down -> Hide
+      if (currentScrollY > lastScrollY.current) {
         header.classList.add('nav-hidden');
         document.documentElement.style.setProperty('--header-offset', '0px');
-      } else {
+      }
+      // Scrolling Up -> Show
+      else if (currentScrollY < lastScrollY.current) {
         header.classList.remove('nav-hidden');
         document.documentElement.style.setProperty('--header-offset', 'var(--header-height)');
       }
