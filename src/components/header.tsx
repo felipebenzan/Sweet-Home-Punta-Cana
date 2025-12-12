@@ -35,7 +35,7 @@ export default function Header() {
               alt="Sweet Home Punta Cana Logo"
               width={1080}
               height={288}
-              className="object-contain h-16 w-auto"
+              className="object-contain h-32 w-auto"
               priority
             />
           </Link>

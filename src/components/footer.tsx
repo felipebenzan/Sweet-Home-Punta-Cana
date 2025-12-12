@@ -35,7 +35,7 @@ export default function Footer() {
                 alt="Sweet Home Punta Cana Logo"
                 width={1080}
                 height={288}
-                className="object-contain h-12 w-auto"
+                className="object-contain h-24 w-auto"
                 priority
               />
             </Link>
