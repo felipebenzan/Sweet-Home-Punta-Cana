@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     url: 'https://www.sweethomepc.com',
     images: [
       {
-        url: 'https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/Sweet%20Home%20Punta%20Cana%20logo.png?alt=media&token=2daf1c25-1bb0-4f7e-9fd2-598f30501843',
+        url: 'https://www.sweethomepc.com/sweet-home-logo.png',
         width: 1200,
         height: 630,
         alt: 'Sweet Home Punta Cana Logo',
@@ -41,13 +41,12 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
       </head>
       <body className={cn('antialiased font-sans flex flex-col min-h-screen', inter.variable, playfairDisplay.variable, dancingScript.variable)}>
-          <ClientLayout>
-            {children}
-          </ClientLayout>
-          <Toaster />
+        <ClientLayout>
+          {children}
+        </ClientLayout>
+        <Toaster />
       </body>
     </html>
   );
 }
 
-    

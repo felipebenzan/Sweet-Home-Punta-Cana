@@ -27,8 +27,8 @@ const baseUrl = process.env.VERCEL_URL
   : "http://localhost:3000";
 
 const numberToWord = (num: number) => {
-    const words = ["Zero", "One", "Two", "Three", "Four", "Five"];
-    return words[num] || String(num);
+  const words = ["Zero", "One", "Two", "Three", "Four", "Five"];
+  return words[num] || String(num);
 };
 
 export default function LaundryConfirmationEmail({
@@ -49,14 +49,14 @@ export default function LaundryConfirmationEmail({
           <Section style={logoSection}>
             <Link href="https://www.sweethomepc.com">
               <Img
-                src="https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/Sweet%20Home%20Punta%20Cana%20logo.png?alt=media&token=2daf1c25-1bb0-4f7e-9fd2-598f30501843"
+                src={`${baseUrl}/sweet-home-logo.png`}
                 width="240"
                 alt="Sweet Home Punta Cana"
                 style={logo}
               />
             </Link>
           </Section>
-          
+
           <Section style={{ padding: '0 24px' }}>
             <Text style={paragraph}>Hi {booking.guestName},</Text>
             <Text style={paragraph}>
@@ -67,103 +67,103 @@ export default function LaundryConfirmationEmail({
           {/* Ticket Section */}
           <Section style={ticket}>
             <Section style={ticketHeader}>
-                <Text style={ticketTitle}>LAUNDRY SERVICE</Text>
-                <Text style={ticketSubtitle}>Admit {numberToWord(booking.qty || 1)} ({booking.qty === 1 ? "Laundry Bag" : "Laundry Bags"})</Text>
+              <Text style={ticketTitle}>LAUNDRY SERVICE</Text>
+              <Text style={ticketSubtitle}>Admit {numberToWord(booking.qty || 1)} ({booking.qty === 1 ? "Laundry Bag" : "Laundry Bags"})</Text>
             </Section>
-            
+
             <Hr style={dashedHr} />
 
             <Section style={ticketDetails}>
-                <Row style={detailRow}>
-                    <Column style={detailLabelCol}>
-                        <Text style={detailLabel}>NAME</Text>
-                    </Column>
-                    <Column style={detailValueCol}>
-                        <Text style={detailValue}>{booking.guestName}</Text>
-                    </Column>
-                </Row>
-                 <Row style={detailRow}>
-                    <Column style={detailLabelCol}>
-                        <Text style={detailLabel}>ROOM</Text>
-                    </Column>
-                    <Column style={detailValueCol}>
-                        <Text style={detailValue}>{booking.accommodation}</Text>
-                    </Column>
-                </Row>
-                 <Row style={detailRow}>
-                    <Column style={detailLabelCol}>
-                        <Text style={detailLabel}>LOADS</Text>
-                    </Column>
-                    <Column style={detailValueCol}>
-                        <Text style={detailValue}>{booking.qty}</Text>
-                    </Column>
-                </Row>
-                <Row style={detailRow}>
-                    <Column style={detailLabelCol}>
-                        <Text style={detailLabel}>PICKUP</Text>
-                    </Column>
-                    <Column style={detailValueCol}>
-                        <Text style={detailValueRight}>{formattedDate} at {formattedTime}</Text>
-                    </Column>
-                </Row>
-                 <Row style={detailRow}>
-                    <Column style={detailLabelCol}>
-                        <Text style={detailLabel}>TOTAL</Text>
-                    </Column>
-                    <Column style={detailValueCol}>
-                        <Text style={detailValue}>${booking.total?.toFixed(2)}</Text>
-                    </Column>
-                </Row>
-            </Section>
-            <Section style={ticketFooter}>
-                <Text style={ticketFooterText}>BOOKING ID: {shortId}</Text>
-            </Section>
-          </Section>
-          
-          <Section style={{ textAlign: 'center' as const, margin: '24px 0' }}>
-            <Button style={button} href={`${baseUrl}/guest-services`}>
-                Enhance Your Stay →
-            </Button>
-          </Section>
-          
-          {/* Enhance Your Stay Section */}
-           <Section style={enhanceStaySection}>
-             <Section style={enhanceStayBox}>
-                  <Row>
-                      <Column style={imageColumn}>
-                          <Img src="https://iampuntacana.com/wp-content/uploads/2025/09/unnamed.png" alt="Scooter" style={promoImage} />
-                      </Column>
-                      <Column style={textColumn}>
-                          <Text style={enhanceStayTitle}>Need a ride?</Text>
-                          <Text style={enhanceStayText}>Get a scooter delivered to your door.</Text>
-                          <Button style={learnMoreButton} href="https://www.scooterspc.com">Learn More</Button>
-                      </Column>
-                  </Row>
-              </Section>
-           </Section>
-
-          <Section style={footer}>
-             <Row>
-                <Column align="center" style={socialsIconContainer}>
-                  <Link href="https://www.facebook.com/sweethomepc/">
-                    <Img src="https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/facebook%20sweet%20home%20punta%20cana%20guest%20house.png?alt=media&token=9576b0e2-0d2d-4c8f-89a5-d97e0bbd56a7" alt="Facebook" width="24" height="24" />
-                  </Link>
+              <Row style={detailRow}>
+                <Column style={detailLabelCol}>
+                  <Text style={detailLabel}>NAME</Text>
                 </Column>
-                <Column align="center" style={socialsIconContainer}>
-                  <Link href="https://www.instagram.com/sweethome_puntacana/">
-                    <Img src="https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/instagram%20sweet%20home%20punta%20cana.png?alt=media&token=27380234-317d-49d1-ac8b-527d171308d1" alt="Instagram" width="24" height="24" />
-                  </Link>
-                </Column>
-                <Column align="center" style={socialsIconContainer}>
-                  <Link href="https://www.youtube.com/@IAMPUNTACANA">
-                    <Img src="https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/youtube%20sweet%20home%20punta%20cana%20i%20am%20punta%20cana%20scooters%20punta%20cana.jpg?alt=media&token=f1eb40ef-feda-4780-b892-2e554237ae98" alt="YouTube" width="24" height="24" />
-                  </Link>
+                <Column style={detailValueCol}>
+                  <Text style={detailValue}>{booking.guestName}</Text>
                 </Column>
               </Row>
-              <Text style={footerText}>
-                Laundry handled with care by Sweet Home Punta Cana.<br/>
-                Bávaro, Punta Cana, Dominican Republic
-              </Text>
+              <Row style={detailRow}>
+                <Column style={detailLabelCol}>
+                  <Text style={detailLabel}>ROOM</Text>
+                </Column>
+                <Column style={detailValueCol}>
+                  <Text style={detailValue}>{booking.accommodation}</Text>
+                </Column>
+              </Row>
+              <Row style={detailRow}>
+                <Column style={detailLabelCol}>
+                  <Text style={detailLabel}>LOADS</Text>
+                </Column>
+                <Column style={detailValueCol}>
+                  <Text style={detailValue}>{booking.qty}</Text>
+                </Column>
+              </Row>
+              <Row style={detailRow}>
+                <Column style={detailLabelCol}>
+                  <Text style={detailLabel}>PICKUP</Text>
+                </Column>
+                <Column style={detailValueCol}>
+                  <Text style={detailValueRight}>{formattedDate} at {formattedTime}</Text>
+                </Column>
+              </Row>
+              <Row style={detailRow}>
+                <Column style={detailLabelCol}>
+                  <Text style={detailLabel}>TOTAL</Text>
+                </Column>
+                <Column style={detailValueCol}>
+                  <Text style={detailValue}>${booking.total?.toFixed(2)}</Text>
+                </Column>
+              </Row>
+            </Section>
+            <Section style={ticketFooter}>
+              <Text style={ticketFooterText}>BOOKING ID: {shortId}</Text>
+            </Section>
+          </Section>
+
+          <Section style={{ textAlign: 'center' as const, margin: '24px 0' }}>
+            <Button style={button} href={`${baseUrl}/guest-services`}>
+              Enhance Your Stay →
+            </Button>
+          </Section>
+
+          {/* Enhance Your Stay Section */}
+          <Section style={enhanceStaySection}>
+            <Section style={enhanceStayBox}>
+              <Row>
+                <Column style={imageColumn}>
+                  <Img src="https://iampuntacana.com/wp-content/uploads/2025/09/unnamed.png" alt="Scooter" style={promoImage} />
+                </Column>
+                <Column style={textColumn}>
+                  <Text style={enhanceStayTitle}>Need a ride?</Text>
+                  <Text style={enhanceStayText}>Get a scooter delivered to your door.</Text>
+                  <Button style={learnMoreButton} href="https://www.scooterspc.com">Learn More</Button>
+                </Column>
+              </Row>
+            </Section>
+          </Section>
+
+          <Section style={footer}>
+            <Row>
+              <Column align="center" style={socialsIconContainer}>
+                <Link href="https://www.facebook.com/sweethomepc/">
+                  <Img src="https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/facebook%20sweet%20home%20punta%20cana%20guest%20house.png?alt=media&token=9576b0e2-0d2d-4c8f-89a5-d97e0bbd56a7" alt="Facebook" width="24" height="24" />
+                </Link>
+              </Column>
+              <Column align="center" style={socialsIconContainer}>
+                <Link href="https://www.instagram.com/sweethome_puntacana/">
+                  <Img src="https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/instagram%20sweet%20home%20punta%20cana.png?alt=media&token=27380234-317d-49d1-ac8b-527d171308d1" alt="Instagram" width="24" height="24" />
+                </Link>
+              </Column>
+              <Column align="center" style={socialsIconContainer}>
+                <Link href="https://www.youtube.com/@IAMPUNTACANA">
+                  <Img src="https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/youtube%20sweet%20home%20punta%20cana%20i%20am%20punta%20cana%20scooters%20punta%20cana.jpg?alt=media&token=f1eb40ef-feda-4780-b892-2e554237ae98" alt="YouTube" width="24" height="24" />
+                </Link>
+              </Column>
+            </Row>
+            <Text style={footerText}>
+              Laundry handled with care by Sweet Home Punta Cana.<br />
+              Bávaro, Punta Cana, Dominican Republic
+            </Text>
           </Section>
 
         </Container>
@@ -253,58 +253,58 @@ const ticket = {
 };
 
 const ticketHeader = {
-    padding: '24px',
-    textAlign: 'center' as const,
+  padding: '24px',
+  textAlign: 'center' as const,
 };
 
 const ticketTitle = {
-    fontSize: '20px',
-    fontWeight: 'bold',
-    color: '#1C1C1C',
-    letterSpacing: '0.1em',
-    margin: 0,
+  fontSize: '20px',
+  fontWeight: 'bold',
+  color: '#1C1C1C',
+  letterSpacing: '0.1em',
+  margin: 0,
 };
 
 const ticketSubtitle = {
-    fontSize: '14px',
-    color: '#434A54',
-    margin: '4px 0 0 0',
+  fontSize: '14px',
+  color: '#434A54',
+  margin: '4px 0 0 0',
 };
 
 const dashedHr = {
-    borderTop: '2px dashed #cccccc',
-    borderBottom: 'none',
-    margin: '0 24px',
+  borderTop: '2px dashed #cccccc',
+  borderBottom: 'none',
+  margin: '0 24px',
 };
 
 const ticketDetails = {
-    padding: '24px',
+  padding: '24px',
 };
 
 const detailRow = {
-    marginBottom: '16px',
+  marginBottom: '16px',
 };
 
 const detailLabelCol = {
-    width: '30%',
+  width: '30%',
 };
 
 const detailValueCol = {
-    width: '70%',
+  width: '70%',
 };
 
 const detailLabel = {
-    fontSize: '14px',
-    color: '#434A54',
-    margin: 0,
+  fontSize: '14px',
+  color: '#434A54',
+  margin: 0,
 };
 
 const detailValue = {
-    fontSize: '14px',
-    fontWeight: '700',
-    color: '#1C1C1C',
-    margin: 0,
-    textAlign: 'right' as const
+  fontSize: '14px',
+  fontWeight: '700',
+  color: '#1C1C1C',
+  margin: 0,
+  textAlign: 'right' as const
 };
 const detailValueRight = {
   ...detailValue,
@@ -332,23 +332,23 @@ const enhanceStaySection = {
 };
 
 const enhanceStayBox = {
-    backgroundColor: '#ffffff',
-    border: '1px solid #e5e5e5',
-    borderRadius: '16px',
-    padding: '20px',
+  backgroundColor: '#ffffff',
+  border: '1px solid #e5e5e5',
+  borderRadius: '16px',
+  padding: '20px',
 }
 
 const enhanceStayTitle = {
-    fontSize: '16px',
-    fontWeight: 'bold',
-    color: '#1C1C1C',
-    margin: '0 0 4px 0'
+  fontSize: '16px',
+  fontWeight: 'bold',
+  color: '#1C1C1C',
+  margin: '0 0 4px 0'
 }
 
 const enhanceStayText = {
-    fontSize: '14px',
-    color: '#434A54',
-    margin: '0 0 12px 0'
+  fontSize: '14px',
+  color: '#434A54',
+  margin: '0 0 12px 0'
 }
 
 const imageColumn = {

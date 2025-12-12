@@ -46,12 +46,12 @@ export default function TransferConfirmationEmail({
 
   const isArrival = booking.direction?.toLowerCase().includes('arr') || booking.direction?.toLowerCase().includes('one-way');
   const isDeparture = booking.direction?.toLowerCase().includes('dep');
-  
+
   const fromLocation = isDeparture ? "SHPC" : "PUJ";
   const fromLocationDetail = isDeparture ? "Sweet Home Punta Cana" : "Punta Cana Airport";
   const toLocation = isDeparture ? "PUJ" : "SHPC";
   const toLocationDetail = isDeparture ? "Punta Cana Airport" : "Sweet Home Punta Cana";
-  
+
   const dateAndFlight = () => {
     let dateStr = booking.arrivalDate || booking.departureDate;
     if (!dateStr) return "Date not specified";
@@ -59,26 +59,26 @@ export default function TransferConfirmationEmail({
     let flightInfo = booking.arrivalFlight || booking.departureFlight || 'Flight TBD';
 
     try {
-        const date = parseISO(dateStr);
-        let datePart = format(date, "MMM dd, yyyy");
-        
-        let timePart = '';
-        if (booking.departureTime) {
-            timePart = ` at ${format(parse(booking.departureTime, 'HH:mm', new Date()), 'h:mm a')}`;
-        }
-        
-        if (isArrival) {
-            return `${datePart} - ${flightInfo}`;
-        }
-        
-        return `${datePart}${timePart}`;
+      const date = parseISO(dateStr);
+      let datePart = format(date, "MMM dd, yyyy");
+
+      let timePart = '';
+      if (booking.departureTime) {
+        timePart = ` at ${format(parse(booking.departureTime, 'HH:mm', new Date()), 'h:mm a')}`;
+      }
+
+      if (isArrival) {
+        return `${datePart} - ${flightInfo}`;
+      }
+
+      return `${datePart}${timePart}`;
 
     } catch (e) {
-        console.error("Could not parse date for email:", dateStr);
-        return "Invalid Date";
+      console.error("Could not parse date for email:", dateStr);
+      return "Invalid Date";
     }
   };
-  
+
   const qrValue = `${shortId}-${fromLocation}-${toLocation}`;
 
   return (
@@ -87,10 +87,10 @@ export default function TransferConfirmationEmail({
       <Preview>{previewText}</Preview>
       <Body style={main}>
         <Container style={container}>
-           <Section style={logoSection}>
-             <Link href="https://www.sweethomepc.com">
-               <Img
-                src="https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/Sweet%20Home%20Punta%20Cana%20logo.png?alt=media&token=2daf1c25-1bb0-4f7e-9fd2-598f30501843"
+          <Section style={logoSection}>
+            <Link href="https://www.sweethomepc.com">
+              <Img
+                src={`${baseUrl}/sweet-home-logo.png`}
                 width="240"
                 alt="Sweet Home Punta Cana"
                 style={logo}
@@ -118,12 +118,12 @@ export default function TransferConfirmationEmail({
                 {/* Left Column */}
                 <Column style={leftColumn}>
                   <Row>
-                    <Column style={{width: '50%'}}>
+                    <Column style={{ width: '50%' }}>
                       <Text style={label}>From</Text>
                       <Text style={locationCode}>{fromLocation}</Text>
                       <Text style={locationDetail}>{fromLocationDetail}</Text>
                     </Column>
-                    <Column style={{width: '50%'}}>
+                    <Column style={{ width: '50%' }}>
                       <Text style={label}>To</Text>
                       <Text style={locationCode}>{toLocation}</Text>
                       <Text style={locationDetail}>{toLocationDetail}</Text>
@@ -136,7 +136,7 @@ export default function TransferConfirmationEmail({
                   <Text style={label}>Passenger</Text>
                   <Text style={largeDetail}>{booking.guestName}</Text>
                 </Column>
-                
+
                 {/* Dashed Separator */}
                 <Column style={separatorColumn}>
                   <div style={dashedLine}></div>
@@ -149,7 +149,7 @@ export default function TransferConfirmationEmail({
                   <Hr style={solidHr} />
                   <Text style={label}>Total Paid</Text>
                   <Text style={price}>${booking.total?.toFixed(2) || '0.00'}</Text>
-                  <Img 
+                  <Img
                     src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${qrValue}`}
                     alt="QR Code"
                     width="100"
@@ -166,7 +166,7 @@ export default function TransferConfirmationEmail({
                 <Text style={noteText}>👋 Your driver will meet you at arrivals with a sign. Welcome to paradise!</Text>
               </Section>
             )}
-            
+
             {/* Footer */}
             <Section style={ticketFooter}>
               <Text style={ticketFooterText}>BOOKING ID: {shortId}</Text>
@@ -175,47 +175,47 @@ export default function TransferConfirmationEmail({
 
           <Section style={{ textAlign: 'center' as const, margin: '24px 0' }}>
             <Button style={button} href={`${baseUrl}/guest-services`}>
-                Enhance Your Stay →
+              Enhance Your Stay →
             </Button>
           </Section>
-          
-           <Section style={enhanceStaySection}>
-             <Section style={enhanceStayBox}>
-                  <Row>
-                      <Column style={imageColumn}>
-                          <Img src="https://iampuntacana.com/wp-content/uploads/2025/09/unnamed.png" alt="Scooter" style={promoImage} />
-                      </Column>
-                      <Column style={textColumn}>
-                          <Text style={enhanceStayTitle}>Need a ride?</Text>
-                          <Text style={enhanceStayText}>Get a scooter delivered to your door.</Text>
-                          <Button style={learnMoreButton} href="https://www.scooterspc.com">Learn More</Button>
-                      </Column>
-                  </Row>
-              </Section>
-           </Section>
 
-          <Section style={footer}>
-             <Row>
-                <Column align="center" style={socialsIconContainer}>
-                  <Link href="https://www.facebook.com/sweethomepc/">
-                    <Img src="https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/facebook%20sweet%20home%20punta%20cana%20guest%20house.png?alt=media&token=9576b0e2-0d2d-4c8f-89a5-d97e0bbd56a7" alt="Facebook" width="24" height="24" />
-                  </Link>
+          <Section style={enhanceStaySection}>
+            <Section style={enhanceStayBox}>
+              <Row>
+                <Column style={imageColumn}>
+                  <Img src="https://iampuntacana.com/wp-content/uploads/2025/09/unnamed.png" alt="Scooter" style={promoImage} />
                 </Column>
-                <Column align="center" style={socialsIconContainer}>
-                  <Link href="https://www.instagram.com/sweethome_puntacana/">
-                    <Img src="https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/instagram%20sweet%20home%20punta%20cana.png?alt=media&token=27380234-317d-49d1-ac8b-527d171308d1" alt="Instagram" width="24" height="24" />
-                  </Link>
-                </Column>
-                <Column align="center" style={socialsIconContainer}>
-                  <Link href="https://www.youtube.com/@IAMPUNTACANA">
-                    <Img src="https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/youtube%20sweet%20home%20punta%20cana%20i%20am%20punta%20cana%20scooters%20punta%20cana.jpg?alt=media&token=f1eb40ef-feda-4780-b892-2e554237ae98" alt="YouTube" width="24" height="24" />
-                  </Link>
+                <Column style={textColumn}>
+                  <Text style={enhanceStayTitle}>Need a ride?</Text>
+                  <Text style={enhanceStayText}>Get a scooter delivered to your door.</Text>
+                  <Button style={learnMoreButton} href="https://www.scooterspc.com">Learn More</Button>
                 </Column>
               </Row>
-              <Text style={footerText}>
-                Travel made easy with Sweet Home Punta Cana.<br/>
-                Bávaro, Punta Cana, Dominican Republic
-              </Text>
+            </Section>
+          </Section>
+
+          <Section style={footer}>
+            <Row>
+              <Column align="center" style={socialsIconContainer}>
+                <Link href="https://www.facebook.com/sweethomepc/">
+                  <Img src="https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/facebook%20sweet%20home%20punta%20cana%20guest%20house.png?alt=media&token=9576b0e2-0d2d-4c8f-89a5-d97e0bbd56a7" alt="Facebook" width="24" height="24" />
+                </Link>
+              </Column>
+              <Column align="center" style={socialsIconContainer}>
+                <Link href="https://www.instagram.com/sweethome_puntacana/">
+                  <Img src="https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/instagram%20sweet%20home%20punta%20cana.png?alt=media&token=27380234-317d-49d1-ac8b-527d171308d1" alt="Instagram" width="24" height="24" />
+                </Link>
+              </Column>
+              <Column align="center" style={socialsIconContainer}>
+                <Link href="https://www.youtube.com/@IAMPUNTACANA">
+                  <Img src="https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/youtube%20sweet%20home%20punta%20cana%20i%20am%20punta%20cana%20scooters%20punta%20cana.jpg?alt=media&token=f1eb40ef-feda-4780-b892-2e554237ae98" alt="YouTube" width="24" height="24" />
+                </Link>
+              </Column>
+            </Row>
+            <Text style={footerText}>
+              Travel made easy with Sweet Home Punta Cana.<br />
+              Bávaro, Punta Cana, Dominican Republic
+            </Text>
           </Section>
 
         </Container>
@@ -416,23 +416,23 @@ const enhanceStaySection = {
 };
 
 const enhanceStayBox = {
-    backgroundColor: '#ffffff',
-    border: '1px solid #e5e5e5',
-    borderRadius: '16px',
-    padding: '20px',
+  backgroundColor: '#ffffff',
+  border: '1px solid #e5e5e5',
+  borderRadius: '16px',
+  padding: '20px',
 }
 
 const enhanceStayTitle = {
-    fontSize: '16px',
-    fontWeight: 'bold',
-    color: '#1C1C1C',
-    margin: '0 0 4px 0'
+  fontSize: '16px',
+  fontWeight: 'bold',
+  color: '#1C1C1C',
+  margin: '0 0 4px 0'
 }
 
 const enhanceStayText = {
-    fontSize: '14px',
-    color: '#434A54',
-    margin: '0 0 12px 0'
+  fontSize: '14px',
+  color: '#434A54',
+  margin: '0 0 12px 0'
 }
 
 const imageColumn = {
@@ -451,4 +451,3 @@ const promoImage = {
   borderRadius: '8px',
 };
 
-    

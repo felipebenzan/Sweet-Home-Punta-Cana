@@ -31,12 +31,12 @@ export default function Header() {
         <div className="relative flex h-full items-center justify-between">
           <Link href="/" className="flex items-center" aria-label="Sweet Home Punta Cana Home">
             <Image
-                src="https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/Sweet%20Home%20Punta%20Cana%20logo.png?alt=media&token=2daf1c25-1bb0-4f7e-9fd2-598f30501843"
-                alt="Sweet Home Punta Cana Logo"
-                width={1080}
-                height={288}
-                className="object-contain h-16 w-auto"
-                priority
+              src="/sweet-home-logo.png"
+              alt="Sweet Home Punta Cana Logo"
+              width={1080}
+              height={288}
+              className="object-contain h-16 w-auto"
+              priority
             />
           </Link>
           <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
@@ -82,4 +82,3 @@ export default function Header() {
   );
 }
 
-    
