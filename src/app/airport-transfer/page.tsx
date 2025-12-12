@@ -254,13 +254,21 @@ function AirportTransferPageComponent() {
 
   return (
     <div className="min-h-screen bg-[#FAFAFA]">
-      {/* Header */}
-      <section className="bg-white border-b border-neutral-200">
-        <div className="max-w-7xl mx-auto px-6 py-16">
-          <h1 className="font-playfair text-5xl md:text-6xl font-bold text-shpc-ink text-center mb-4">
+      {/* Hero Section */}
+      <section className="relative h-[50vh] w-full flex items-center justify-center text-center text-white bg-black">
+        <Image
+          src="/transfer-seamless-arrival.png"
+          alt="Airport transfer seamless arrival"
+          fill
+          priority
+          className="object-cover opacity-60"
+          data-ai-hint="airport transfer seamless arrival"
+        />
+        <div className="relative z-10 p-6">
+          <h1 className="text-4xl md:text-6xl font-playfair font-bold drop-shadow-lg">
             Airport Transfer
           </h1>
-          <p className="font-inter text-lg text-neutral-600 text-center max-w-2xl mx-auto">
+          <p className="mt-4 text-lg md:text-2xl font-light drop-shadow-md max-w-2xl mx-auto">
             Professional transfer service between Punta Cana Airport and Sweet Home
           </p>
         </div>
