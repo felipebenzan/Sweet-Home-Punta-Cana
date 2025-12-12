@@ -77,18 +77,23 @@ export default function Footer() {
           </div>
           <div>
             <h4 className="font-semibold text-shpc-ink">Follow Us</h4>
-            <div className="mt-4 flex justify-center items-center gap-[20px]">
-              {socialLinks.map((social) => (
-                <a key={social.label} href={social.href} target="_blank" rel="noopener noreferrer" className="text-neutral-500 hover:text-shpc-ink relative w-[40px] h-[40px]" aria-label={social.label}>
-                  <Image
-                    src={social.icon}
-                    alt={social.label}
-                    fill
-                    className={`object-contain ${social.className || ''}`}
-                    sizes="40px"
-                  />
-                </a>
-              ))}
+            <div className="mt-4 flex justify-start items-center gap-[20px]">
+              {socialLinks.map((social) => {
+                const isLarge = social.label === 'Facebook' || social.label === 'YouTube';
+                const sizeClass = isLarge ? 'w-[48px] h-[48px]' : 'w-[40px] h-[40px]';
+
+                return (
+                  <a key={social.label} href={social.href} target="_blank" rel="noopener noreferrer" className={`text-neutral-500 hover:text-shpc-ink relative ${sizeClass}`} aria-label={social.label}>
+                    <Image
+                      src={social.icon}
+                      alt={social.label}
+                      fill
+                      className={`object-contain ${social.className || ''}`}
+                      sizes={isLarge ? "48px" : "40px"}
+                    />
+                  </a>
+                );
+              })}
             </div>
           </div>
         </div>
