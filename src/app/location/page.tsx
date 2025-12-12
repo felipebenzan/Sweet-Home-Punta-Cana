@@ -145,14 +145,14 @@ export default function FindUsPage() {
           <h2 className="font-playfair text-4xl mb-2">Follow Us ✨</h2>
           <p className="text-muted-foreground mb-6">See the latest from paradise.</p>
           <div className="flex justify-center items-center gap-6">
-            <a href="https://www.facebook.com/sweethomepc" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-shpc-ink">
-              <Image src="https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/facebook%20sweet%20home%20punta%20cana%20guest%20house.png?alt=media&token=9576b0e2-0d2d-4c8f-89a5-d97e0bbd56a7" alt="Facebook" width={24} height={24} className="h-6 w-6 object-contain" />
+            <a href="https://www.facebook.com/sweethomepc" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-shpc-ink relative w-[48px] h-[48px]">
+              <Image src="/facebook-logo-facebook-icon-transparent-free-png.png" alt="Facebook" fill className="object-contain" sizes="48px" />
             </a>
-            <a href="https://www.instagram.com/sweethome_puntacana" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-shpc-ink">
-              <Image src="https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/instagram%20sweet%20home%20punta%20cana.png?alt=media&token=27380234-317d-49d1-ac8b-527d171308d1" alt="Instagram" width={24} height={24} className="h-6 w-6 object-contain" />
+            <a href="https://www.instagram.com/sweethome_puntacana" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-shpc-ink relative w-[40px] h-[40px]">
+              <Image src="/instagram.jpeg" alt="Instagram" fill className="object-contain p-1" sizes="40px" />
             </a>
-            <a href="https://www.youtube.com/@IAMPUNTACANA" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-shpc-ink">
-              <Image src="https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/youtube%20sweet%20home%20punta%20cana%20i%20am%20punta%20cana%20scooters%20punta%20cana.jpg?alt=media&token=f1eb40ef-feda-4780-b892-2e554237ae98" alt="YouTube" width={24} height={24} className="h-6 w-6 object-contain" />
+            <a href="https://www.youtube.com/@IAMPUNTACANA" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-shpc-ink relative w-[58px] h-[58px]">
+              <Image src="/youtube-logo-youtube-icon-transparent-free-png.png" alt="YouTube" fill className="object-contain" sizes="58px" />
             </a>
           </div>
         </section>
