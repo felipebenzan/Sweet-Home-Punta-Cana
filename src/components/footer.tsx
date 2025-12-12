@@ -79,8 +79,16 @@ export default function Footer() {
             <h4 className="font-semibold text-shpc-ink">Follow Us</h4>
             <div className="mt-4 flex justify-start items-center gap-[20px]">
               {socialLinks.map((social) => {
-                const isLarge = social.label === 'Facebook' || social.label === 'YouTube';
-                const sizeClass = isLarge ? 'w-[48px] h-[48px]' : 'w-[40px] h-[40px]';
+                let sizeClass = 'w-[40px] h-[40px]';
+                let sizeNum = 40;
+
+                if (social.label === 'YouTube') {
+                  sizeClass = 'w-[58px] h-[58px]';
+                  sizeNum = 58;
+                } else if (social.label === 'Facebook') {
+                  sizeClass = 'w-[48px] h-[48px]';
+                  sizeNum = 48;
+                }
 
                 return (
                   <a key={social.label} href={social.href} target="_blank" rel="noopener noreferrer" className={`text-neutral-500 hover:text-shpc-ink relative ${sizeClass}`} aria-label={social.label}>
@@ -89,7 +97,7 @@ export default function Footer() {
                       alt={social.label}
                       fill
                       className={`object-contain ${social.className || ''}`}
-                      sizes={isLarge ? "48px" : "40px"}
+                      sizes={`${sizeNum}px`}
                     />
                   </a>
                 );
