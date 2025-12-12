@@ -121,8 +121,8 @@ export default function FindUsPage() {
         {/* Transfer Promo Banner */}
         <section className="relative rounded-2xl shadow-soft overflow-hidden bg-shpc-ink text-white">
           <Image
-            src="https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/Sweet%20Home%20Punta%20Cana%20private%20airport%20transfer.png?alt=media&token=6ca4f80f-9990-4ab8-9ff3-9f3b780de331"
-            alt="Airport transfer van"
+            src="/transfer-seamless-arrival.png"
+            alt="Airport transfer seamless arrival"
             fill
             className="object-cover opacity-40"
             data-ai-hint="airport transfer"
