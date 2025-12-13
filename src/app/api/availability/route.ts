@@ -28,14 +28,18 @@ export async function GET(request: NextRequest) {
             .filter((id): id is string => !!id);
 
         // 3. Call Beds24 API
-        // NOTE: We read env vars here to ensure detailed control and debug visibility
+        // NOTE: We cap numAdults at 2 because the frontend logic assumes standard rooms (cap 2)
+        // and forces multi-room selection for larger groups. Asking Beds24 for 8 guests on a single room
+        // causes it to return 0 price or unavailable.
+        const numAdultsForSearch = Math.min(numAdults, 2);
+
         const apiKey = process.env.BEDS24_API_KEY;
         const propKey = process.env.BEDS24_PROP_KEY || process.env.BEDS24_PROP_ID;
 
         const { data: beds24Data, debug: beds24Debug } = await Beds24.getAvailability({
             arrival,
             departure,
-            numAdults,
+            numAdults: numAdultsForSearch,
             roomIds: beds24Ids,
             auth: { apiKey, propKey }
         });
@@ -62,7 +66,9 @@ export async function GET(request: NextRequest) {
             const isAvailable = room.beds24_room_id && b24
                 ? b24.available
                 : false;
-            const finalPrice = b24 ? b24.price : room.price;
+
+            // Fallback to local room price if API price is 0 or missing
+            const finalPrice = (b24 && b24.price > 0) ? b24.price : room.price;
 
             let parsedAmenities: string[] = [];
             try {
