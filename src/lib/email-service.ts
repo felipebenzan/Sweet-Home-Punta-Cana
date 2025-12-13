@@ -321,44 +321,53 @@ export async function sendBookingConfirmation(data: BookingEmailData) {
                 return `
              <div style="background-color: #F9F7F2; padding: 40px 20px; font-family: 'Helvetica', 'Arial', sans-serif;">
                <div style="max-width: 600px; margin: 0 auto;">
+                 
+                 <!-- Header -->
                  <div style="text-align: center; margin-bottom: 30px;">
-                    <div style="display: inline-block; background: white; padding: 15px; border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 20px;">
-                        <img src="https://img.icons8.com/ios-filled/50/228B22/checkmark--v1.png" alt="Success" width="32" height="32" />
+                    <div style="margin-bottom: 20px;">
+                        <img src="https://img.icons8.com/ios-filled/100/228B22/checkmark--v1.png" alt="Success" width="64" height="64" style="display: block; margin: 0 auto;" />
                     </div>
                     <h1 style="font-family: 'Times New Roman', serif; font-size: 32px; color: #1A1E26; margin: 0 0 10px 0;">Adventure Locked In!</h1>
-                    <p style="color: #666; margin: 0;">Pack your sunscreen, ${guestName}!</p>
-                    <div style="margin-top: 10px; font-family: monospace; color: #999; font-size: 14px;">
-                        Booking ID: ${confirmationId.substring(0, 8).toUpperCase()}
+                    <p style="color: #666; font-size: 16px; margin: 0; line-height: 1.5;">
+                        Pack your sunscreen, ${guestName}! A confirmation has been sent to ${guestEmail}.
+                    </p>
+                    <div style="margin-top: 15px; font-family: monospace; color: #999; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        <span style="font-size: 16px;">🎫</span> Booking ID: ${confirmationId.substring(0, 8).toUpperCase()}
                     </div>
                  </div>
-                 <div style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.05); margin-bottom: 25px;">
-                    <div style="padding: 25px;">
-                       <h3 style="margin: 0 0 15px 0; font-family: 'Times New Roman', serif; text-align: center; font-size: 20px; color: #1A1E26;">Your Booked Excursion</h3>
-                       <div style="text-align: center; font-size: 22px; font-weight: bold; color: #333; margin-bottom: 15px;">${excursionTitle}</div>
-                       <div style="background: #F9F7F2; padding: 15px; border-radius: 8px; font-size: 14px; color: #555;">
-                          <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
-                             <div style="display: flex; align-items: center; gap: 5px;">
-                                <img src="https://img.icons8.com/ios-filled/50/000000/calendar.png" width="16" height="16" style="opacity: 0.6;">
-                                ${excursionDate}
-                             </div>
-                             <div style="display: flex; align-items: center; gap: 5px;">
-                                <img src="https://img.icons8.com/ios-filled/50/000000/user-group-man-man.png" width="16" height="16" style="opacity: 0.6;">
-                                ${pax}
-                             </div>
-                          </div>
-                       </div>
-                    </div>
-                    <div style="border-top: 1px dashed #eee; padding: 25px;">
-                        <h3 style="margin: 0 0 15px 0; font-size: 16px; color: #1A1E26;">Payment Summary</h3>
-                        <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 18px; color: #333;">
-                            <span>Total Paid (USD)</span>
-                            <span style="font-family: monospace;">$${totalPrice.toFixed(2)}</span>
+
+                 <!-- Excursion Card -->
+                 <div style="background: white; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); margin-bottom: 24px; padding: 24px; text-align: center;">
+                    <h3 style="margin: 0 0 16px 0; font-family: 'Times New Roman', serif; font-size: 20px; font-weight: 600; color: #1A1E26;">Your Booked Excursion</h3>
+                    <p style="font-size: 20px; font-weight: bold; color: #1A1E26; margin: 0 0 16px 0;">${excursionTitle}</p>
+                    
+                    <div style="font-size: 14px; color: #666; display: flex; justify-content: center; gap: 20px;">
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <img src="https://img.icons8.com/ios-filled/50/000000/calendar.png" width="16" height="16" style="opacity: 0.6;" />
+                            <span>${excursionDate}</span>
                         </div>
-                        <div style="margin-top: 10px; font-size: 12px; color: #228B22;">
-                            ✔ All taxes & fees included.
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <img src="https://img.icons8.com/ios-filled/50/000000/user-group-man-man.png" width="16" height="16" style="opacity: 0.6;" />
+                            <span>${pax}</span>
                         </div>
                     </div>
                  </div>
+
+                 <!-- Payment Card -->
+                 <div style="background: white; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); padding: 24px;">
+                    <h3 style="margin: 0 0 16px 0; font-family: 'Times New Roman', serif; font-size: 18px; font-weight: 600; color: #1A1E26;">Payment Summary</h3>
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center; font-weight: bold; font-size: 16px; color: #1A1E26;">
+                        <span>Total Paid (USD)</span>
+                        <span style="font-family: monospace;">$${totalPrice.toFixed(2)}</span>
+                    </div>
+                    
+                    <div style="margin-top: 12px; font-size: 12px; color: #228B22; font-weight: 500; display: flex; align-items: center; gap: 6px;">
+                        <span style="font-size: 14px;">✓</span> All taxes & fees included.
+                    </div>
+                 </div>
+
+                 <!-- Footer -->
                  <div style="text-align: center; color: #999; font-size: 12px; margin-top: 30px;">
                     <p>Need help? WhatsApp: <a href="https://wa.me/18095105465" style="color: #D4AF37; text-decoration: none;">+1 (809) 510-5465</a></p>
                     <p>Sweet Home Punta Cana</p>
