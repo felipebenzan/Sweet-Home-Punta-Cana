@@ -192,6 +192,14 @@ export const Beds24 = {
         // API Error said "must be at least 16 characters" for keys.
         const isPropKeyValid = propKey && propKey.length >= 16;
 
+        // Calculate firstNight/lastNight (Alternative to arrival/departure)
+        // Arrival: YYYY-MM-DD
+        // Departure: YYYY-MM-DD
+        const firstNight = bookingData.arrival;
+        const lastNightDate = new Date(bookingData.departure);
+        lastNightDate.setDate(lastNightDate.getDate() - 1);
+        const lastNight = lastNightDate.toISOString().split('T')[0];
+
         // Construct Payload strictly
         const payload: any = {
             authentication: {
@@ -201,18 +209,22 @@ export const Beds24 = {
             bookId: bookingData.bookId, // Optional, for updates
             arrival: bookingData.arrival,
             departure: bookingData.departure,
+            firstNight: firstNight,
+            lastNight: lastNight,
             status: bookingData.status || "new",
             numAdult: bookingData.numAdult,
             numChild: bookingData.numChild,
             guestFirstName: bookingData.guestFirstName,
             guestName: bookingData.guestName, // Last name usually
+
+            // Explicitly map standard fields
             guestEmail: bookingData.guestEmail,
             guestPhone: bookingData.guestPhone,
             guestAddress: bookingData.guestAddress,
             guestCity: bookingData.guestCity,
             guestCountry: bookingData.guestCountry,
             guestZip: bookingData.guestZip,
-            subtotal: bookingData.price, // Optional, pricing
+            subtotal: bookingData.price,
             comments: bookingData.comments
         };
 
