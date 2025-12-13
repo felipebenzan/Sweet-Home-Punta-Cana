@@ -31,9 +31,11 @@ export default function ClientLayout({
   // Checkout pages might want a simplified header or no header
   if (isBookingFlowPage && !isSearchPage) {
     return (
-      <main className="flex-grow flex flex-col min-h-screen bg-shpc-sand">
-        {children}
-      </main>
+      <PayPalProvider>
+        <main className="flex-grow flex flex-col min-h-screen bg-shpc-sand">
+          {children}
+        </main>
+      </PayPalProvider>
     );
   }
 
