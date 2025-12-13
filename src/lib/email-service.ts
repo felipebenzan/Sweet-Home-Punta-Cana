@@ -380,8 +380,7 @@ export async function sendBookingConfirmation(data: BookingEmailData) {
                     <div style="background: white; border-radius: 50%; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px auto;">
                         <span style="font-size: 24px;">✅</span>
                     </div>
-                    <h1 style="font-family: 'Times New Roman', serif; font-size: 28px; margin: 0 0 10px 0;">Your Vogue Beach Getaway Confirmation</h1>
-                    <p style="color: rgba(255,255,255,0.8); font-size: 16px; margin: 0;">We are thrilled to confirm your reservation!</p>
+                    <h1 style="font-family: 'Times New Roman', serif; font-size: 28px; margin: 0 0 10px 0;">Your Experience is locked in</h1>
                  </div>
 
                  <!-- Card 1: Reservation Details -->
