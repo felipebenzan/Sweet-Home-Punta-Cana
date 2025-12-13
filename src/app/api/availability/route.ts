@@ -57,11 +57,11 @@ export async function GET(request: NextRequest) {
             const b24 = room.beds24_room_id ? beds24Data[room.beds24_room_id] : null;
 
             // If we have Beds24 data, use it. 
-            // If we have a beds24_room_id but NO data, assume UNAVAILABLE (safer).
-            // If no beds24_room_id, assume available (legacy/dev).
-            const isAvailable = room.beds24_room_id
-                ? (b24 ? b24.available : false)
-                : true;
+            // STRICT MODE: If we have a beds24_room_id but NO data, assume UNAVAILABLE.
+            // If no beds24_room_id, ALSO assume UNAVAILABLE (Safe Mode for Prod).
+            const isAvailable = room.beds24_room_id && b24
+                ? b24.available
+                : false;
             const finalPrice = b24 ? b24.price : room.price;
 
             let parsedAmenities: string[] = [];
