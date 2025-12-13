@@ -25,6 +25,8 @@ export default function LaundryServicePage() {
         window.scrollTo(0, 0);
     }, []);
 
+
+
     const [currentStep, setCurrentStep] = useState(1);
     const [bags, setBags] = useState(1);
     const [pickupTime, setPickupTime] = useState('08:00');
@@ -41,6 +43,14 @@ export default function LaundryServicePage() {
     const [termsAccepted, setTermsAccepted] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
     const [showPaypal, setShowPaypal] = useState(false);
+
+    const paymentContainerRef = React.useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (showPaypal && paymentContainerRef.current) {
+            paymentContainerRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }, [showPaypal]);
 
     const total = useMemo(() => bags * PRICE_PER_BAG, [bags]);
 
@@ -448,7 +458,7 @@ export default function LaundryServicePage() {
                                         </div>
                                     </>
                                 ) : (
-                                    <div className="space-y-6">
+                                    <div className="space-y-6" ref={paymentContainerRef}>
                                         <h3 className="font-playfair text-2xl font-semibold text-center text-shpc-ink">
                                             Complete Your Secure Payment
                                         </h3>
@@ -460,12 +470,12 @@ export default function LaundryServicePage() {
                                             onPaymentCancel={onPaymentCancel}
                                         />
                                         <Button
-                                            variant="ghost"
-                                            className="w-full"
+                                            variant="outline"
+                                            className="w-full border-neutral-300 py-6"
                                             onClick={onPaymentCancel}
                                             disabled={isProcessing}
                                         >
-                                            Cancel
+                                            Back
                                         </Button>
                                     </div>
                                 )}

@@ -36,6 +36,14 @@ function AirportTransferPageComponent() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [showPaypal, setShowPaypal] = useState(false);
 
+  const paymentContainerRef = React.useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (showPaypal && paymentContainerRef.current) {
+      paymentContainerRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [showPaypal]);
+
   const [direction, setDirection] = useState<'arrive' | 'depart' | 'round'>('arrive');
   const [passengers, setPassengers] = useState(2);
   const getTomorrow = () => addDays(new Date(), 1);
@@ -681,7 +689,7 @@ function AirportTransferPageComponent() {
                     </div>
                   </>
                 ) : (
-                  <div className="space-y-6">
+                  <div className="space-y-6" ref={paymentContainerRef}>
                     <h3 className="font-playfair text-2xl font-semibold text-center text-shpc-ink">
                       Complete Your Secure Payment
                     </h3>
@@ -693,12 +701,12 @@ function AirportTransferPageComponent() {
                       onPaymentCancel={onPaymentCancel}
                     />
                     <Button
-                      variant="ghost"
-                      className="w-full"
+                      variant="outline"
+                      className="w-full border-neutral-300 py-6"
                       onClick={onPaymentCancel}
                       disabled={isProcessing}
                     >
-                      Cancel
+                      Back
                     </Button>
                   </div>
                 )}
