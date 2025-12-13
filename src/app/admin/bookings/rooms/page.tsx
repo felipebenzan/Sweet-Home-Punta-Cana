@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowLeft, Home, Calendar as CalendarIcon } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { DeleteBookingButton } from '../delete-booking-button';
 
 async function getBookings() {
     try {
@@ -118,9 +119,15 @@ export default async function RoomBookingsPage() {
                                     </div>
                                     <div className="text-right">
                                         <p className="text-2xl font-bold">${booking.totalPrice?.toFixed(2)}</p>
-                                        <p className="text-xs text-muted-foreground">
-                                            ID: {booking.confirmationId}
-                                        </p>
+                                        <div className="flex items-center justify-end gap-2 mt-1">
+                                            <p className="text-xs text-muted-foreground">
+                                                ID: {booking.confirmationId}
+                                            </p>
+                                            <DeleteBookingButton
+                                                bookingId={booking.confirmationId}
+                                                bookingType="room"
+                                            />
+                                        </div>
                                     </div>
                                 </div>
                             </CardHeader>

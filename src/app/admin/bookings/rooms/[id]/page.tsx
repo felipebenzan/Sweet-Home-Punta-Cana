@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, Bed, Calendar, User, Mail, Phone, CreditCard, Users } from 'lucide-react';
 import Link from 'next/link';
+import { DeleteBookingButton } from '../../delete-booking-button';
 
 export const dynamic = 'force-dynamic';
 
@@ -58,9 +59,12 @@ export default async function RoomBookingDetailPage({ params }: { params: { id: 
                         <Bed className="h-6 w-6 text-blue-500" />
                         <h1 className="text-3xl font-bold">Room Reservation</h1>
                     </div>
-                    <Badge variant={booking.status === 'Confirmed' ? 'default' : 'secondary'} className="text-lg px-4 py-1">
-                        {booking.status}
-                    </Badge>
+                    <div className="flex items-center gap-4">
+                        <DeleteBookingButton bookingId={booking.id} bookingType="room" />
+                        <Badge variant={booking.status === 'Confirmed' ? 'default' : 'secondary'} className="text-lg px-4 py-1">
+                            {booking.status}
+                        </Badge>
+                    </div>
                 </div>
             </div>
 
