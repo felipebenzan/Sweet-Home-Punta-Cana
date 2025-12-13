@@ -3,51 +3,51 @@ import { Resend } from 'resend';
 const resend = new Resend(process.env.RESEND_API_KEY || 're_123_build_placeholder');
 
 interface BookingEmailData {
-   guestName: string;
-   guestEmail: string;
-   bookingType: 'room' | 'laundry' | 'transfer' | 'excursion';
-   bookingDetails: any;
-   confirmationId: string;
-   totalPrice: number;
+    guestName: string;
+    guestEmail: string;
+    bookingType: 'room' | 'laundry' | 'transfer' | 'excursion';
+    bookingDetails: any;
+    confirmationId: string;
+    totalPrice: number;
 }
 
 export async function sendBookingConfirmation(data: BookingEmailData) {
-   const { guestName, guestEmail, bookingType, bookingDetails, confirmationId, totalPrice } = data;
+    const { guestName, guestEmail, bookingType, bookingDetails, confirmationId, totalPrice } = data;
 
-   // Use different sender addresses for different booking types
-   const fromAddresses = {
-      room: 'Sweet Home Punta Cana <bookings@sweethomepc.com>',
-      transfer: 'Sweet Home Airport Transfer <airporttransfer@sweethomepc.com>',
-      laundry: 'Sweet Home Laundry Service <laundry@sweethomepc.com>',
-      excursion: 'Sweet Home Excursions <excursions@sweethomepc.com>',
-   };
+    // Use different sender addresses for different booking types
+    const fromAddresses = {
+        room: 'Sweet Home Punta Cana <bookings@sweethomepc.com>',
+        transfer: 'Sweet Home Airport Transfer <airporttransfer@sweethomepc.com>',
+        laundry: 'Sweet Home Laundry Service <laundry@sweethomepc.com>',
+        excursion: 'Sweet Home Excursions <excursions@sweethomepc.com>',
+    };
 
-   const fromAddress = fromAddresses[bookingType] || fromAddresses.room;
+    const fromAddress = fromAddresses[bookingType] || fromAddresses.room;
 
-   // Normalize bookingType to ensure case-insensitive matching
-   const normalizedBookingType = bookingType.toLowerCase().trim();
+    // Normalize bookingType to ensure case-insensitive matching
+    const normalizedBookingType = bookingType.toLowerCase().trim();
 
-   const subject = `Booking Confirmation - Sweet Home Punta Cana`;
+    const subject = `Booking Confirmation - Sweet Home Punta Cana`;
 
-   // Normalize details: Standalone has nested 'details', Room+Transfer has flattened properties
-   const details = bookingDetails.details || bookingDetails;
+    // Normalize details: Standalone has nested 'details', Room+Transfer has flattened properties
+    const details = bookingDetails.details || bookingDetails;
 
-   // Helper to format date
-   const formatDate = (dateStr: string) => {
-      if (!dateStr) return 'N/A';
-      try {
-         return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-      } catch (e) { return dateStr; }
-   };
-   // Helper to format date with weekday
-   const formatFullDate = (dateStr: string) => {
-      if (!dateStr) return 'N/A';
-      try {
-         return new Date(dateStr).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
-      } catch (e) { return dateStr; }
-   };
+    // Helper to format date
+    const formatDate = (dateStr: string) => {
+        if (!dateStr) return 'N/A';
+        try {
+            return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        } catch (e) { return dateStr; }
+    };
+    // Helper to format date with weekday
+    const formatFullDate = (dateStr: string) => {
+        if (!dateStr) return 'N/A';
+        try {
+            return new Date(dateStr).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+        } catch (e) { return dateStr; }
+    };
 
-   const html = `
+    const html = `
     <!DOCTYPE html>
     <html>
       <head>
@@ -62,13 +62,11 @@ export async function sendBookingConfirmation(data: BookingEmailData) {
           
           /* Mobile Responsive */
           @media only screen and (max-width: 480px) {
-            .boarding-grid, .grid-row, .grid-col { display: block !important; width: 100% !important; box-sizing: border-box !important; }
-            .grid-col { border-right: none !important; border-bottom: 1px dashed #ccc !important; padding: 20px !important; }
-            .grid-col:last-child { border-bottom: none !important; }
-            .value { font-size: 20px !important; }
-            .value-large { font-size: 24px !important; }
-
-            /* New responsive styles for the table layout */
+            .mob-stack { display: block !important; width: 100% !important; padding-left: 0 !important; padding-right: 0 !important; }
+            .mob-center { text-align: center !important; }
+            .mob-mb { margin-bottom: 20px !important; }
+            
+            /* Transfer specific overrides */
             .stack-column {
                 display: block !important;
                 width: 100% !important;
@@ -85,20 +83,16 @@ export async function sendBookingConfirmation(data: BookingEmailData) {
                 display: block !important;
                 width: 100% !important;
                 padding: 10px 0 !important;
+                border-bottom: 1px dashed #eee;
             }
-            .ticket-val {
-                font-size: 16px !important;
-            }
-            .ticket-header-title {
-                font-size: 24px !important;
-            }
+            .ticket-column:last-child { border-bottom: none; }
           }
         </style>
       </head>
       <body>
         ${(() => {
-         if (normalizedBookingType === 'transfer') {
-            return `
+            if (normalizedBookingType === 'transfer') {
+                return `
             <div style="background-color: #f4f4f4; padding: 20px; font-family: 'Helvetica', 'Arial', sans-serif;">
               <!-- Confirmation Message -->
               <div style="max-width: 600px; margin: 0 auto; text-align: center; margin-bottom: 30px;">
@@ -211,15 +205,15 @@ export async function sendBookingConfirmation(data: BookingEmailData) {
                   <p>Need help? WhatsApp: <a href="https://wa.me/18095105465" style="color: #D4AF37; text-decoration: none;">+1 (809) 510-5465</a></p>
               </div>
             </div>`;
-         }
+            }
 
-         if (normalizedBookingType === 'room') {
-            const checkIn = bookingDetails.checkInDate ? formatDate(bookingDetails.checkInDate) : 'N/A';
-            const checkOut = bookingDetails.checkOutDate ? formatDate(bookingDetails.checkOutDate) : 'N/A';
-            const roomName = bookingDetails.roomName || 'Luxury Room';
-            const guests = bookingDetails.numberOfGuests || 1;
+            if (normalizedBookingType === 'room') {
+                const checkIn = bookingDetails.checkInDate ? formatDate(bookingDetails.checkInDate) : 'N/A';
+                const checkOut = bookingDetails.checkOutDate ? formatDate(bookingDetails.checkOutDate) : 'N/A';
+                const roomName = bookingDetails.roomName || 'Luxury Room';
+                const guests = bookingDetails.numberOfGuests || 1;
 
-            return `
+                return `
              <div style="background-color: #F9F7F2; padding: 0; font-family: 'Helvetica', 'Arial', sans-serif;">
                 <div style="position: relative; height: 250px; background-image: url('https://images.unsplash.com/photo-1540541338287-41700207dee6?q=80&w=2070&auto=format&fit=crop'); background-size: cover; background-position: center;">
                    <div style="position: absolute; inset: 0; background: rgba(0,0,0,0.4);"></div>
@@ -317,14 +311,14 @@ export async function sendBookingConfirmation(data: BookingEmailData) {
                    </div>
                 </div>
              </div>`;
-         }
+            }
 
-         if (normalizedBookingType === 'excursion') {
-            const excursionTitle = details.mainExcursion?.title || 'Excursion Adventure';
-            const excursionDate = details.mainExcursion?.bookingDate ? formatFullDate(details.mainExcursion.bookingDate) : (bookingDetails.date ? formatFullDate(bookingDetails.date) : 'Date to be confirmed');
-            const pax = details.pax || bookingDetails.pax || '1 Adult';
+            if (normalizedBookingType === 'excursion') {
+                const excursionTitle = details.mainExcursion?.title || 'Excursion Adventure';
+                const excursionDate = details.mainExcursion?.bookingDate ? formatFullDate(details.mainExcursion.bookingDate) : (bookingDetails.date ? formatFullDate(bookingDetails.date) : 'Date to be confirmed');
+                const pax = details.pax || bookingDetails.pax || '1 Adult';
 
-            return `
+                return `
              <div style="background-color: #F9F7F2; padding: 40px 20px; font-family: 'Helvetica', 'Arial', sans-serif;">
                <div style="max-width: 600px; margin: 0 auto;">
                  <div style="text-align: center; margin-bottom: 30px;">
@@ -371,78 +365,195 @@ export async function sendBookingConfirmation(data: BookingEmailData) {
                  </div>
                </div>
              </div>`;
-         }
+            }
 
-         if (normalizedBookingType === 'laundry') {
-            // Laundry Service - Clean Service Ticket Design
-            const pickupTime = details.pickupTime || '08:00 AM';
-            const bags = details.bags || 1;
-            const roomNumber = details.roomNumber || 'N/A';
-            const dateStr = bookingDetails.date ? formatFullDate(bookingDetails.date) : 'N/A';
+            if (normalizedBookingType === 'laundry') {
+                // Laundry Service - Exact Confirmation Page Replica
+                const pickupTime = details.pickupTime || '08:00 AM';
+                const bags = details.bags || 1;
+                const roomNumber = details.roomNumber || 'N/A';
+                const phone = bookingDetails.phone || details.phone || 'N/A';
+                const dateStr = bookingDetails.date ? formatFullDate(bookingDetails.date) : 'N/A';
+                const receiptDate = bookingDetails.date ? new Date(bookingDetails.date).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }) : 'N/A';
 
-            return `
+                // Special Instructions (conditional)
+                const specialInstructions = details.specialInstructions ? `
+                <div style="padding-top: 15px; border-top: 1px dashed #ccc; margin-top: 15px;">
+                    <div style="font-size: 11px; text-transform: uppercase; color: #999; margin-bottom: 5px; font-family: 'Helvetica', sans-serif;">Special Instructions</div>
+                    <div style="font-size: 14px; color: #333; font-style: italic;">${details.specialInstructions}</div>
+                </div>
+             ` : '';
+
+                return `
              <div style="background-color: #f4f4f4; padding: 40px 20px; font-family: 'Helvetica', 'Arial', sans-serif;">
-               <div style="max-width: 600px; margin: 0 auto; background: #FFFFFF; border-radius: 12px; overflow: hidden; box-shadow: 0 5px 20px rgba(0,0,0,0.08);">
+               <div style="max-width: 600px; margin: 0 auto;">
                   
-                  <!-- Header -->
-                  <div style="background-color: #FFFFFF; padding: 40px 20px 20px; text-align: center; border-bottom: 1px solid #eee;">
-                     <div style="font-size: 24px; margin-bottom: 10px;">🏝️</div>
-                     <h2 style="font-family: 'Times New Roman', serif; font-size: 20px; color: #999; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 5px 0;">Sweet Home Punta Cana</h2>
-                     <h1 style="color: #2C3E50; font-size: 28px; margin: 0; font-family: 'Helvetica', sans-serif; font-weight: bold;">Laundry Request Confirmed</h1>
-                     <div style="margin-top: 15px;">
-                        <span style="background: #f0f0f0; color: #666; font-size: 12px; padding: 5px 10px; border-radius: 20px; font-family: monospace;">ID: ${confirmationId.substring(0, 12)}</span>
+                  <!-- Main Header -->
+                  <div style="text-align: center; margin-bottom: 30px;">
+                     <div style="margin-bottom: 15px;">
+                        <img src="https://img.icons8.com/ios-filled/100/228B22/checkmark--v1.png" alt="Check" width="60" height="60" style="display: block; margin: 0 auto;"/>
                      </div>
+                     <h1 style="color: #1A1E26; font-size: 36px; margin: 0 0 10px 0; font-family: 'Times New Roman', serif; font-weight: bold;">Laundry Pickup Scheduled!</h1>
+                     <p style="color: #666; font-size: 16px; margin: 0 auto 15px auto; max-width: 400px; line-height: 1.5;">We'll take care of the rest. A confirmation has been sent to your email.</p>
+                     <div style="background: #e0e0e0; color: #555; font-size: 12px; padding: 4px 10px; border-radius: 4px; display: inline-block; font-family: monospace;">Order ID: <strong>${confirmationId}</strong></div>
                   </div>
 
-                  <!-- Summary Grid -->
-                  <div style="padding: 30px;">
-                     <table width="100%" cellpadding="0" cellspacing="0">
-                        <tr>
-                            <!-- Customer Details -->
-                            <td width="50%" valign="top" class="ticket-column" style="padding-bottom: 20px;">
-                                <div style="font-size: 12px; text-transform: uppercase; color: #999; margin-bottom: 5px; font-weight: bold;">Customer</div>
-                                <div class="ticket-val" style="font-size: 18px; color: #333; font-weight: bold;">${guestName}</div>
-                                <div style="font-size: 14px; color: #666; margin-top: 2px;">${guestEmail}</div>
-                                <div style="font-size: 14px; color: #666; margin-top: 2px;">Room: ${roomNumber}</div>
-                            </td>
-                            <!-- Service Type -->
-                            <td width="50%" valign="top" class="ticket-column" style="padding-bottom: 20px;">
-                                <div style="font-size: 12px; text-transform: uppercase; color: #999; margin-bottom: 5px; font-weight: bold;">Service Type</div>
-                                <div class="ticket-val" style="font-size: 18px; color: #333; font-weight: bold;">Laundry Service</div>
-                                <div style="font-size: 14px; color: #666; margin-top: 2px;">${bags} Bag(s) • Wash & Fold</div>
-                            </td>
-                        </tr>
-                        <tr>
-                             <!-- Price -->
-                             <td width="100%" colspan="2" style="border-top: 1px dashed #ddd; padding-top: 20px; text-align: right;">
-                                <div style="font-size: 12px; text-transform: uppercase; color: #999; margin-bottom: 5px; font-weight: bold;">Total Price</div>
-                                <div style="font-size: 32px; color: #2C3E50; font-weight: bold;">$${totalPrice.toFixed(2)} USD</div>
-                             </td>
-                        </tr>
-                     </table>
+                  <!-- Receipt Container -->
+                  <div style="background: #FAF8F5; border: 2px dashed #ccc; border-radius: 8px; overflow: hidden; margin-bottom: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+                      
+                      <!-- Receipt Header -->
+                      <div style="background-color: #1A1E26; color: white; padding: 20px;">
+                          <table width="100%" cellpadding="0" cellspacing="0">
+                              <tr>
+                                  <td>
+                                      <div style="font-family: 'Times New Roman', serif; font-size: 20px; font-weight: bold;">Sweet Home Punta Cana</div>
+                                      <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.7; margin-top: 4px;">Service Receipt</div>
+                                  </td>
+                                  <td style="text-align: right; vertical-align: top;">
+                                      <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.7;">Date</div>
+                                      <div style="font-family: monospace; font-size: 14px; font-weight: bold; margin-top: 4px;">${receiptDate}</div>
+                                  </td>
+                              </tr>
+                          </table>
+                      </div>
+
+                      <!-- Receipt Body -->
+                      <div style="padding: 30px;">
+                          
+                          <!-- Guest Info Grid (2 Rows) -->
+                          <div style="border-bottom: 1px dashed #ccc; padding-bottom: 20px; margin-bottom: 20px;">
+                            <table width="100%" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td width="50%" valign="top" class="mob-stack" style="padding-bottom: 20px;">
+                                        <div style="font-size: 10px; text-transform: uppercase; color: #999; margin-bottom: 2px;">Guest Name</div>
+                                        <div style="font-size: 16px; color: #1A1E26; font-weight: bold;">${guestName}</div>
+                                    </td>
+                                    <td width="50%" valign="top" class="mob-stack" style="padding-bottom: 20px;">
+                                        <div style="font-size: 10px; text-transform: uppercase; color: #999; margin-bottom: 2px;">Email</div>
+                                        <div style="font-size: 14px; color: #333; font-weight: bold;">${guestEmail}</div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="50%" valign="top" class="mob-stack">
+                                        <div style="font-size: 10px; text-transform: uppercase; color: #999; margin-bottom: 2px;">Phone</div>
+                                        <div style="font-size: 16px; color: #1A1E26; font-weight: bold;">${phone}</div>
+                                    </td>
+                                    <td width="50%" valign="top" class="mob-stack">
+                                        <div style="font-size: 10px; text-transform: uppercase; color: #999; margin-bottom: 2px;">Room Number</div>
+                                        <div style="font-size: 16px; color: #1A1E26; font-weight: bold;">${roomNumber}</div>
+                                    </td>
+                                </tr>
+                            </table>
+                          </div>
+
+                          <!-- Service Details -->
+                          <div style="border-bottom: 1px dashed #ccc; padding-bottom: 20px; margin-bottom: 20px;">
+                               <table width="100%">
+                                   <tr>
+                                       <td style="font-size: 12px; text-transform: uppercase; color: #666;">Service</td>
+                                       <td style="text-align: right; font-family: 'Times New Roman', serif; font-size: 18px; font-weight: bold; color: #1A1E26;">Wash & Fold</td>
+                                   </tr>
+                                   <tr>
+                                       <td style="font-size: 12px; text-transform: uppercase; color: #666; padding-top: 10px;">Bags</td>
+                                       <td style="text-align: right; font-size: 16px; font-weight: bold; color: #1A1E26; padding-top: 10px;">${bags}</td>
+                                   </tr>
+                               </table>
+                          </div>
+
+                          <!-- Schedule -->
+                          <div style="padding-bottom: 10px;">
+                                <table width="100%">
+                                    <tr>
+                                        <td style="font-size: 12px; text-transform: uppercase; color: #666; padding-bottom: 10px;">Service Date</td>
+                                        <td style="text-align: right; font-weight: bold; color: #1A1E26; padding-bottom: 10px;">${dateStr}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-size: 12px; text-transform: uppercase; color: #666; padding-bottom: 10px;">Pickup Time</td>
+                                        <td style="text-align: right; font-weight: bold; color: #1A1E26; padding-bottom: 10px;">${pickupTime}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-size: 12px; text-transform: uppercase; color: #666; padding-bottom: 10px;">Delivery Time</td>
+                                        <td style="text-align: right; font-weight: bold; color: #1A1E26; padding-bottom: 10px;">Before 5:00 PM (Same Day)</td>
+                                    </tr>
+                                </table>
+                          </div>
+
+                          ${specialInstructions}
+
+                          <!-- Total -->
+                          <div style="border-top: 2px solid #ccc; margin-top: 20px; padding-top: 20px;">
+                               <table width="100%">
+                                   <tr>
+                                       <td style="font-size: 14px; text-transform: uppercase; color: #666;">Total Paid</td>
+                                       <td style="text-align: right; font-family: 'Times New Roman', serif; font-size: 28px; font-weight: bold; color: #1A1E26;">$${totalPrice.toFixed(2)} USD</td>
+                                   </tr>
+                               </table>
+                          </div>
+
+                      </div>
+                      
+                      <!-- Receipt Footer -->
+                      <div style="background-color: #F4F1EB; padding: 15px; text-align: center; border-top: 1px dashed #ccc;">
+                          <p style="margin: 0; font-size: 11px; color: #666;">Thank you for choosing Sweet Home Punta Cana Laundry Service</p>
+                      </div>
                   </div>
 
-                  <!-- Call to Action -->
-                  <div style="background-color: #eef2f5; padding: 25px; text-align: center;">
-                      <h3 style="margin: 0 0 10px 0; color: #2C3E50; font-size: 18px;">What's Next?</h3>
-                      <p style="margin: 0; color: #666; font-size: 15px;">We will contact you shortly to coordinate the pickup.</p>
+                  <!-- What Happens Next -->
+                  <div style="background: white; border: 1px solid #ddd; border-radius: 8px; padding: 30px; margin-bottom: 20px;">
+                      <h3 style="margin: 0 0 20px 0; font-family: 'Times New Roman', serif; font-size: 20px; color: #1A1E26;">What Happens Next?</h3>
+                      
+                      <table width="100%" cellpadding="0" cellspacing="0">
+                          <tr>
+                              <td width="40" valign="top" style="padding-bottom: 20px;">
+                                  <div style="width: 24px; height: 24px; background: #FFD700; border-radius: 50%; text-align: center; line-height: 24px; font-size: 12px; font-weight: bold; color: #1A1E26;">1</div>
+                              </td>
+                              <td valign="top" style="padding-bottom: 20px; color: #555; font-size: 14px; line-height: 1.5;">Please leave your laundry bag outside your door or at the reception.</td>
+                          </tr>
+                          <tr>
+                              <td width="40" valign="top" style="padding-bottom: 20px;">
+                                  <div style="width: 24px; height: 24px; background: #FFD700; border-radius: 50%; text-align: center; line-height: 24px; font-size: 12px; font-weight: bold; color: #1A1E26;">2</div>
+                              </td>
+                              <td valign="top" style="padding-bottom: 20px; color: #555; font-size: 14px; line-height: 1.5;">Our team will collect it shortly.</td>
+                          </tr>
+                          <tr>
+                              <td width="40" valign="top">
+                                  <div style="width: 24px; height: 24px; background: #FFD700; border-radius: 50%; text-align: center; line-height: 24px; font-size: 12px; font-weight: bold; color: #1A1E26;">3</div>
+                              </td>
+                              <td valign="top" style="color: #555; font-size: 14px; line-height: 1.5;">Your fresh, clean, and folded clothes will be returned before 5:00 PM the same day.</td>
+                          </tr>
+                      </table>
                   </div>
 
-                  <!-- Footer -->
-                  <div style="background-color: #2C3E50; padding: 20px; text-align: center; color: rgba(255,255,255,0.7);">
-                     <p style="margin: 0; font-size: 12px;">Sweet Home Punta Cana | Laundry Service Team</p>
-                     <p style="margin: 5px 0 0 0; font-size: 12px;">Questions? +1 (809) 510-5465</p>
+                  <!-- Need Help -->
+                  <div style="background: white; border: 1px solid #ddd; border-radius: 8px; padding: 30px;">
+                        <h3 style="margin: 0 0 20px 0; font-family: 'Times New Roman', serif; font-size: 20px; color: #1A1E26;">Need Help?</h3>
+                        
+                        <table width="100%" cellspacing="0" cellpadding="0">
+                            <tr>
+                                <td width="50%" align="center" style="padding-right: 5px;">
+                                    <a href="https://wa.me/18095105465" style="display: block; text-decoration: none; border: 1px solid #ddd; padding: 12px; border-radius: 6px; color: #333; font-size: 14px; font-weight: bold;">
+                                        <span style="font-size: 16px;">💬</span> WhatsApp
+                                    </a>
+                                </td>
+                                <td width="50%" align="center" style="padding-left: 5px;">
+                                     <a href="mailto:info@sweethomepuntacana.com" style="display: block; text-decoration: none; border: 1px solid #ddd; padding: 12px; border-radius: 6px; color: #333; font-size: 14px; font-weight: bold;">
+                                        <span style="font-size: 16px;">✉️</span> Email
+                                     </a>
+                                </td>
+                            </tr>
+                        </table>
                   </div>
 
                </div>
-               <div style="text-align: center; color: #999; font-size: 11px; margin-top: 20px;">
-                  Sent with ♥ to ${guestEmail}
+               
+               <div style="text-align: center; color: #999; font-size: 11px; margin-top: 30px;">
+                  Sweet Home Punta Cana | Bávaro, Punta Cana
                </div>
              </div>`;
-         }
+            }
 
-         // Fallback
-         return `
+            // Fallback
+            return `
             <div class="container">
               <div class="room-header">
                 <h1>🏝️ Sweet Home Punta Cana</h1>
@@ -456,27 +567,27 @@ export async function sendBookingConfirmation(data: BookingEmailData) {
                 <div class="room-total">Total: $${totalPrice.toFixed(2)} USD</div>
               </div>
             </div>`;
-      })()}
+        })()}
       </body>
     </html>
   `;
 
-   try {
-      await resend.emails.send({
-         from: fromAddress,
-         to: [guestEmail],
-         bcc: [
-            process.env.BOOKING_NOTIFICATION_EMAIL || 'info@sweethomepuntacana.com',
-            'sweethomepc123@gmail.com'
-         ],
-         subject,
-         html,
-      });
+    try {
+        await resend.emails.send({
+            from: fromAddress,
+            to: [guestEmail],
+            bcc: [
+                process.env.BOOKING_NOTIFICATION_EMAIL || 'info@sweethomepuntacana.com',
+                'sweethomepc123@gmail.com'
+            ],
+            subject,
+            html,
+        });
 
-      console.log(`✅ Booking confirmation sent to ${guestEmail}`);
-      return { success: true, html };
-   } catch (error) {
-      console.error('❌ Failed to send booking email:', error);
-      return { success: false, error, html };
-   }
+        console.log(`✅ Booking confirmation sent to ${guestEmail}`);
+        return { success: true, html };
+    } catch (error) {
+        console.error('❌ Failed to send booking email:', error);
+        return { success: false, error, html };
+    }
 }

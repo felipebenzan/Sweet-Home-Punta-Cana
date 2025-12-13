@@ -64,7 +64,7 @@ async function run() {
         totalPrice: 180.00
     }).then(res => res.html && saveHtml('email_excursion', res.html));
 
-    // 4. Laundry
+    // 4. Laundry - Enriched Data for Strict Alignment Test
     await sendBookingConfirmation({
         guestName: 'Sarah Connor',
         guestEmail: 'sarah@example.com',
@@ -74,7 +74,8 @@ async function run() {
                 bags: 2,
                 pickupTime: '09:00 AM',
                 roomNumber: '101',
-                specialInstructions: 'Please use gentle cycle.'
+                specialInstructions: 'Please use gentle cycle.',
+                phone: '+1 (555) 0199'
             },
             date: '2024-01-17'
         },
