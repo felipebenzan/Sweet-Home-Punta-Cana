@@ -78,97 +78,179 @@ export async function sendBookingConfirmation(data: BookingEmailData) {
             .grid-col:last-child { border-bottom: none !important; }
             .value { font-size: 20px !important; }
             .value-large { font-size: 24px !important; }
+
+            /* New responsive styles for the table layout */
+            .stack-column {
+                display: block !important;
+                width: 100% !important;
+                border-right: none !important;
+                border-bottom: 1px dashed #ccc !important;
+                padding-bottom: 20px !important;
+            }
+            .stack-column:last-child {
+                border-bottom: none !important;
+            }
           }
         </style>
       </head>
       <body>
         ${bookingType === 'transfer' ? `
-            <div class="container transfer-body">
-              <div class="transfer-header">
-                 <img src="https://sweet-home-punta-cana.vercel.app/sweet-home-logo.png" alt="Sweet Home Logo" class="transfer-logo" style="width: 120px; height: auto;" />
-                 <div style="font-family: 'Times New Roman', serif; font-size: 24px; letter-spacing: 2px; margin-top: 10px;">SWEET HOME</div>
-                 <div style="font-size: 12px; letter-spacing: 3px; margin-top: 5px; opacity: 0.8;">AIRPORT TRANSFER</div>
-                 <div class="transfer-booking-id">BOOKING ID: ${confirmationId}</div>
+            <!-- Main Wrapper ensuring centered content -->
+            <div style="background-color: #f4f4f4; padding: 20px; font-family: 'Helvetica', 'Arial', sans-serif;">
+              
+              <!-- Confirmation Message Wrapper -->
+              <div style="max-width: 600px; margin: 0 auto; text-align: center; margin-bottom: 30px;">
+                 <h1 style="font-family: 'Times New Roman', serif; font-size: 32px; color: #1A1E26; margin-bottom: 10px;">Your Transfer is Booked!</h1>
+                 <p style="color: #666; font-size: 16px;">Your journey is secured. Here is your boarding pass.</p>
               </div>
 
-              <div class="pass-container">
-                  <div class="boarding-grid">
-                    <!-- Row 1 -->
-                    <div class="grid-row">
-                        <!-- Column 1: Flight / Route -->
-                        <div class="grid-col">
-                            <span class="label">FROM</span>
-                            <span class="value">
-                                ${details.direction === 'arrive' ? 'Punta Cana Intl. Airport (PUJ)' : 'Sweet Home Punta Cana'}
-                            </span>
-                            
-                            <span class="label">TO</span>
-                            <span class="value">
-                                ${details.direction === 'arrive' ? 'Sweet Home Punta Cana' : 'Punta Cana Intl. Airport (PUJ)'}
-                            </span>
-
-                            <span class="label">AIRLINE</span>
-                            <span class="value">
-                                ${details.airline || details.arrivalAirline || 'N/A'}
-                            </span>
-
-                            <span class="label">FLIGHT</span>
-                            <span class="value">
-                                ${details.direction === 'arrive'
-        ? (details.arrivalFlight || details.flightNumber || 'N/A')
-        : (details.departureFlight || details.flightNumber || 'N/A')}
-                            </span>
-                            
-                            <span class="label">DATE</span>
-                            <span class="value">
-                                ${details.arrivalDate || details.departureDate || details.date || 'N/A'}
-                            </span>
+              <!-- Ticket Container -->
+              <div style="max-width: 600px; margin: 0 auto; background-color: #FAF8F5; border: 2px dashed #ccc; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+                
+                <!-- Ticket Header -->
+                <div style="background-color: #1A1E26; color: white; padding: 20px 30px; border-bottom: 2px dashed rgba(255,255,255,0.2);">
+                    <div style="display: table; width: 100%;">
+                        <div style="display: table-cell; vertical-align: middle;">
+                            <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.8; margin-bottom: 5px;">BOARDING PASS</div>
+                            <div style="font-family: 'Times New Roman', serif; font-size: 24px; font-weight: bold; margin-bottom: 5px;">Sweet Home Transfer</div>
+                            <div style="font-family: 'Courier New', monospace; font-size: 12px; color: #D4AF37;">Booking: ${confirmationId}</div>
                         </div>
-
-                        <!-- Column 2: Passenger Info -->
-                        <div class="grid-col">
-                            <span class="label">PASSENGER NAME</span>
-                            <span class="value value-large">${guestName}</span>
-
-                            <span class="label">GUESTS</span>
-                            <span class="value">
-                                ${(details.pax || details.guests || '1').toString().toLowerCase().includes('guest') || (details.pax || details.guests || '1').toString().toLowerCase().includes('person')
-        ? (details.pax || details.guests || '1')
-        : (details.pax || details.guests || '1') + ' Person(s)'}
-                            </span>
-                            <div style="font-size: 10px; color: #666; margin-top: -10px; margin-bottom: 15px; font-style: italic;">
-                                (Max 2 Passengers)
-                            </div>
-
-                            <span class="label">STATUS</span>
-                            <span class="value" style="color: #27ae60;">CONFIRMED</span>
-                        </div>
-
-                        <!-- Column 3: Price & QR -->
-                        <div class="grid-col" style="text-align: center;">
-                             <span class="label">TOTAL FARE</span>
-                             <span class="value value-large">$${totalPrice.toFixed(2)} USD</span>
-                             
-                             <div style="margin-top: 20px; margin-bottom: 20px;">
-                                <div style="background: #1A1E26; color: #D4AF37; padding: 10px; display: inline-block; font-family: sans-serif; font-size: 12px; letter-spacing: 1px;">
-                                    BOARDING PASS
-                                </div>
-                             </div>
-                             
-                             <div class="qr-placeholder" style="background: transparent; border: none; padding: 0;">
-                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${confirmationId}" alt="QR Code" width="120" height="120" />
-                                <div style="font-size: 10px; color: #888; margin-top: 5px;">${confirmationId}</div>
-                             </div>
+                         <div style="display: table-cell; vertical-align: middle; text-align: right;">
+                            <!-- Bus Icon Placeholder using Emoji for email compatibility -->
+                            <span style="font-size: 24px;">🚌</span>
                         </div>
                     </div>
-                  </div>
+                </div>
 
-                  <div class="transfer-footer">
-                    <p>Please present this digital confirmation to your driver upon arrival.</p>
-                    <p>Need help? WhatsApp: <a href="https://wa.me/18095105465" style="color: #D4AF37; text-decoration: none;">+1 (809) 510-5465</a></p>
-                    <p>Sweet Home Punta Cana</p>
-                  </div>
+                <!-- Ticket Body (3 Columns) -->
+                <div>
+                   <!-- Mobile Fallback: Stack them. Desktop: Table Cell. Using a table for layout -->
+                   <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
+                      <tr>
+                        <!-- Column 1: Departure / Arrival -->
+                        <td width="33.33%" valign="top" style="padding: 24px; border-right: 1px dashed #ccc; font-family: sans-serif;" class="stack-column">
+                            <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #999; font-weight: bold; margin-bottom: 15px;">Departure / Arrival</div>
+                            
+                            <!-- From -->
+                            <div style="margin-bottom: 15px;">
+                                <div style="font-size: 10px; text-transform: uppercase; color: #666; margin-bottom: 2px;">From</div>
+                                <div style="font-size: 14px; font-weight: bold; color: #1A1E26; margin-bottom: 2px;">
+                                    ${details.direction === 'arrive' ? 'Punta Cana Intl. Airport' : 'Sweet Home Punta Cana'}
+                                </div>
+                                <div style="font-family: 'Courier New', monospace; font-size: 12px; color: #666;">
+                                    ${details.direction === 'arrive' ? 'PUJ' : 'SHPC'}
+                                </div>
+                            </div>
+                            
+                            <!-- Divider with Bus -->
+                            <div style="position: relative; height: 1px; background-color: #ccc; margin: 15px 0;">
+                                <div style="position: absolute; top: -10px; left: 50%; margin-left: -10px; background-color: #FAF8F5; padding: 0 5px;">🚌</div>
+                            </div>
+
+                            <!-- To -->
+                            <div style="margin-bottom: 20px;">
+                                <div style="font-size: 10px; text-transform: uppercase; color: #666; margin-bottom: 2px;">To</div>
+                                <div style="font-size: 14px; font-weight: bold; color: #1A1E26; margin-bottom: 2px;">
+                                     ${details.direction === 'arrive' ? 'Sweet Home Punta Cana' : 'Punta Cana Intl. Airport'}
+                                </div>
+                                <div style="font-family: 'Courier New', monospace; font-size: 12px; color: #666;">
+                                    ${details.direction === 'arrive' ? 'SHPC' : 'PUJ'}
+                                </div>
+                            </div>
+
+                            <!-- Details -->
+                            <div style="border-top: 1px dashed #ccc; padding-top: 15px;">
+                                <table width="100%">
+                                    <tr>
+                                        <td style="font-size: 10px; text-transform: uppercase; color: #999;">Flight</td>
+                                        <td style="font-family: 'Courier New', monospace; font-size: 12px; font-weight: bold; text-align: right; color: #1A1E26;">
+                                            ${details.direction === 'arrive'
+        ? (details.arrivalFlight || details.flightNumber || 'N/A')
+        : (details.departureFlight || details.flightNumber || 'N/A')}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-size: 10px; text-transform: uppercase; color: #999; padding-top: 5px;">Date</td>
+                                        <td style="font-family: 'Courier New', monospace; font-size: 12px; font-weight: bold; text-align: right; color: #1A1E26; padding-top: 5px;">
+                                            ${details.arrivalDate || details.departureDate || details.date || 'N/A'}
+                                        </td>
+                                    </tr>
+                                    ${details.direction === 'depart' && details.departureTime ? `
+                                    <tr>
+                                        <td style="font-size: 10px; text-transform: uppercase; color: #999; padding-top: 5px;">Time</td>
+                                        <td style="font-family: 'Courier New', monospace; font-size: 12px; font-weight: bold; text-align: right; color: #1A1E26; padding-top: 5px;">
+                                            ${details.departureTime}
+                                        </td>
+                                    </tr>` : ''}
+                                </table>
+                            </div>
+                        </td>
+
+                        <!-- Column 2: Passenger / Booking Info -->
+                        <td width="33.33%" valign="top" style="padding: 24px; border-right: 1px dashed #ccc; font-family: sans-serif;" class="stack-column">
+                            <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #999; font-weight: bold; margin-bottom: 15px;">Passenger / Info</div>
+                            
+                            <div style="margin-bottom: 15px;">
+                                <div style="font-size: 10px; text-transform: uppercase; color: #666; margin-bottom: 2px;">Passenger Name</div>
+                                <div style="font-family: 'Times New Roman', serif; font-size: 18px; font-weight: bold; color: #1A1E26; text-transform: uppercase;">
+                                    ${guestName}
+                                </div>
+                            </div>
+
+                            <div style="margin-bottom: 15px;">
+                                <div style="font-size: 10px; text-transform: uppercase; color: #666; margin-bottom: 2px;">Service Type</div>
+                                <div style="font-size: 14px; font-weight: bold; color: #1A1E26;">
+                                    ${details.direction === 'arrive' ? 'Arrival' : (details.direction === 'depart' ? 'Departure' : 'Round Trip')}
+                                </div>
+                            </div>
+
+                             <div style="margin-bottom: 15px;">
+                                <div style="font-size: 10px; text-transform: uppercase; color: #666; margin-bottom: 2px;">Guests</div>
+                                <div style="font-size: 14px; font-weight: bold; color: #1A1E26;">
+                                     ${(details.pax || details.guests || '1').toString().replace(/[^0-9]/g, '') || '1'} 
+                                     <span style="font-size: 12px; font-weight: normal; color: #666;">(Max 2)</span>
+                                </div>
+                            </div>
+
+                            <!-- Note Box -->
+                            <div style="background-color: rgba(212, 175, 55, 0.1); border-left: 2px solid #D4AF37; padding: 10px; margin-top: 20px;">
+                                <p style="margin: 0; font-size: 11px; color: #1A1E26; line-height: 1.4;">
+                                    <strong>Note:</strong> Your driver will be waiting with a sign bearing your name.
+                                </p>
+                            </div>
+                        </td>
+
+                        <!-- Column 3: Price / Code -->
+                        <td width="33.33%" valign="top" style="padding: 24px; font-family: sans-serif;" class="stack-column">
+                            <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #999; font-weight: bold; margin-bottom: 15px;">Price / Code</div>
+                            
+                            <div style="text-align: center; margin-bottom: 20px;">
+                                <div style="background: white; border: 2px solid #ccc; padding: 10px; display: inline-block; border-radius: 4px;">
+                                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${confirmationId}" alt="QR Code" width="100" height="100" style="display: block;" />
+                                </div>
+                            </div>
+
+                            <div style="text-align: center;">
+                                <div style="font-size: 10px; text-transform: uppercase; color: #666; margin-bottom: 5px;">Total</div>
+                                <div style="font-family: 'Times New Roman', serif; font-size: 28px; font-weight: bold; color: #1A1E26;">
+                                    $${totalPrice.toFixed(2)} USD
+                                </div>
+                            </div>
+                        </td>
+                      </tr>
+                   </table>
+                </div>
+
+                <!-- Footer -->
+                <div style="background-color: #FAF8F5; border-top: 2px dashed #ccc; padding: 15px; text-align: center;">
+                    <p style="margin: 0; font-size: 11px; color: #666;">Please present this confirmation upon arrival · Sweet Home Punta Cana</p>
+                </div>
               </div>
+
+               <div style="text-align: center; margin-top: 20px; font-size: 12px; color: #999;">
+                  <p>Need help? WhatsApp: <a href="https://wa.me/18095105465" style="color: #D4AF37; text-decoration: none;">+1 (809) 510-5465</a></p>
+              </div>
+
             </div>
           ` : `
             <div class="container">
