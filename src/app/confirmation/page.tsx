@@ -248,7 +248,7 @@ function ConfirmationContent() {
           <h1 className="text-3xl md:text-5xl font-playfair font-bold mb-4 tracking-tight">
             {(!isReservation(booking) && booking.serviceType === 'excursion')
               ? "Your Experience is locked in"
-              : "🌴 Your Vogue Beach Getaway Confirmation"}
+              : `Pack your bags ${booking.guestName} your booking is confirmed!`}
           </h1>
           {(!isReservation(booking) && booking.serviceType === 'excursion') ? null : (
             <p className="text-lg md:text-xl font-light opacity-95 max-w-2xl">
