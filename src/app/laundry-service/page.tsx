@@ -172,6 +172,22 @@ export default function LaundryServicePage() {
         { number: 2, label: "Guest Info & Pay" }
     ];
 
+    const wizardRef = React.useRef<HTMLDivElement>(null);
+    const isFirstRender = React.useRef(true);
+
+    useEffect(() => {
+        if (isFirstRender.current) {
+            isFirstRender.current = false;
+            return;
+        }
+
+        if (wizardRef.current) {
+            setTimeout(() => {
+                wizardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+        }
+    }, [currentStep]);
+
     return (
         <div className="min-h-screen bg-[#FAFAFA]">
             {/* Header */}
@@ -220,7 +236,7 @@ export default function LaundryServicePage() {
                 <div className="grid grid-cols-1 lg:grid-cols-[60%_40%] gap-12">
 
                     {/* Left Column - Wizard Steps */}
-                    <div className="space-y-12">
+                    <div className="space-y-12" ref={wizardRef}>
 
                         {/* STEP 1: Service Details */}
                         {currentStep === 1 && (

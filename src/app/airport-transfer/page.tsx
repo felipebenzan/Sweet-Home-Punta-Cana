@@ -264,6 +264,24 @@ function AirportTransferPageComponent() {
     { number: 3, label: "Payment" }
   ];
 
+  const wizardRef = React.useRef<HTMLDivElement>(null);
+  const isFirstRender = React.useRef(true);
+
+  useEffect(() => {
+    // Skip the scroll on initial mount (first render)
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+
+    if (wizardRef.current) {
+      // Small timeout to ensure DOM is updated
+      setTimeout(() => {
+        wizardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    }
+  }, [currentStep]);
+
   return (
     <div className="min-h-screen bg-[#FAFAFA]">
       {/* Hero Section */}
@@ -291,7 +309,7 @@ function AirportTransferPageComponent() {
         <div className="grid grid-cols-1 lg:grid-cols-[60%_40%] gap-12">
 
           {/* Left Column - Booking Form (60%) */}
-          <div className="space-y-12">
+          <div className="space-y-12" ref={wizardRef}>
 
             {/* STEP 1: Selection */}
             {currentStep === 1 && (
