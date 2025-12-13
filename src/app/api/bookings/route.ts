@@ -155,11 +155,17 @@ export async function POST(request: NextRequest) {
         // Send confirmation email (async, don't await to speed up response?)
         // Better to await to ensure it sends, or handle error.
         try {
+            // Extract phone from payload or customer object to ensure it is available for the email
+            const phone = booking.phone || booking.customer?.phone || '';
+
             await sendBookingConfirmation({
                 guestName: booking.guestName || booking.customer?.name || 'Guest',
                 guestEmail: booking.guestEmail || booking.customer?.email || '',
                 bookingType: booking.type || 'room',
-                bookingDetails: booking,
+                bookingDetails: {
+                    ...booking,
+                    phone // Explicitly pass the resolved phone number
+                },
                 confirmationId,
                 totalPrice: booking.totalPrice || booking.pricing?.totalUSD || 0,
             });
