@@ -246,11 +246,15 @@ function ConfirmationContent() {
             <CheckCircle className="h-12 w-12 text-green-500 fill-green-50" />
           </div>
           <h1 className="text-3xl md:text-5xl font-playfair font-bold mb-4 tracking-tight">
-            🌴 Your Vogue Beach Getaway Confirmation
+            {(!isReservation(booking) && booking.serviceType === 'excursion')
+              ? "Your Experience is locked in"
+              : "🌴 Your Vogue Beach Getaway Confirmation"}
           </h1>
-          <p className="text-lg md:text-xl font-light opacity-95 max-w-2xl">
-            We are thrilled to confirm your reservation at our beautiful Punta Cana guest house!
-          </p>
+          {(!isReservation(booking) && booking.serviceType === 'excursion') ? null : (
+            <p className="text-lg md:text-xl font-light opacity-95 max-w-2xl">
+              We are thrilled to confirm your reservation at our beautiful Punta Cana guest house!
+            </p>
+          )}
         </div>
       </header>
 
