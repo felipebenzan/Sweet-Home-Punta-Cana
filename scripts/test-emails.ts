@@ -13,7 +13,6 @@ const saveHtml = (name: string, html: string) => {
 async function run() {
     // 1. Room
     await sendBookingConfirmation({
-        entry: 'room', // This isn't used but interface might require something if typing strict, but 'bookingType' is what matters
         guestName: 'John Doe',
         guestEmail: 'test@example.com',
         bookingType: 'room',
@@ -45,7 +44,7 @@ async function run() {
         totalPrice: 45.00
     }).then(res => res.html && saveHtml('email_transfer', res.html));
 
-    // 3. Excursion
+    // 3. Excursion - Rich Data for Strict Alignment
     await sendBookingConfirmation({
         guestName: 'Mike Ross',
         guestEmail: 'mike@example.com',
@@ -53,18 +52,25 @@ async function run() {
         bookingDetails: {
             details: {
                 mainExcursion: {
-                    title: 'Saona Island Adventure',
+                    title: 'Buggy Adventure Tour',
                     bookingDate: '2024-01-16',
-                    adults: 2
+                    adults: 2,
+                    image: 'https://images.unsplash.com/photo-1599587402099-da172643778f?w=600&q=80',
+                    practicalInfo: {
+                        duration: '4 hours',
+                        departure: '8:00 AM',
+                        pickup: 'Hotel Lobby',
+                        pickupMapLink: 'https://maps.google.com'
+                    }
                 },
                 pax: '2 Adults'
             }
         },
         confirmationId: 'EXC-345678',
-        totalPrice: 180.00
+        totalPrice: 150.00
     }).then(res => res.html && saveHtml('email_excursion', res.html));
 
-    // 4. Laundry - Enriched Data for Strict Alignment Test
+    // 4. Laundry
     await sendBookingConfirmation({
         guestName: 'Sarah Connor',
         guestEmail: 'sarah@example.com',

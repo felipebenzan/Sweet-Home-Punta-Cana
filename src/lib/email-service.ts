@@ -314,64 +314,182 @@ export async function sendBookingConfirmation(data: BookingEmailData) {
             }
 
             if (normalizedBookingType === 'excursion') {
-                const excursionTitle = details.mainExcursion?.title || 'Excursion Adventure';
-                const excursionDate = details.mainExcursion?.bookingDate ? formatFullDate(details.mainExcursion.bookingDate) : (bookingDetails.date ? formatFullDate(bookingDetails.date) : 'Date to be confirmed');
-                const pax = details.pax || bookingDetails.pax || '1 Adult';
+                const bookingId = confirmationId.substring(0, 8).toUpperCase();
+                const bookingDate = details.mainExcursion?.bookingDate ? formatFullDate(details.mainExcursion.bookingDate) : (bookingDetails.date ? formatFullDate(bookingDetails.date) : 'Date to be confirmed');
+
+                // Helper to render excursion items (Main + Bundles)
+                const renderExcursionItems = () => {
+                    const items = [details.mainExcursion, ...(details.bundledItems || [])].filter(Boolean);
+                    return items.map((item: any) => `
+                        <div style="border-bottom: 1px dashed #e5e7eb; padding-bottom: 24px; margin-bottom: 24px;">
+                            <div style="display: flex; gap: 16px; margin-bottom: 16px;">
+                                ${item.image ? `<img src="${item.image}" alt="${item.title}" style="width: 80px; height: 60px; border-radius: 8px; object-fit: cover;" />` : ''}
+                                <div>
+                                    <div style="font-size: 14px; color: #6b7280; display: flex; align-items: center; gap: 4px;">
+                                        🏠 Adventure
+                                    </div>
+                                    <div style="font-size: 18px; font-weight: 600; color: #1f2937; line-height: 1.4;">${item.title}</div>
+                                </div>
+                            </div>
+                            
+                            <table width="100%" cellpadding="0" cellspacing="0" style="font-size: 12px; color: #1f2937;">
+                                <tr>
+                                    <td width="50%" style="padding-bottom: 12px; vertical-align: top;">
+                                        <div style="color: #6b7280; font-size: 12px; margin-bottom: 4px;">📅 Date</div>
+                                        <div style="font-size: 16px; font-weight: 500;">${item.bookingDate ? formatFullDate(item.bookingDate) : 'TBD'}</div>
+                                    </td>
+                                    <td width="50%" style="padding-bottom: 12px; vertical-align: top;">
+                                        <div style="color: #6b7280; font-size: 12px; margin-bottom: 4px;">👥 Guests</div>
+                                        <div style="font-size: 16px; font-weight: 500;">${item.adults || 1} Guests</div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="50%" style="padding-bottom: 12px; vertical-align: top;">
+                                        ${item.practicalInfo?.duration ? `
+                                        <div style="color: #6b7280; font-size: 12px; margin-bottom: 4px;">🕒 Duration</div>
+                                        <div style="font-size: 16px; font-weight: 500;">${item.practicalInfo.duration}</div>
+                                        ` : ''}
+                                    </td>
+                                    <td width="50%" style="padding-bottom: 12px; vertical-align: top;">
+                                        ${item.practicalInfo?.departure ? `
+                                        <div style="color: #6b7280; font-size: 12px; margin-bottom: 4px;">🕒 Pickup Time</div>
+                                        <div style="font-size: 16px; font-weight: 500;">${item.practicalInfo.departure}</div>
+                                        ` : ''}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" style="vertical-align: top;">
+                                        ${item.practicalInfo?.pickup ? `
+                                        <div style="color: #6b7280; font-size: 12px; margin-bottom: 4px;">📍 Meeting Point</div>
+                                        <div style="font-size: 16px; font-weight: 500;">${item.practicalInfo.pickup}</div>
+                                        ${item.practicalInfo.pickupMapLink ? `<a href="${item.practicalInfo.pickupMapLink}" style="color: #2563eb; text-decoration: underline; font-size: 14px; display: block; margin-top: 4px;">View Map & Instructions</a>` : ''}
+                                        ` : ''}
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                   `).join('');
+                };
 
                 return `
              <div style="background-color: #F9F7F2; padding: 40px 20px; font-family: 'Helvetica', 'Arial', sans-serif;">
-               <div style="max-width: 600px; margin: 0 auto;">
+               <div style="max-width: 600px; margin: 0 auto; padding-bottom: 40px;">
                  
-                 <!-- Header -->
-                 <div style="text-align: center; margin-bottom: 30px;">
-                    <div style="margin-bottom: 20px;">
-                        <img src="https://img.icons8.com/ios-filled/100/228B22/checkmark--v1.png" alt="Success" width="64" height="64" style="display: block; margin: 0 auto;" />
+                 <!-- Header with Image -->
+                 <div style="text-align: center; margin-bottom: 30px; background-color: #1A1E26; padding: 40px 20px; border-radius: 16px; color: white;">
+                    <div style="background: white; border-radius: 50%; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px auto;">
+                        <span style="font-size: 24px;">✅</span>
                     </div>
-                    <h1 style="font-family: 'Times New Roman', serif; font-size: 32px; color: #1A1E26; margin: 0 0 10px 0;">Adventure Locked In!</h1>
-                    <p style="color: #666; font-size: 16px; margin: 0; line-height: 1.5;">
-                        Pack your sunscreen, ${guestName}! A confirmation has been sent to ${guestEmail}.
-                    </p>
-                    <div style="margin-top: 15px; font-family: monospace; color: #999; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                        <span style="font-size: 16px;">🎫</span> Booking ID: ${confirmationId.substring(0, 8).toUpperCase()}
+                    <h1 style="font-family: 'Times New Roman', serif; font-size: 28px; margin: 0 0 10px 0;">Your Vogue Beach Getaway Confirmation</h1>
+                    <p style="color: rgba(255,255,255,0.8); font-size: 16px; margin: 0;">We are thrilled to confirm your reservation!</p>
+                 </div>
+
+                 <!-- Card 1: Reservation Details -->
+                 <div style="background: white; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); margin-bottom: 24px; overflow: hidden;">
+                    <div style="background-color: #FEFCE8; padding: 16px 24px; border-bottom: 1px solid #FEF08A;">
+                        <h3 style="margin: 0; font-size: 18px; color: #1f2937; display: flex; align-items: center; gap: 8px;">
+                            <span>✅</span> Reservation Details
+                        </h3>
+                    </div>
+                    <div style="padding: 24px;">
+                        <table width="100%" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td width="70%" style="vertical-align: top; padding-right: 20px;">
+                                    <div style="margin-bottom: 20px;">
+                                        <div style="font-size: 12px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Reservation ID</div>
+                                        <div style="font-size: 24px; font-weight: bold; color: #1f2937;">${bookingId}</div>
+                                    </div>
+                                    
+                                    <div style="margin-bottom: 20px;">
+                                        <div style="font-size: 12px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Guest Name</div>
+                                        <div style="font-size: 16px; font-weight: 500; color: #1f2937;">${guestName}</div>
+                                    </div>
+
+                                    <div style="margin-bottom: 20px;">
+                                        <div style="font-size: 12px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Confirmation Sent To</div>
+                                        <div style="font-size: 16px; font-weight: 500; color: #1f2937;">${guestEmail}</div>
+                                    </div>
+                                    
+                                    <div>
+                                        <div style="font-size: 12px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Guest House</div>
+                                        <div style="font-size: 16px; font-weight: 500; color: #1f2937;">Sweet Home Punta Cana</div>
+                                    </div>
+                                </td>
+                                <td width="30%" style="vertical-align: top; text-align: center;">
+                                    <div style="background: #F9F7F2; padding: 12px; border-radius: 12px; border: 1px solid #e5e7eb; display: inline-block;">
+                                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${bookingId}" alt="QR Code" width="100" height="100" />
+                                    </div>
+                                    <div style="font-size: 10px; color: #6b7280; margin-top: 8px; line-height: 1.2;">
+                                        📌 Keep this ID and QR Code handy for quick check-in!
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
                     </div>
                  </div>
 
-                 <!-- Excursion Card -->
-                 <div style="background: white; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); margin-bottom: 24px; padding: 24px; text-align: center;">
-                    <h3 style="margin: 0 0 16px 0; font-family: 'Times New Roman', serif; font-size: 20px; font-weight: 600; color: #1A1E26;">Your Booked Excursion</h3>
-                    <p style="font-size: 20px; font-weight: bold; color: #1A1E26; margin: 0 0 16px 0;">${excursionTitle}</p>
-                    
-                    <div style="font-size: 14px; color: #666; display: flex; justify-content: center; gap: 20px;">
-                        <div style="display: flex; align-items: center; gap: 6px;">
-                            <img src="https://img.icons8.com/ios-filled/50/000000/calendar.png" width="16" height="16" style="opacity: 0.6;" />
-                            <span>${excursionDate}</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 6px;">
-                            <img src="https://img.icons8.com/ios-filled/50/000000/user-group-man-man.png" width="16" height="16" style="opacity: 0.6;" />
-                            <span>${pax}</span>
-                        </div>
+                 <!-- Card 2: Excursion Details -->
+                 <div style="background: white; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); margin-bottom: 24px; overflow: hidden;">
+                    <div style="padding: 16px 24px; border-bottom: 1px solid #f3f4f6;">
+                        <h3 style="margin: 0; font-size: 18px; color: #1f2937; display: flex; align-items: center; gap: 8px;">
+                            <span>🌴</span> Excursion Details
+                        </h3>
+                    </div>
+                    <div style="padding: 24px;">
+                        ${renderExcursionItems()}
                     </div>
                  </div>
 
-                 <!-- Payment Card -->
-                 <div style="background: white; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); padding: 24px;">
-                    <h3 style="margin: 0 0 16px 0; font-family: 'Times New Roman', serif; font-size: 18px; font-weight: 600; color: #1A1E26;">Payment Summary</h3>
-                    
-                    <div style="display: flex; justify-content: space-between; align-items: center; font-weight: bold; font-size: 16px; color: #1A1E26;">
-                        <span>Total Paid (USD)</span>
-                        <span style="font-family: monospace;">$${totalPrice.toFixed(2)}</span>
+                 <!-- Card 3: Payment Summary -->
+                 <div style="background: white; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); overflow: hidden;">
+                    <div style="padding: 16px 24px; border-bottom: 1px solid #f3f4f6;">
+                        <h3 style="margin: 0; font-size: 18px; color: #1f2937; display: flex; align-items: center; gap: 8px;">
+                            <span>💰</span> Payment Summary
+                        </h3>
                     </div>
-                    
-                    <div style="margin-top: 12px; font-size: 12px; color: #228B22; font-weight: 500; display: flex; align-items: center; gap: 6px;">
-                        <span style="font-size: 14px;">✓</span> All taxes & fees included.
+                    <div style="padding: 24px;">
+                        <div style="margin-bottom: 16px;">
+                            <div style="display: flex; justify-content: space-between; color: #6b7280; margin-bottom: 8px;">
+                                <span>Subtotal</span>
+                                <span style="font-weight: 500; color: #1f2937;">$${totalPrice.toFixed(2)}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; font-size: 18px; font-weight: bold; color: #1f2937; margin-bottom: 8px;">
+                                <span>Total Paid (USD)</span>
+                                <span>$${totalPrice.toFixed(2)}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; color: #6b7280; font-size: 14px;">
+                                <span>Balance Due at Check-in</span>
+                                <span>$0.00</span>
+                            </div>
+                        </div>
+                        
+                        <div style="border-top: 1px solid #e5e7eb; padding-top: 16px; margin-bottom: 16px;">
+                             <table width="100%" cellpadding="0" cellspacing="0" style="font-size: 14px;">
+                                <tr>
+                                    <td width="50%" style="padding-right: 12px;">
+                                        <div style="color: #6b7280; margin-bottom: 4px;">Payment Processed On</div>
+                                        <div style="font-weight: 500; color: #1f2937;">${new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })}</div>
+                                    </td>
+                                    <td width="50%">
+                                        <div style="color: #6b7280; margin-bottom: 4px;">Cancellation Policy</div>
+                                        <div style="color: #16a34a; font-weight: 500;">Free cancellation up to 48h before arrival.</div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <div style="background-color: #F9F7F2; padding: 12px; border-radius: 8px; text-align: center; color: #4b5563; font-size: 14px; font-weight: 500;">
+                            ✨ All taxes included, no hidden fees.
+                        </div>
                     </div>
                  </div>
 
                  <!-- Footer -->
                  <div style="text-align: center; color: #999; font-size: 12px; margin-top: 30px;">
-                    <p>Need help? WhatsApp: <a href="https://wa.me/18095105465" style="color: #D4AF37; text-decoration: none;">+1 (809) 510-5465</a></p>
-                    <p>Sweet Home Punta Cana</p>
+                    <p>💬 Need help? WhatsApp: <a href="https://wa.me/18095105465" style="color: #D4AF37; text-decoration: none;">+1 (809) 510-5465</a></p>
+                    <p>Sweet Home Punta Cana | Bávaro, Punta Cana</p>
                  </div>
+
                </div>
              </div>`;
             }
