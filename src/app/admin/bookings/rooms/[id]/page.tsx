@@ -27,14 +27,15 @@ async function getRoomReservation(id: string) {
     }
 }
 
-export default async function RoomBookingDetailPage({ params }: { params: { id: string } }) {
+export default async function RoomBookingDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const session = await verifySession();
 
     if (!session) {
         redirect('/admin/login');
     }
 
-    const booking = await getRoomReservation(params.id);
+    const { id } = await params;
+    const booking = await getRoomReservation(id);
 
     if (!booking) {
         return (

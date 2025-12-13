@@ -184,22 +184,24 @@ export default function RoomBookingsCalendar() {
                             </div>
                             <div className="space-y-2">
                                 {dayStatus.checkIns.map(booking => (
-                                    <div key={booking.confirmationId} className="p-3 bg-green-50 rounded-lg border border-green-200">
-                                        <div className="flex justify-between items-start">
-                                            <div>
-                                                <p className="font-semibold">{booking.guestName || booking.customer?.name}</p>
-                                                <p className="text-sm text-muted-foreground">
-                                                    {booking.rooms?.map(r => r.name).join(', ')}
-                                                </p>
-                                                <p className="text-sm text-muted-foreground">
-                                                    {booking.dates?.checkIn} → {booking.dates?.checkOut}
-                                                </p>
+                                    <Link key={booking.confirmationId} href={`/admin/bookings/rooms/${booking.confirmationId}`} className="block transition-transform active:scale-[0.99]">
+                                        <div className="p-3 bg-green-50 rounded-lg border border-green-200 hover:shadow-sm hover:border-green-300 transition-all cursor-pointer">
+                                            <div className="flex justify-between items-start">
+                                                <div>
+                                                    <p className="font-semibold">{booking.guestName || booking.customer?.name}</p>
+                                                    <p className="text-sm text-muted-foreground">
+                                                        {booking.rooms?.map(r => r.name).join(', ')}
+                                                    </p>
+                                                    <p className="text-sm text-muted-foreground">
+                                                        {booking.dates?.checkIn} → {booking.dates?.checkOut}
+                                                    </p>
+                                                </div>
+                                                <Badge variant="outline" className="bg-white">
+                                                    {booking.confirmationId.substring(0, 8)}...
+                                                </Badge>
                                             </div>
-                                            <Badge variant="outline" className="bg-white">
-                                                {booking.confirmationId}
-                                            </Badge>
                                         </div>
-                                    </div>
+                                    </Link>
                                 ))}
                             </div>
                         </div>
@@ -214,22 +216,24 @@ export default function RoomBookingsCalendar() {
                             </div>
                             <div className="space-y-2">
                                 {dayStatus.stayOvers.map(booking => (
-                                    <div key={booking.confirmationId} className="p-3 bg-blue-50 rounded-lg border border-blue-200">
-                                        <div className="flex justify-between items-start">
-                                            <div>
-                                                <p className="font-semibold">{booking.guestName || booking.customer?.name}</p>
-                                                <p className="text-sm text-muted-foreground">
-                                                    {booking.rooms?.map(r => r.name).join(', ')}
-                                                </p>
-                                                <p className="text-sm text-muted-foreground">
-                                                    {booking.dates?.checkIn} → {booking.dates?.checkOut}
-                                                </p>
+                                    <Link key={booking.confirmationId} href={`/admin/bookings/rooms/${booking.confirmationId}`} className="block transition-transform active:scale-[0.99]">
+                                        <div className="p-3 bg-blue-50 rounded-lg border border-blue-200 hover:shadow-sm hover:border-blue-300 transition-all cursor-pointer">
+                                            <div className="flex justify-between items-start">
+                                                <div>
+                                                    <p className="font-semibold">{booking.guestName || booking.customer?.name}</p>
+                                                    <p className="text-sm text-muted-foreground">
+                                                        {booking.rooms?.map(r => r.name).join(', ')}
+                                                    </p>
+                                                    <p className="text-sm text-muted-foreground">
+                                                        {booking.dates?.checkIn} → {booking.dates?.checkOut}
+                                                    </p>
+                                                </div>
+                                                <Badge variant="outline" className="bg-white">
+                                                    {booking.confirmationId.substring(0, 8)}...
+                                                </Badge>
                                             </div>
-                                            <Badge variant="outline" className="bg-white">
-                                                {booking.confirmationId}
-                                            </Badge>
                                         </div>
-                                    </div>
+                                    </Link>
                                 ))}
                             </div>
                         </div>
@@ -244,22 +248,24 @@ export default function RoomBookingsCalendar() {
                             </div>
                             <div className="space-y-2">
                                 {dayStatus.checkOuts.map(booking => (
-                                    <div key={booking.confirmationId} className="p-3 bg-red-50 rounded-lg border border-red-200">
-                                        <div className="flex justify-between items-start">
-                                            <div>
-                                                <p className="font-semibold">{booking.guestName || booking.customer?.name}</p>
-                                                <p className="text-sm text-muted-foreground">
-                                                    {booking.rooms?.map(r => r.name).join(', ')}
-                                                </p>
-                                                <p className="text-sm text-muted-foreground">
-                                                    {booking.dates?.checkIn} → {booking.dates?.checkOut}
-                                                </p>
+                                    <Link key={booking.confirmationId} href={`/admin/bookings/rooms/${booking.confirmationId}`} className="block transition-transform active:scale-[0.99]">
+                                        <div className="p-3 bg-red-50 rounded-lg border border-red-200 hover:shadow-sm hover:border-red-300 transition-all cursor-pointer">
+                                            <div className="flex justify-between items-start">
+                                                <div>
+                                                    <p className="font-semibold">{booking.guestName || booking.customer?.name}</p>
+                                                    <p className="text-sm text-muted-foreground">
+                                                        {booking.rooms?.map(r => r.name).join(', ')}
+                                                    </p>
+                                                    <p className="text-sm text-muted-foreground">
+                                                        {booking.dates?.checkIn} → {booking.dates?.checkOut}
+                                                    </p>
+                                                </div>
+                                                <Badge variant="outline" className="bg-white">
+                                                    {booking.confirmationId.substring(0, 8)}...
+                                                </Badge>
                                             </div>
-                                            <Badge variant="outline" className="bg-white">
-                                                {booking.confirmationId}
-                                            </Badge>
                                         </div>
-                                    </div>
+                                    </Link>
                                 ))}
                             </div>
                         </div>
