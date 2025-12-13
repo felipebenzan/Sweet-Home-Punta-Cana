@@ -56,13 +56,12 @@ export const Beds24 = {
         console.log("[Beds24][getAvailability] Debug:", JSON.stringify(debugEnv));
 
         if (!apiKey) {
-            console.warn("[Beds24] No API Key found. Using mock data.");
-            const mock = await getMockAvailability({ arrival, departure, numAdults, roomIds });
+            console.error("[Beds24] No API Key found in environment. CANNOT CHECK REAL AVAILABILITY.");
             return {
-                data: mock,
+                data: {}, // Return empty to prevent showing false availability
                 debug: {
-                    source: 'mock',
-                    error: `No API Key. Env state: ${JSON.stringify(debugEnv)}`
+                    source: 'real',
+                    error: `No API Key found. Env state: ${JSON.stringify(debugEnv)}`
                 }
             };
         }
@@ -75,8 +74,8 @@ export const Beds24 = {
             const payload = {
                 // but passing keys prevents permission issues if private.
                 // However, standard getAvailabilities structure is flatter.
-                checkIn: arrival,
-                checkOut: departure,
+                checkIn: arrival.replace(/-/g, ''), // Format YYYYMMDD
+                checkOut: departure.replace(/-/g, ''), // Format YYYYMMDD
                 // propId is likely what we have in 'propKey' variable (303042 is an ID)
                 propId: propId,
                 numAdult: numAdults,
