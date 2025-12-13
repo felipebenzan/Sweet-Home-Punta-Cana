@@ -162,6 +162,96 @@ export const Beds24 = {
             // or should we fallback to mock? safer to fail closed (unavailable).
             return { data: {}, debug: { source: 'real', error: String(error) } };
         }
+    },
+
+    setBooking: async (bookingData: any): Promise<{ success: boolean; debug: Beds24DebugInfo }> => {
+        const apiKey = process.env.BEDS24_API_KEY;
+        const propKey = process.env.BEDS24_PROP_KEY || process.env.BEDS24_PROP_ID;
+
+        // Enhanced Debugging for Env Vars
+        const debugEnv = {
+            hasApiKey: !!apiKey,
+            hasPropKey: !!propKey,
+            propKeySource: process.env.BEDS24_PROP_KEY ? 'PROP_KEY' : (process.env.BEDS24_PROP_ID ? 'PROP_ID' : 'NONE')
+        };
+        console.log("[Beds24][setBooking] Env Debug:", JSON.stringify(debugEnv));
+
+        if (!apiKey) {
+            console.error("[Beds24][setBooking] Missing API Key. Cannot create booking.");
+            return { success: false, debug: { source: 'mock', error: 'Missing API Key' } };
+        }
+
+        const endpoint = "https://api.beds24.com/json/setBooking";
+
+        // Construct Payload strictly
+        const payload = {
+            authentication: {
+                apiKey: apiKey,
+                propKey: propKey
+            },
+            roomId: bookingData.roomId,
+            bookId: bookingData.bookId, // Optional, for updates
+            arrival: bookingData.arrival,
+            departure: bookingData.departure,
+            status: bookingData.status || "new",
+            numAdult: bookingData.numAdult,
+            numChild: bookingData.numChild,
+            guestFirstName: bookingData.guestFirstName,
+            guestName: bookingData.guestName, // Last name usually
+            guestEmail: bookingData.guestEmail,
+            guestPhone: bookingData.guestPhone,
+            guestAddress: bookingData.guestAddress,
+            guestCity: bookingData.guestCity,
+            guestCountry: bookingData.guestCountry,
+            guestZip: bookingData.guestZip,
+            subtotal: bookingData.price, // Optional, pricing
+            comments: bookingData.comments
+        };
+
+        // 🔍 DEBUG LOG: Payload
+        // We mask the API key in logs for security, even though user asked for "exact", safety first.
+        const debugPayload = { ...payload, authentication: { ...payload.authentication, apiKey: '***MASKED***' } };
+        console.log("[Beds24][setBooking] 📤 Payload:", JSON.stringify(debugPayload, null, 2));
+
+        try {
+            const response = await fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.json();
+
+            // 🔍 DEBUG LOG: Response
+            console.log(`[Beds24][setBooking] 📥 Response Status: ${response.status}`);
+            console.log("[Beds24][setBooking] 📥 Raw Response Body:", JSON.stringify(data, null, 2));
+
+            if (!response.ok) {
+                console.error(`[Beds24][setBooking] HTTP Error: ${response.status} ${response.statusText}`);
+                return { success: false, debug: { source: 'real', error: `HTTP ${response.status}`, rawResponse: data } };
+            }
+
+            // Beds24 returns { success: true, bookId: ... } or { error: ... }
+            if (data.error) {
+                console.error(`[Beds24][setBooking] API Error: ${data.error}`);
+                return { success: false, debug: { source: 'real', error: data.error, rawResponse: data } };
+            }
+
+            if (data.bookId) {
+                console.log(`[Beds24][setBooking] ✅ Success! Book ID: ${data.bookId}`);
+                return { success: true, debug: { source: 'real', rawResponse: data } };
+            }
+
+            // Fallback if no bookId but no explicit error?
+            console.warn("[Beds24][setBooking] Unknown response state (no bookId, no error).");
+            return { success: false, debug: { source: 'real', error: 'Unknown response format', rawResponse: data } };
+
+        } catch (error) {
+            console.error("[Beds24][setBooking] ❌ Network/Execution Error:", error);
+            return { success: false, debug: { source: 'real', error: String(error) } };
+        }
     }
 };
 

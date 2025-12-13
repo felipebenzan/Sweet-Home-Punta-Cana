@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { sendBookingConfirmation } from '@/lib/email-service';
 import { checkDailyLimit } from '@/lib/settings';
 import { prisma } from '@/lib/prisma';
+import { Beds24 } from '@/lib/beds24';
 
 export const dynamic = 'force-dynamic';
 
@@ -73,6 +74,35 @@ export async function POST(request: NextRequest) {
                 include: { room: true }
             });
             confirmationId = savedBooking.id;
+
+            // 🟢 INTEGRATE BEDS24: Send booking to Beds24 if room has ID
+            if (savedBooking.room && savedBooking.room.beds24_room_id) {
+                console.log(`[Beds24] Syncing reservation ${confirmationId} to Beds24 (Room: ${savedBooking.room.beds24_room_id})...`);
+
+                try {
+                    const b24Result = await Beds24.setBooking({
+                        roomId: savedBooking.room.beds24_room_id,
+                        arrival: booking.dates.checkIn, // YYYY-MM-DD expected
+                        departure: booking.dates.checkOut,
+                        status: "confirmed", // or "new"
+                        numAdult: booking.guests,
+                        guestName: booking.guestName,
+                        guestEmail: booking.guestEmail,
+                        guestPhone: booking.customer.phone,
+                        price: booking.pricing.totalUSD,
+                        comments: `Booking source: SweetHomePC Website | ID: ${confirmationId}`
+                    });
+
+                    if (!b24Result.success) {
+                        console.error(`[Beds24] Sync Failed for ${confirmationId}:`, b24Result.debug.error);
+                        // Optional: Store error in DB or notify admin?
+                    }
+                } catch (b24err) {
+                    console.error(`[Beds24] Sync Exception for ${confirmationId}:`, b24err);
+                }
+            } else {
+                console.warn(`[Beds24] Skipped sync for ${confirmationId}: Room has no Beds24 ID.`);
+            }
 
             // If there is a transfer included, we should create a ServiceBooking for it too?
             // The current payload has `transfer` object.
