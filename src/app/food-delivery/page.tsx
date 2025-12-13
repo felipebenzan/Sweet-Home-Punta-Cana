@@ -2,7 +2,7 @@
 
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ArrowRight, ExternalLink, Info, MapPin } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -27,6 +27,10 @@ const deliveryApps = [
 const ADDRESS = 'Sweet Home Punta Cana, Bavaro, Punta Cana 23000, Dominican Republic';
 
 export default function FoodDeliveryPage() {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <div className="bg-white text-shpc-ink">
       {/* Hero Section */}

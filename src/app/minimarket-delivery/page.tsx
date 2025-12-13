@@ -1,7 +1,7 @@
 
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ArrowRight, Phone, Check, Info, Droplets, ShoppingBasket, Sun, Package, Sparkles, Clock, DollarSign, Handshake, Utensils, GlassWater, Wind } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -20,29 +20,33 @@ const whatYoullFind = [
 ];
 
 export default function MiniMarketDeliveryPage() {
-    const howItWorks = [
-      {
-        icon: <Phone />,
-        title: "Call or WhatsApp",
-        text: 'Place your order quickly and easily.',
-        contact: "+1 (829) 530-1777"
-      },
-      {
-        icon: <Clock />,
-        title: "Fast Delivery",
-        text: 'Usually arrives in 10–25 minutes.',
-      },
-      {
-        icon: <DollarSign />,
-        title: "Cash Only",
-        text: 'Simple, direct, and convenient.',
-      },
-      {
-        icon: <Handshake />,
-        title: "Tipping Matters",
-        text: 'In the Dominican Republic, tipping your rider is part of the service.',
-      },
-    ];
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  const howItWorks = [
+    {
+      icon: <Phone />,
+      title: "Call or WhatsApp",
+      text: 'Place your order quickly and easily.',
+      contact: "+1 (829) 530-1777"
+    },
+    {
+      icon: <Clock />,
+      title: "Fast Delivery",
+      text: 'Usually arrives in 10–25 minutes.',
+    },
+    {
+      icon: <DollarSign />,
+      title: "Cash Only",
+      text: 'Simple, direct, and convenient.',
+    },
+    {
+      icon: <Handshake />,
+      title: "Tipping Matters",
+      text: 'In the Dominican Republic, tipping your rider is part of the service.',
+    },
+  ];
 
   return (
     <div className="bg-white text-shpc-ink">
@@ -71,67 +75,67 @@ export default function MiniMarketDeliveryPage() {
 
         {/* Intro */}
         <section className="text-center max-w-3xl mx-auto">
-            <p className="text-lg md:text-xl leading-relaxed text-neutral-700">
-                Your neighborhood mini market, known locally as a colmado, is just around the corner. From essentials and cleaning supplies to ice-cold beer, rum, and snacks — everything can be delivered straight to Sweet Home.
-            </p>
+          <p className="text-lg md:text-xl leading-relaxed text-neutral-700">
+            Your neighborhood mini market, known locally as a colmado, is just around the corner. From essentials and cleaning supplies to ice-cold beer, rum, and snacks — everything can be delivered straight to Sweet Home.
+          </p>
         </section>
-        
+
         {/* How It Works */}
         <section>
-            <h2 className="text-3xl md:text-4xl font-semibold font-playfair mb-8 text-center tracking-tight text-neutral-800/90" style={{ fontWeight: 400 }}>How It Works</h2>
-             <div className="grid grid-cols-2 gap-6 max-w-4xl mx-auto">
-                {howItWorks.map((item, index) => (
-                    <div key={index} className="p-6 bg-shpc-sand/50 rounded-2xl flex flex-col items-center text-center h-full transition-all hover:bg-shpc-sand hover:shadow-soft">
-                        <div className="text-primary mb-4">
-                          {React.cloneElement(item.icon, { className: "h-7 w-7", strokeWidth: 1.5 })}
-                        </div>
-                        <h3 className="font-semibold text-base mb-1">{item.title}</h3>
-                        <p className="text-neutral-600 text-sm leading-relaxed tracking-wide flex-grow" style={{ letterSpacing: '0.01em', lineHeight: 1.6 }}>{item.text}</p>
-                         {item.contact && (
-                            <a href={`https://wa.me/${item.contact.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold text-primary mt-2 hover:underline">{item.contact}</a>
-                        )}
-                    </div>
-                ))}
-            </div>
+          <h2 className="text-3xl md:text-4xl font-semibold font-playfair mb-8 text-center tracking-tight text-neutral-800/90" style={{ fontWeight: 400 }}>How It Works</h2>
+          <div className="grid grid-cols-2 gap-6 max-w-4xl mx-auto">
+            {howItWorks.map((item, index) => (
+              <div key={index} className="p-6 bg-shpc-sand/50 rounded-2xl flex flex-col items-center text-center h-full transition-all hover:bg-shpc-sand hover:shadow-soft">
+                <div className="text-primary mb-4">
+                  {React.cloneElement(item.icon, { className: "h-7 w-7", strokeWidth: 1.5 })}
+                </div>
+                <h3 className="font-semibold text-base mb-1">{item.title}</h3>
+                <p className="text-neutral-600 text-sm leading-relaxed tracking-wide flex-grow" style={{ letterSpacing: '0.01em', lineHeight: 1.6 }}>{item.text}</p>
+                {item.contact && (
+                  <a href={`https://wa.me/${item.contact.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold text-primary mt-2 hover:underline">{item.contact}</a>
+                )}
+              </div>
+            ))}
+          </div>
         </section>
 
         {/* Location */}
         <section>
-            <div className="text-center max-w-3xl mx-auto">
-                <h2 className="text-3xl md:text-4xl font-bold font-playfair mb-4">Location</h2>
-                <p className="text-lg md:text-xl leading-relaxed text-neutral-700 mb-8">
-                    The nearest colmado is Mini Market La Bodega, just a short walk from Sweet Home Punta Cana.
-                </p>
-            </div>
-            <div className="rounded-2xl overflow-hidden shadow-soft h-96">
-                <EmbeddedMap mapUrl={COLMADO_MAP_URL} mode="walking" />
-            </div>
+          <div className="text-center max-w-3xl mx-auto">
+            <h2 className="text-3xl md:text-4xl font-bold font-playfair mb-4">Location</h2>
+            <p className="text-lg md:text-xl leading-relaxed text-neutral-700 mb-8">
+              The nearest colmado is Mini Market La Bodega, just a short walk from Sweet Home Punta Cana.
+            </p>
+          </div>
+          <div className="rounded-2xl overflow-hidden shadow-soft h-96">
+            <EmbeddedMap mapUrl={COLMADO_MAP_URL} mode="walking" />
+          </div>
         </section>
-        
+
         {/* What You'll Find */}
         <section>
-            <h2 className="text-3xl md:text-4xl font-bold font-playfair mb-8 text-center">What You'll Find</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-8 max-w-2xl mx-auto">
-                {whatYoullFind.map((item, index) => (
-                    <div key={index} className="flex items-start gap-4">
-                        <div className="text-shpc-yellow mt-1">
-                            {React.cloneElement(item.icon, { className: "h-5 w-5", strokeWidth: 2 })}
-                        </div>
-                        <div>
-                            <h3 className="font-bold text-lg">{item.title}</h3>
-                            <p className="text-neutral-500 text-sm">{item.description}</p>
-                        </div>
-                    </div>
-                ))}
-            </div>
-             <p className="text-center text-sm text-neutral-500 mt-12 italic">If you don’t see it, ask — colmados usually find a way.</p>
+          <h2 className="text-3xl md:text-4xl font-bold font-playfair mb-8 text-center">What You'll Find</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-8 max-w-2xl mx-auto">
+            {whatYoullFind.map((item, index) => (
+              <div key={index} className="flex items-start gap-4">
+                <div className="text-shpc-yellow mt-1">
+                  {React.cloneElement(item.icon, { className: "h-5 w-5", strokeWidth: 2 })}
+                </div>
+                <div>
+                  <h3 className="font-bold text-lg">{item.title}</h3>
+                  <p className="text-neutral-500 text-sm">{item.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+          <p className="text-center text-sm text-neutral-500 mt-12 italic">If you don’t see it, ask — colmados usually find a way.</p>
         </section>
 
         {/* Closing Note */}
         <section className="text-center max-w-3xl mx-auto">
-             <p className="text-lg md:text-xl leading-relaxed text-neutral-700">
-                Fast, convenient, and local — your colmado is the easiest way to get what you need during your stay.
-            </p>
+          <p className="text-lg md:text-xl leading-relaxed text-neutral-700">
+            Fast, convenient, and local — your colmado is the easiest way to get what you need during your stay.
+          </p>
         </section>
 
         <section>
