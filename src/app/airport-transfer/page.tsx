@@ -36,11 +36,10 @@ function AirportTransferPageComponent() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [showPaypal, setShowPaypal] = useState(false);
 
-  const paymentContainerRef = React.useRef<HTMLDivElement>(null);
-
+  // Scroll to top of wizard when payment mode is toggled
   useEffect(() => {
-    if (showPaypal && paymentContainerRef.current) {
-      paymentContainerRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (showPaypal && wizardRef.current) {
+      wizardRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }, [showPaypal]);
 
@@ -707,7 +706,7 @@ function AirportTransferPageComponent() {
                     </div>
                   </>
                 ) : (
-                  <div className="space-y-6" ref={paymentContainerRef}>
+                  <div className="space-y-6">
                     <h3 className="font-playfair text-2xl font-semibold text-center text-shpc-ink">
                       Complete Your Secure Payment
                     </h3>
