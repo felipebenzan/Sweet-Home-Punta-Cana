@@ -33,19 +33,27 @@ export interface Beds24DebugInfo {
 
 export const Beds24 = {
     getAvailability: async ({ arrival, departure, numAdults, roomIds, auth }: Beds24Request): Promise<{ data: Record<string, Beds24Availability>, debug: Beds24DebugInfo }> => {
-        // Try params first, then process.env, then HARDCODED FALLBACK (Emergency Fix)
-        const apiKey = auth?.apiKey || process.env.BEDS24_API_KEY || "SweetHome2025SecretKeyX99";
-        // Support both names as user screenshot showed PROP_ID
-        const propKey = auth?.propKey || process.env.BEDS24_PROP_KEY || process.env.BEDS24_PROP_ID || "303042";
+        // Auth Keys (For accessing secured data if needed)
+        const apiKey = auth?.apiKey || process.env.BEDS24_API_KEY;
 
-        // Enhanced Debugging for Env Vars
+        // Prop ID (The Identifier, e.g. 303042)
+        // If BEDS24_PROP_KEY is a password (long string), we MUST NOT use it as an ID.
+        // We prioritize BEDS24_PROP_ID, then fallback to a default if known.
+        let propId = process.env.BEDS24_PROP_ID || "303042";
+
+        // Sanity check: If the code previously fell back to PROP_KEY and it's numeric, that's fine.
+        // But if provided propKey is short (numeric), we can use it as ID too.
+        if (auth?.propKey && auth.propKey.length < 16) {
+            propId = auth.propKey;
+        }
+
+        // Enhanced Debugging
         const debugEnv = {
             hasApiKey: !!apiKey,
-            apiKeyLength: apiKey ? apiKey.length : 0,
-            hasPropKey: !!propKey,
-            propKeySource: process.env.BEDS24_PROP_KEY ? 'PROP_KEY' : (process.env.BEDS24_PROP_ID ? 'PROP_ID' : 'NONE')
+            propIdUsed: propId,
+            envPropId: process.env.BEDS24_PROP_ID
         };
-        console.log("[Beds24] Env Debug:", JSON.stringify(debugEnv));
+        console.log("[Beds24][getAvailability] Debug:", JSON.stringify(debugEnv));
 
         if (!apiKey) {
             console.warn("[Beds24] No API Key found. Using mock data.");
@@ -62,20 +70,15 @@ export const Beds24 = {
         try {
             console.log(`[Beds24] Fetching availability for ${arrival} to ${departure}`);
 
-            // Beds24 JSON API Endpoint
-            // Correct endpoint is getAvailabilities (plural)
             const endpoint = "https://api.beds24.com/json/getAvailabilities";
 
-            // Prepare payload
-            // Beds24 getAvailabilities expects checkIn, checkOut, and propId (or roomId)
             const payload = {
-                // Authentication is supposedly not required for getAvailabilities if public,
                 // but passing keys prevents permission issues if private.
                 // However, standard getAvailabilities structure is flatter.
                 checkIn: arrival,
                 checkOut: departure,
                 // propId is likely what we have in 'propKey' variable (303042 is an ID)
-                propId: propKey,
+                propId: propId,
                 numAdult: numAdults,
                 options: {
                     // "includePrice": true 
@@ -165,8 +168,10 @@ export const Beds24 = {
     },
 
     setBooking: async (bookingData: any): Promise<{ success: boolean; debug: Beds24DebugInfo }> => {
+        // Fallback Logic from getAvailability (Emergency Fix)
+        // Fallback Logic from getAvailability (Emergency Fix)
         const apiKey = process.env.BEDS24_API_KEY;
-        const propKey = process.env.BEDS24_PROP_KEY || process.env.BEDS24_PROP_ID;
+        const propKey = process.env.BEDS24_PROP_KEY || process.env.BEDS24_PROP_ID || "303042";
 
         // Enhanced Debugging for Env Vars
         const debugEnv = {
@@ -183,11 +188,14 @@ export const Beds24 = {
 
         const endpoint = "https://api.beds24.com/json/setBooking";
 
+        // Determine if propKey is actually an ID or a Secret Key
+        // API Error said "must be at least 16 characters" for keys.
+        const isPropKeyValid = propKey && propKey.length >= 16;
+
         // Construct Payload strictly
-        const payload = {
+        const payload: any = {
             authentication: {
                 apiKey: apiKey,
-                propKey: propKey
             },
             roomId: bookingData.roomId,
             bookId: bookingData.bookId, // Optional, for updates
@@ -208,9 +216,20 @@ export const Beds24 = {
             comments: bookingData.comments
         };
 
+        // If we have a long key, use it for auth
+        if (isPropKeyValid) {
+            payload.authentication.propKey = propKey;
+        } else if (propKey) {
+            // If it's short, it's likely an ID. Pass it as propId in case API needs it contextually
+            payload.propId = propKey;
+        }
+
         // 🔍 DEBUG LOG: Payload
         // We mask the API key in logs for security, even though user asked for "exact", safety first.
         const debugPayload = { ...payload, authentication: { ...payload.authentication, apiKey: '***MASKED***' } };
+        // Mask propKey if it exists in auth
+        if (payload.authentication.propKey) debugPayload.authentication.propKey = '***MASKED***';
+
         console.log("[Beds24][setBooking] 📤 Payload:", JSON.stringify(debugPayload, null, 2));
 
         try {
