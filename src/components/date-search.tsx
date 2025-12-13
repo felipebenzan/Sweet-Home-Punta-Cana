@@ -118,7 +118,7 @@ export default function DateSearch({ className, roomSlug }: DateSearchProps) {
             <div className="flex items-center justify-between">
               <Button variant="ghost" size="icon" onClick={() => setGuests(Math.max(1, guests - 1))}><Minus className="h-4 w-4" /></Button>
               <span>{guests}</span>
-              <Button variant="ghost" size="icon" onClick={() => setGuests(Math.min(10, guests + 1))}><Plus className="h-4 w-4" /></Button>
+              <Button variant="ghost" size="icon" onClick={() => setGuests(Math.min(8, guests + 1))}><Plus className="h-4 w-4" /></Button>
             </div>
           </PopoverContent>
         </Popover>
