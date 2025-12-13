@@ -83,12 +83,8 @@ export async function sendBookingConfirmation(data: BookingEmailData) {
         ${bookingType === 'transfer' ? `
             <div class="container transfer-body">
               <div class="transfer-header">
-                <!-- Using absolute path for logo, assuming email client can access it or use a public URL if available. 
-                     For now using text/emoji if image not hosted publicly, but trying to use the image reference as requested.
-                     Ideally logos should be on a CDN. modifying to use local reference might not work in email clients without public hosting. 
-                     I will use a placeholder or text if image is not guaranteed to be public. 
-                     However, I will use a reliable public URL if I knew one, but I'll stick to a text fallback for safety or standard img src. -->
-                 <div style="font-family: 'Times New Roman', serif; font-size: 24px; letter-spacing: 2px;">SWEET HOME</div>
+                 <img src="https://sweet-home-punta-cana.vercel.app/sweet-home-logo.png" alt="Sweet Home Logo" class="transfer-logo" style="width: 120px; height: auto;" />
+                 <div style="font-family: 'Times New Roman', serif; font-size: 24px; letter-spacing: 2px; margin-top: 10px;">SWEET HOME</div>
                  <div style="font-size: 12px; letter-spacing: 3px; margin-top: 5px; opacity: 0.8;">AIRPORT TRANSFER</div>
                  <div class="transfer-booking-id">BOOKING ID: ${confirmationId}</div>
               </div>
@@ -107,6 +103,11 @@ export async function sendBookingConfirmation(data: BookingEmailData) {
                             <span class="label">TO</span>
                             <span class="value">
                                 ${bookingDetails.direction === 'arrive' ? 'Sweet Home Punta Cana' : 'Punta Cana Intl. Airport (PUJ)'}
+                            </span>
+
+                            <span class="label">AIRLINE</span>
+                            <span class="value">
+                                ${bookingDetails.airline || bookingDetails.arrivalAirline || 'N/A'}
                             </span>
 
                             <span class="label">FLIGHT</span>
@@ -133,6 +134,9 @@ export async function sendBookingConfirmation(data: BookingEmailData) {
         ? (bookingDetails.pax || bookingDetails.guests || '1')
         : (bookingDetails.pax || bookingDetails.guests || '1') + ' Person(s)'}
                             </span>
+                            <div style="font-size: 10px; color: #666; margin-top: -10px; margin-bottom: 15px; font-style: italic;">
+                                (Max 2 Passengers)
+                            </div>
 
                             <span class="label">STATUS</span>
                             <span class="value" style="color: #27ae60;">CONFIRMED</span>
@@ -143,15 +147,15 @@ export async function sendBookingConfirmation(data: BookingEmailData) {
                              <span class="label">TOTAL FARE</span>
                              <span class="value value-large">$${totalPrice.toFixed(2)} USD</span>
                              
-                             <div style="margin-top: 20px;">
+                             <div style="margin-top: 20px; margin-bottom: 20px;">
                                 <div style="background: #1A1E26; color: #D4AF37; padding: 10px; display: inline-block; font-family: sans-serif; font-size: 12px; letter-spacing: 1px;">
                                     BOARDING PASS
                                 </div>
                              </div>
                              
-                             <div class="qr-placeholder">
-                                [SCAN FOR DETAILS]<br/>
-                                ${confirmationId}
+                             <div class="qr-placeholder" style="background: transparent; border: none; padding: 0;">
+                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${confirmationId}" alt="QR Code" width="120" height="120" />
+                                <div style="font-size: 10px; color: #888; margin-top: 5px;">${confirmationId}</div>
                              </div>
                         </div>
                     </div>
