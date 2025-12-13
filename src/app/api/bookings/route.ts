@@ -81,10 +81,10 @@ export async function POST(request: NextRequest) {
 
                 try {
                     const b24Result = await Beds24.setBooking({
-                        roomId: savedBooking.room.beds24_room_id,
+                        roomId: String(savedBooking.room.beds24_room_id),
                         arrival: booking.dates.checkIn.split('T')[0], // Ensure YYYY-MM-DD
                         departure: booking.dates.checkOut.split('T')[0], // Ensure YYYY-MM-DD
-                        status: "confirmed", // or "new"
+                        status: 1, // 1 = Confirmed, 2 = New, 0 = Cancelled
                         numAdult: booking.guests,
                         guestName: booking.guestName,
                         guestEmail: booking.guestEmail,
