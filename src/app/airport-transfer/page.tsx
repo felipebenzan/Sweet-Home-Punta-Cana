@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo, useState, Suspense } from "react";
+import React, { useMemo, useState, Suspense, useEffect } from "react";
 import { Calendar as CalendarIcon, Clock, Plane, Info, Loader2, Users, Mail, Phone, Check, ArrowRight, Bus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
@@ -27,6 +27,10 @@ const DIRECTION_DETAILS = {
 function AirportTransferPageComponent() {
   const router = useRouter();
   const { toast } = useToast();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const [currentStep, setCurrentStep] = useState(1);
   const [isProcessing, setIsProcessing] = useState(false);

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import Image from 'next/image';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
@@ -20,6 +20,10 @@ const CURRENCY = 'USD';
 export default function LaundryServicePage() {
     const { toast } = useToast();
     const router = useRouter();
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
 
     const [currentStep, setCurrentStep] = useState(1);
     const [bags, setBags] = useState(1);
