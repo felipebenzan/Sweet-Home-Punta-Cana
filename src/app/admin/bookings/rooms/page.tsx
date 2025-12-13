@@ -86,42 +86,37 @@ export default async function RoomBookingsPage() {
             ) : (
                 <div className="space-y-4">
                     {bookings.map((booking: any) => (
-                        <Card key={booking.confirmationId} className="hover:shadow-lg transition-shadow">
-                            <CardHeader>
+                        <Card key={booking.confirmationId} className="hover:shadow-lg transition-shadow group">
+                            <CardHeader className="pb-3">
                                 <div className="flex justify-between items-start">
-                                    <div className="space-y-2">
+                                    <div className="space-y-1">
                                         <div className="flex items-center gap-2">
-                                            <Badge className="bg-blue-100 text-blue-800">
-                                                <Home className="h-4 w-4 mr-1" />
-                                                Room Booking
+                                            <Link href={`/admin/bookings/rooms/${booking.confirmationId}`} className="hover:underline focus:underline decoration-2 underline-offset-2 rounded-md">
+                                                <h3 className="font-bold text-lg group-hover:text-blue-600 transition-colors">
+                                                    {booking.guestName || booking.customer?.name || 'Guest'}
+                                                </h3>
+                                            </Link>
+                                            <Badge variant={booking.type === 'room' ? 'default' : 'secondary'}>
+                                                {booking.type === 'room' ? 'Room' : booking.type}
                                             </Badge>
+                                        </div>
+                                        <div className="flex flex-col gap-0.5">
                                             <span className="text-sm text-muted-foreground">
                                                 {new Date(booking.createdAt).toLocaleDateString('en-US', {
-                                                    month: 'short',
-                                                    day: 'numeric',
-                                                    year: 'numeric',
-                                                    hour: '2-digit',
-                                                    minute: '2-digit'
+                                                    month: 'short', day: 'numeric', year: 'numeric',
+                                                    hour: '2-digit', minute: '2-digit'
                                                 })}
                                             </span>
-                                        </div>
-                                        <CardTitle className="text-lg">
-                                            {booking.guestName || booking.customer?.name || 'Guest'}
-                                        </CardTitle>
-                                        <p className="text-sm text-muted-foreground">
-                                            {booking.guestEmail || booking.customer?.email}
-                                        </p>
-                                        {booking.customer?.phone && (
                                             <p className="text-sm text-muted-foreground">
-                                                📱 {booking.customer.phone}
+                                                {booking.guestEmail || booking.customer?.email}
                                             </p>
-                                        )}
+                                        </div>
                                     </div>
                                     <div className="text-right">
-                                        <p className="text-2xl font-bold">${booking.totalPrice?.toFixed(2)}</p>
-                                        <div className="flex items-center justify-end gap-2 mt-1">
-                                            <p className="text-xs text-muted-foreground">
-                                                ID: {booking.confirmationId}
+                                        <p className="text-2xl font-bold text-shpc-ink">${booking.totalPrice?.toFixed(2)}</p>
+                                        <div className="flex items-center justify-end gap-2 mt-2">
+                                            <p className="text-xs text-muted-foreground font-mono bg-gray-100 px-1.5 py-0.5 rounded">
+                                                {booking.confirmationId.substring(0, 8)}...
                                             </p>
                                             <DeleteBookingButton
                                                 bookingId={booking.confirmationId}
@@ -132,42 +127,40 @@ export default async function RoomBookingsPage() {
                                 </div>
                             </CardHeader>
                             <CardContent>
-                                {booking.dates && (
-                                    <div className="space-y-2 text-sm">
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div>
-                                                <p className="text-muted-foreground">Check-in</p>
-                                                <p className="font-semibold">{booking.dates.checkIn}</p>
-                                            </div>
-                                            <div>
-                                                <p className="text-muted-foreground">Check-out</p>
-                                                <p className="font-semibold">{booking.dates.checkOut}</p>
-                                            </div>
+                                <Link href={`/admin/bookings/rooms/${booking.confirmationId}`} className="block">
+                                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-4 bg-gray-50/50 rounded-lg border border-gray-100 hover:bg-blue-50/30 transition-colors">
+                                        <div>
+                                            <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Check-in</p>
+                                            <p className="font-medium text-sm">{booking.dates.checkIn}</p>
                                         </div>
-                                        <div className="grid grid-cols-2 gap-4 mt-4">
-                                            <div>
-                                                <p className="text-muted-foreground">Guests</p>
-                                                <p className="font-semibold">{booking.guests}</p>
-                                            </div>
-                                            {booking.rooms && (
-                                                <div>
-                                                    <p className="text-muted-foreground">Rooms</p>
-                                                    <p className="font-semibold">{booking.rooms.map((r: any) => r.name).join(', ')}</p>
-                                                </div>
-                                            )}
+                                        <div>
+                                            <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Check-out</p>
+                                            <p className="font-medium text-sm">{booking.dates.checkOut}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Guests</p>
+                                            <p className="font-medium text-sm">{booking.guests}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Room</p>
+                                            <p className="font-medium text-sm truncate" title={booking.rooms?.[0]?.name}>
+                                                {booking.rooms?.[0]?.name || 'Unassigned'}
+                                            </p>
                                         </div>
                                     </div>
-                                )}
+                                </Link>
                                 {booking.paypalTransactionId && (
-                                    <div className="mt-4 pt-4 border-t text-xs text-muted-foreground">
-                                        <p>PayPal Transaction: {booking.paypalTransactionId}</p>
+                                    <div className="mt-3 text-xs text-muted-foreground flex gap-1 items-center px-1">
+                                        <span className="w-2 h-2 rounded-full bg-blue-400"></span>
+                                        PayPal: {booking.paypalTransactionId}
                                     </div>
                                 )}
                             </CardContent>
                         </Card>
-                    ))}
-                </div>
+                    ))
+                    }
+                </div >
             )}
-        </div>
+        </div >
     );
 }
