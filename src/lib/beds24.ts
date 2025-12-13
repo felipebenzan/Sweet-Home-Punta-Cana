@@ -172,7 +172,7 @@ export const Beds24 = {
         // Fallback Logic from getAvailability (Emergency Fix)
         // Fallback Logic from getAvailability (Emergency Fix)
         const apiKey = process.env.BEDS24_API_KEY || "SweetHome2025SecretKeyX99";
-        const propKey = process.env.BEDS24_PROP_KEY || process.env.BEDS24_PROP_ID || "SweetHomeSecretKey2025!";
+        const propKey = process.env.BEDS24_PROP_KEY || "SweetHomeSecretKey2025!";
 
         // Enhanced Debugging for Env Vars
         const debugEnv = {
