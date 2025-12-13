@@ -36,7 +36,7 @@ export default function RoomBookingsCalendar() {
 
     const loadBookings = async () => {
         try {
-            const response = await fetch('/api/bookings');
+            const response = await fetch('/api/bookings', { cache: 'no-store' });
             const data = await response.json();
             setBookings(data.bookings?.filter((b: Booking) => b.type === 'room') || []);
         } catch (error) {
@@ -153,13 +153,15 @@ export default function RoomBookingsCalendar() {
         if (!selectedDate) return null;
 
         const dayStatus = getBookingsForDate(selectedDate);
+        const [y, m, d] = selectedDate.split('-').map(Number);
+        const displayDate = new Date(y, m - 1, d).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
         const hasBookings = dayStatus.checkIns.length > 0 || dayStatus.stayOvers.length > 0 || dayStatus.checkOuts.length > 0;
 
         if (!hasBookings) {
             return (
                 <Card className="mt-6">
                     <CardContent className="p-6 text-center text-muted-foreground">
-                        No bookings for {new Date(selectedDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                        No bookings for {displayDate}
                     </CardContent>
                 </Card>
             );
@@ -169,7 +171,7 @@ export default function RoomBookingsCalendar() {
             <Card className="mt-6">
                 <CardHeader>
                     <CardTitle>
-                        Bookings for {new Date(selectedDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                        Bookings for {displayDate}
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">

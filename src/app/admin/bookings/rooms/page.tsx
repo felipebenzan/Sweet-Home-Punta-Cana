@@ -1,7 +1,6 @@
 import { verifySession } from '@/lib/auth';
 import { redirect } from 'next/navigation';
-import { readFile } from 'fs/promises';
-import { join } from 'path';
+import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,16 +9,36 @@ import { Badge } from '@/components/ui/badge';
 
 async function getBookings() {
     try {
-        const bookingsPath = join(process.cwd(), 'src', 'data', 'bookings.json');
-        const fileContent = await readFile(bookingsPath, 'utf-8');
-        const bookings = JSON.parse(fileContent);
-        // Filter only room bookings and sort by most recent
-        return bookings
-            .filter((b: any) => b.type === 'room')
-            .sort((a: any, b: any) =>
-                new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-            );
+        const reservations = await prisma.reservation.findMany({
+            include: { room: true },
+            orderBy: { createdAt: 'desc' }
+        });
+
+        // Map Prisma reservations to the UI structure expected by the component
+        return reservations.map((r) => ({
+            confirmationId: r.id,
+            createdAt: r.createdAt.toISOString(),
+            // Guest Details
+            guestName: r.guestName,
+            guestEmail: r.guestEmail,
+            customer: {
+                name: r.guestName,
+                email: r.guestEmail,
+                phone: r.guestPhone || ''
+            },
+            // Pricing & Dates
+            totalPrice: r.totalPrice,
+            dates: {
+                checkIn: r.checkInDate.toISOString().split('T')[0],
+                checkOut: r.checkOutDate.toISOString().split('T')[0]
+            },
+            guests: r.numberOfGuests,
+            // Wrap single room in array for UI consistency
+            rooms: r.room ? [{ name: r.room.name }] : [],
+            type: 'room'
+        }));
     } catch (error) {
+        console.error("Failed to fetch bookings:", error);
         return [];
     }
 }

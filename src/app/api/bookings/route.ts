@@ -244,9 +244,19 @@ export async function GET() {
                 email: r.guestEmail,
                 phone: r.guestPhone
             },
+            // Legacy/Generic Date
             date: r.checkInDate.toISOString().split('T')[0],
             createdAt: r.createdAt.toISOString(),
             totalPrice: r.totalPrice,
+
+            // 🟢 Calendar-Compatible Structure
+            dates: {
+                checkIn: r.checkInDate.toISOString().split('T')[0],
+                checkOut: r.checkOutDate.toISOString().split('T')[0]
+            },
+            rooms: r.room ? [{ name: r.room.name, slug: r.room.slug }] : [],
+            guests: r.numberOfGuests,
+
             details: {
                 checkIn: r.checkInDate.toISOString().split('T')[0],
                 checkOut: r.checkOutDate.toISOString().split('T')[0],
