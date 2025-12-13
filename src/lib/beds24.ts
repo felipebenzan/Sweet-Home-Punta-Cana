@@ -34,7 +34,8 @@ export interface Beds24DebugInfo {
 export const Beds24 = {
     getAvailability: async ({ arrival, departure, numAdults, roomIds, auth }: Beds24Request): Promise<{ data: Record<string, Beds24Availability>, debug: Beds24DebugInfo }> => {
         // Auth Keys (For accessing secured data if needed)
-        const apiKey = auth?.apiKey || process.env.BEDS24_API_KEY;
+        // Auth Keys (Hardcoded fallback to bypass Vercel Env issues)
+        const apiKey = auth?.apiKey || process.env.BEDS24_API_KEY || "SweetHome2025SecretKeyX99";
 
         // Prop ID (The Identifier, e.g. 303042)
         // If BEDS24_PROP_KEY is a password (long string), we MUST NOT use it as an ID.
@@ -169,8 +170,9 @@ export const Beds24 = {
     setBooking: async (bookingData: any): Promise<{ success: boolean; debug: Beds24DebugInfo }> => {
         // Fallback Logic from getAvailability (Emergency Fix)
         // Fallback Logic from getAvailability (Emergency Fix)
-        const apiKey = process.env.BEDS24_API_KEY;
-        const propKey = process.env.BEDS24_PROP_KEY || process.env.BEDS24_PROP_ID || "303042";
+        // Fallback Logic from getAvailability (Emergency Fix)
+        const apiKey = process.env.BEDS24_API_KEY || "SweetHome2025SecretKeyX99";
+        const propKey = process.env.BEDS24_PROP_KEY || process.env.BEDS24_PROP_ID || "SweetHomeSecretKey2025!";
 
         // Enhanced Debugging for Env Vars
         const debugEnv = {
