@@ -431,6 +431,8 @@ function BookingForm({
   onBundledItemChange,
   onRemoveBundledItem,
   isBookable,
+  isMobile,
+
 }: {
   mainExcursion: BundledItem;
   onMainExcursionChange: (newState: Omit<BundledItem, keyof Excursion>) => void;
