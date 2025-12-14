@@ -131,8 +131,8 @@ export async function sendBookingConfirmation(data: BookingEmailData) {
           .footer { text-align: center; padding: 20px; font-size: 12px; color: #666; background: #f9f9f9; }
           
           /* Mobile Responsive */
-          @media only screen and (max-width: 480px) {
-            .mob-stack { display: block !important; width: 100% !important; padding-left: 0 !important; padding-right: 0 !important; }
+          @media only screen and (max-width: 600px) {
+            .mob-stack { display: block !important; width: 100% !important; padding-left: 0 !important; padding-right: 0 !important; box-sizing: border-box !important; }
             .mob-center { text-align: center !important; }
             .mob-mb { margin-bottom: 20px !important; }
             
@@ -140,9 +140,11 @@ export async function sendBookingConfirmation(data: BookingEmailData) {
             .stack-column {
                 display: block !important;
                 width: 100% !important;
+                max-width: 100% !important;
                 border-right: none !important;
                 border-bottom: 1px dashed #ccc !important;
                 padding-bottom: 20px !important;
+                box-sizing: border-box !important;
             }
             .stack-column:last-child {
                 border-bottom: none !important;
@@ -154,6 +156,7 @@ export async function sendBookingConfirmation(data: BookingEmailData) {
                 width: 100% !important;
                 padding: 10px 0 !important;
                 border-bottom: 1px dashed #eee;
+                box-sizing: border-box !important;
             }
             .ticket-column:last-child { border-bottom: none; }
           }
