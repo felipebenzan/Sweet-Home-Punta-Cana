@@ -136,18 +136,11 @@ function AirportTransferPageComponent() {
     }
   };
 
-  const handleContinueStep2 = () => {
-    if (validateStep2()) {
-      setCurrentStep(3);
-    }
-  };
+  // Renamed from handleProceed for clarity, now called when moving to Step 3
+  const handleReviewAndPay = async () => {
+    if (!validateStep2()) return;
 
-  const handleProceed = async () => {
-    if (!termsAccepted) {
-      toast({ title: "Terms Required", description: "Please accept the terms and conditions.", variant: "destructive" });
-      return;
-    }
-
+    // Check availability before moving to payment step
     setIsProcessing(true);
 
     const checkDate = direction === 'arrive' || direction === 'round' ? arrivalDate : departureDate;
@@ -175,7 +168,10 @@ function AirportTransferPageComponent() {
         return;
       }
 
-      setShowPaypal(true);
+      // If available, proceed to Step 3 (Payment)
+      setCurrentStep(3);
+      setIsProcessing(false);
+
     } catch (error) {
       console.error('Availability check failed:', error);
       toast({
@@ -186,6 +182,8 @@ function AirportTransferPageComponent() {
       setIsProcessing(false);
     }
   };
+
+
 
   const onPaymentSuccess = async (paypalOrderId: string, paypalTransactionId: string) => {
     toast({ title: 'Payment Successful!', description: 'Finalizing your booking, please wait...' });
@@ -307,8 +305,7 @@ function AirportTransferPageComponent() {
       <section className="max-w-7xl mx-auto px-6 py-16">
         {/* Main Content - Layout Adapts to Step */}
         <div className={cn(
-          "grid grid-cols-1 gap-12",
-          currentStep === 3 ? "lg:grid-cols-[60%_40%]" : "max-w-3xl mx-auto"
+          "grid grid-cols-1 gap-12 max-w-3xl mx-auto"
         )}>
 
           {/* Left Column - Booking Form (60%) */}
@@ -564,11 +561,21 @@ function AirportTransferPageComponent() {
                     BACK
                   </Button>
                   <Button
-                    onClick={handleContinueStep2}
+                    onClick={handleReviewAndPay}
+                    disabled={isProcessing}
                     className="flex-1 bg-shpc-yellow hover:bg-shpc-yellow/90 text-shpc-ink font-semibold py-7"
                   >
-                    CONTINUE
-                    <ArrowRight className="ml-2 h-5 w-5" />
+                    {isProcessing ? (
+                      <>
+                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                        Checking...
+                      </>
+                    ) : (
+                      <>
+                        Review and pay
+                        <ArrowRight className="ml-2 h-5 w-5" />
+                      </>
+                    )}
                   </Button>
                 </div>
               </div>
@@ -586,159 +593,144 @@ function AirportTransferPageComponent() {
                   </p>
                 </div>
 
-                {!showPaypal ? (
-                  <>
-                    {/* Boarding Pass Container */}
-                    <div className="bg-[#FAF8F5] border-2 border-dashed border-neutral-300 rounded-lg overflow-hidden">
-                      {/* Header */}
-                      <div className="p-8 border-b border-neutral-300 flex items-start justify-between">
-                        <div>
-                          <p className="font-playfair text-2xl font-bold text-shpc-ink">Sweet Home</p>
-                          <p className="font-playfair text-2xl font-bold text-shpc-ink">Punta Cana</p>
-                        </div>
-                        <div>
-                          <p className="font-inter text-sm font-bold text-shpc-ink uppercase tracking-wider">
-                            BOARDING PASS
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* Main Content - Two Columns */}
-                      <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] divide-y md:divide-y-0 md:divide-x divide-dashed divide-neutral-300">
-
-                        {/* Left Column - Trip Details */}
-                        <div className="p-8 space-y-6">
-                          <div className="grid grid-cols-2 gap-6">
-                            <div className="space-y-1">
-                              <p className="text-xs text-neutral-500 font-inter uppercase tracking-wide">Route:</p>
-                              <p className="font-inter font-semibold text-shpc-ink">{DIRECTION_DETAILS[direction].label}</p>
-                            </div>
-
-                            {showArrival && arrivalFlight && (
-                              <div className="space-y-1">
-                                <p className="text-xs text-neutral-500 font-inter uppercase tracking-wide">Flight #:</p>
-                                <p className="font-inter font-semibold text-shpc-ink">{arrivalAirline} {arrivalFlight}</p>
-                              </div>
-                            )}
-                          </div>
-
-                          <div className="space-y-1">
-                            <p className="text-xs text-neutral-500 font-inter uppercase tracking-wide">Date:</p>
-                            <p className="font-inter font-semibold text-shpc-ink">
-                              {showArrival ? (arrivalDate ? format(arrivalDate, "MMM do yyyy") : "") : (departureDate ? format(departureDate, "MMM do yyyy") : "")}
-                            </p>
-                          </div>
-
-                          <div className="space-y-3">
-                            <div className="space-y-1">
-                              <p className="text-xs text-neutral-500 font-inter uppercase tracking-wide">From</p>
-                              <p className="font-inter text-shpc-ink">Punta Cana Intl. Airport (PUJ)</p>
-                            </div>
-
-                            <div className="space-y-1">
-                              <p className="text-xs text-neutral-500 font-inter uppercase tracking-wide">To</p>
-                              <p className="font-inter font-semibold text-shpc-ink">Sweet Home Punta Cana</p>
-                            </div>
-                          </div>
-
-
-                        </div>
-
-                        {/* Right Column - Passenger Info & QR */}
-                        <div className="p-8 space-y-6 md:w-64">
-                          <div className="space-y-4">
-                            <div className="space-y-1">
-                              <p className="text-xs text-neutral-500 font-inter uppercase tracking-wide">Passengers</p>
-                              <p className="font-inter font-semibold text-shpc-ink">{passengers}</p>
-                            </div>
-
-                            <div className="space-y-1">
-                              <p className="text-xs text-neutral-500 font-inter uppercase tracking-wide">Guest Name</p>
-                              <p className="font-playfair font-bold text-shpc-ink text-lg uppercase">
-                                {guest.name || 'GUEST NAME'}
-                              </p>
-                            </div>
-
-                            {guest.email && (
-                              <div className="space-y-1">
-                                <p className="text-xs text-neutral-500 font-inter uppercase tracking-wide">Email</p>
-                                <p className="font-inter text-sm text-shpc-ink break-all">{guest.email}</p>
-                              </div>
-                            )}
-
-                            {guest.phone && (
-                              <div className="space-y-1">
-                                <p className="text-xs text-neutral-500 font-inter uppercase tracking-wide">Phone</p>
-                                <p className="font-inter text-sm text-shpc-ink">{guest.phone}</p>
-                              </div>
-                            )}
-                          </div>
-
-
-                        </div>
-                      </div>
+                <div className="bg-[#FAF8F5] border-2 border-dashed border-neutral-300 rounded-lg overflow-hidden">
+                  {/* Header */}
+                  <div className="p-8 border-b border-neutral-300 flex items-start justify-between">
+                    <div>
+                      <p className="font-playfair text-2xl font-bold text-shpc-ink">Sweet Home</p>
+                      <p className="font-playfair text-2xl font-bold text-shpc-ink">Punta Cana</p>
                     </div>
+                    <div>
+                      <p className="font-inter text-sm font-bold text-shpc-ink uppercase tracking-wider">
+                        BOARDING PASS
+                      </p>
+                    </div>
+                  </div>
 
-                    {/* Peace of Mind Note */}
-                    <div className="bg-blue-50 p-4 rounded-xl border border-blue-100 flex gap-3">
-                      <div className="bg-blue-100 p-2 rounded-full h-fit">
-                        <Check className="w-4 h-4 text-blue-600" />
+                  {/* Main Content - Two Columns */}
+                  <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] divide-y md:divide-y-0 md:divide-x divide-dashed divide-neutral-300">
+
+                    {/* Left Column - Trip Details */}
+                    <div className="p-8 space-y-6">
+                      <div className="grid grid-cols-2 gap-6">
+                        <div className="space-y-1">
+                          <p className="text-xs text-neutral-500 font-inter uppercase tracking-wide">Route:</p>
+                          <p className="font-inter font-semibold text-shpc-ink">{DIRECTION_DETAILS[direction].label}</p>
+                        </div>
+
+                        {showArrival && arrivalFlight && (
+                          <div className="space-y-1">
+                            <p className="text-xs text-neutral-500 font-inter uppercase tracking-wide">Flight #:</p>
+                            <p className="font-inter font-semibold text-shpc-ink">{arrivalAirline} {arrivalFlight}</p>
+                          </div>
+                        )}
                       </div>
-                      <div>
-                        <p className="font-bold text-blue-900 text-sm">🌟 Peace of Mind Promise</p>
-                        <p className="text-blue-800/80 text-sm mt-1 leading-relaxed">
-                          Your driver will be waiting for you at the airport exit holding a sign with your name. We proactively track your flight for any delays, ensuring your pick-up is on time, every time.
+
+                      <div className="space-y-1">
+                        <p className="text-xs text-neutral-500 font-inter uppercase tracking-wide">Date:</p>
+                        <p className="font-inter font-semibold text-shpc-ink">
+                          {showArrival ? (arrivalDate ? format(arrivalDate, "MMM do yyyy") : "") : (departureDate ? format(departureDate, "MMM do yyyy") : "")}
                         </p>
                       </div>
+
+                      <div className="space-y-3">
+                        <div className="space-y-1">
+                          <p className="text-xs text-neutral-500 font-inter uppercase tracking-wide">From</p>
+                          <p className="font-inter text-shpc-ink">Punta Cana Intl. Airport (PUJ)</p>
+                        </div>
+
+                        <div className="space-y-1">
+                          <p className="text-xs text-neutral-500 font-inter uppercase tracking-wide">To</p>
+                          <p className="font-inter font-semibold text-shpc-ink">Sweet Home Punta Cana</p>
+                        </div>
+                      </div>
+
+
                     </div>
 
-                    {/* Terms & Conditions */}
-                    <div className="flex items-start space-x-3 pt-4">
-                      <Checkbox
-                        id="terms"
-                        checked={termsAccepted}
-                        onCheckedChange={(checked) => setTermsAccepted(checked as boolean)}
-                        className="mt-1"
-                      />
-                      <label htmlFor="terms" className="text-sm text-neutral-600 font-inter leading-relaxed">
-                        I accept the{' '}
-                        <Link href="/terms/transfers" target="_blank" className="text-shpc-yellow hover:text-shpc-yellow/80 underline">
-                          Transfer Policy and Conditions
-                        </Link>
-                        .
-                      </label>
-                    </div>
+                    {/* Right Column - Passenger Info & QR */}
+                    <div className="p-8 space-y-6 md:w-64">
+                      <div className="space-y-4">
+                        <div className="space-y-1">
+                          <p className="text-xs text-neutral-500 font-inter uppercase tracking-wide">Passengers</p>
+                          <p className="font-inter font-semibold text-shpc-ink">{passengers}</p>
+                        </div>
 
-                    {/* Action Buttons */}
-                    <div className="grid grid-cols-2 gap-4 pt-6">
-                      <Button
-                        onClick={() => setCurrentStep(2)}
-                        variant="outline"
-                        className="py-7 border-neutral-300 font-semibold"
-                      >
-                        BACK
-                      </Button>
-                      <Button
-                        onClick={handleProceed}
-                        disabled={isProcessing}
-                        className="bg-shpc-yellow hover:bg-shpc-yellow/90 text-shpc-ink font-semibold py-7"
-                      >
-                        {isProcessing ? (
-                          <>
-                            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                            Preparing...
-                          </>
-                        ) : (
-                          'PAY AND BOOK NOW'
+                        <div className="space-y-1">
+                          <p className="text-xs text-neutral-500 font-inter uppercase tracking-wide">Guest Name</p>
+                          <p className="font-playfair font-bold text-shpc-ink text-lg uppercase">
+                            {guest.name || 'GUEST NAME'}
+                          </p>
+                        </div>
+
+                        {guest.email && (
+                          <div className="space-y-1">
+                            <p className="text-xs text-neutral-500 font-inter uppercase tracking-wide">Email</p>
+                            <p className="font-inter text-sm text-shpc-ink break-all">{guest.email}</p>
+                          </div>
                         )}
-                      </Button>
+
+                        {guest.phone && (
+                          <div className="space-y-1">
+                            <p className="text-xs text-neutral-500 font-inter uppercase tracking-wide">Phone</p>
+                            <p className="font-inter text-sm text-shpc-ink">{guest.phone}</p>
+                          </div>
+                        )}
+                      </div>
+
+
                     </div>
-                  </>
-                ) : (
-                  <div className="space-y-6">
-                    <h3 className="font-playfair text-2xl font-semibold text-center text-shpc-ink">
-                      Complete Your Secure Payment
-                    </h3>
+                  </div>
+
+                  {/* Total and Note Section */}
+                  <div className="bg-[#f0f0f0] p-6 border-t border-neutral-300 flex flex-col items-center justify-center space-y-2">
+                    <div className="flex items-baseline gap-2">
+                      <span className="font-playfair font-bold text-3xl text-shpc-ink">${total.toFixed(2)}</span>
+                      <span className="text-neutral-600">USD</span>
+                    </div>
+                    <p className="font-cursive text-green-600 text-lg">
+                      All fees and taxes included
+                    </p>
+                  </div>
+                </div>
+
+                {/* Peace of Mind Note */}
+                <div className="bg-blue-50 p-4 rounded-xl border border-blue-100 flex gap-3">
+                  <div className="bg-blue-100 p-2 rounded-full h-fit">
+                    <Check className="w-4 h-4 text-blue-600" />
+                  </div>
+                  <div>
+                    <p className="font-bold text-blue-900 text-sm">🌟 Peace of Mind Promise</p>
+                    <p className="text-blue-800/80 text-sm mt-1 leading-relaxed">
+                      Your driver will be waiting for you at the airport exit holding a sign with your name. We proactively track your flight for any delays, ensuring your pick-up is on time, every time.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Terms & Conditions */}
+                <div className="flex items-start space-x-3 pt-4">
+                  <Checkbox
+                    id="terms"
+                    checked={termsAccepted}
+                    onCheckedChange={(checked) => setTermsAccepted(checked as boolean)}
+                    className="mt-1"
+                  />
+                  <label htmlFor="terms" className="text-sm text-neutral-600 font-inter leading-relaxed">
+                    I accept the{' '}
+                    <Link href="/terms/transfers" target="_blank" className="text-shpc-yellow hover:text-shpc-yellow/80 underline">
+                      Transfer Policy and Conditions
+                    </Link>
+                    .
+                  </label>
+                </div>
+
+                {/* Payment Buttons (Replaces previous Action Buttons) */}
+                <div className="space-y-6 pt-6">
+                  <h3 className="font-playfair text-2xl font-semibold text-center text-shpc-ink">
+                    Complete Your Secure Payment
+                  </h3>
+                  {/* Only show PayPal buttons if terms are accepted (optional, but good UX) */}
+                  {termsAccepted ? (
                     <PayPalButtonsWrapper
                       amount={total.toString()}
                       currency={CURRENCY}
@@ -746,98 +738,26 @@ function AirportTransferPageComponent() {
                       onPaymentError={onPaymentError}
                       onPaymentCancel={onPaymentCancel}
                     />
-                    <Button
-                      variant="outline"
-                      className="w-full border-neutral-300 py-6"
-                      onClick={onPaymentCancel}
-                      disabled={isProcessing}
-                    >
-                      Back
-                    </Button>
-                  </div>
-                )}
+                  ) : (
+                    <div className="text-center p-4 bg-yellow-50 text-yellow-800 rounded-md border border-yellow-200">
+                      Please accept the terms and conditions to proceed with payment.
+                    </div>
+                  )}
+
+                  <Button
+                    variant="outline"
+                    className="w-full border-neutral-300 py-6"
+                    onClick={() => setCurrentStep(2)}
+                    disabled={isProcessing}
+                  >
+                    Back to Details
+                  </Button>
+                </div>
               </div>
             )}
           </div>
 
-          {/* Right Column - Luxury Ticket Summary (Only on Step 3) */}
-          {currentStep === 3 && (
-            <div className="lg:sticky lg:top-24 h-fit">
-              <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-                {/* Header */}
-                <div className="p-6 md:p-10 border-b border-neutral-200">
-                  <h3 className="font-playfair text-2xl font-semibold text-shpc-ink uppercase tracking-wide">
-                    Your Ticket Summary
-                  </h3>
-                </div>
 
-                {/* Itinerary Details */}
-                <div className="p-6 md:p-10 space-y-6">
-                  <div className="space-y-5">
-                    <div className="flex justify-between items-start">
-                      <span className="text-sm text-neutral-500 font-inter uppercase tracking-wide">Route</span>
-                      <span className="font-inter font-semibold text-shpc-ink text-right">{DIRECTION_DETAILS[direction].short}</span>
-                    </div>
-
-                    {showArrival && arrivalDate && (
-                      <div className="flex justify-between items-start">
-                        <span className="text-sm text-neutral-500 font-inter uppercase tracking-wide">Arrival</span>
-                        <span className="font-inter font-semibold text-shpc-ink">{format(arrivalDate, "MMM do yyyy")}</span>
-                      </div>
-                    )}
-
-                    {showDeparture && departureDate && (
-                      <div className="flex justify-between items-start">
-                        <span className="text-sm text-neutral-500 font-inter uppercase tracking-wide">Departure</span>
-                        <span className="font-inter font-semibold text-shpc-ink">{format(departureDate, "MMM do yyyy")} {departureTime}</span>
-                      </div>
-                    )}
-
-                    <div className="flex justify-between items-start">
-                      <span className="text-sm text-neutral-500 font-inter uppercase tracking-wide">Passengers</span>
-                      <span className="font-inter font-semibold text-shpc-ink">{passengers}</span>
-                    </div>
-                  </div>
-
-                  {/* Price Block - Luxury Receipt Style */}
-                  <div className="bg-shpc-ink rounded-lg p-8 text-center space-y-3 mt-8">
-                    <p className="text-white/70 text-xs font-inter uppercase tracking-widest">
-                      Total Amount
-                    </p>
-                    <p className="text-white text-5xl font-bold font-playfair">
-                      ${total.toFixed(2)}
-                    </p>
-                    <p className="text-white/60 text-xs font-inter">
-                      USD · All taxes included
-                    </p>
-                  </div>
-
-                  {/* Inclusions */}
-                  <div className="pt-6 space-y-4">
-                    <p className="font-playfair text-base font-semibold text-shpc-ink">Included:</p>
-                    <div className="space-y-3 text-sm text-neutral-700 font-inter">
-                      <div className="flex items-center gap-3">
-                        <Check className="h-4 w-4 text-shpc-yellow shrink-0" strokeWidth={3} />
-                        <span>24/7 Flight tracking</span>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <Check className="h-4 w-4 text-shpc-yellow shrink-0" strokeWidth={3} />
-                        <span>Meet & greet service</span>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <Check className="h-4 w-4 text-shpc-yellow shrink-0" strokeWidth={3} />
-                        <span>Luggage assistance</span>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <Check className="h-4 w-4 text-shpc-yellow shrink-0" strokeWidth={3} />
-                        <span>Professional driver</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
       </section>
     </div>
