@@ -89,7 +89,7 @@ export default function BookingBar() {
             }}
         >
             <div className="max-w-6xl mx-auto px-6">
-                <div className="grid grid-cols-[1fr_auto_auto] md:flex md:flex-row items-center gap-2 md:gap-4 md:justify-center">
+                <div className="grid grid-cols-[1.3fr_1fr_1fr] md:flex md:flex-row items-center gap-2 md:gap-4 md:justify-center">
 
                     {/* Date Picker */}
                     <div className="w-full md:w-auto flex-1 md:max-w-sm">
