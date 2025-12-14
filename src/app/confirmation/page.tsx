@@ -339,16 +339,19 @@ function ConfirmationContent() {
                     <p className="font-medium text-lg">11:00 AM</p>
                   </div>
                 </div>
-                {booking.room && booking.room.image && (
-                  <div className="mt-6">
-                    <p className="text-sm text-muted-foreground mb-2 font-medium">Room Preview</p>
-                    <div className="relative h-48 w-full sm:w-64 rounded-xl overflow-hidden shadow-sm">
+                {booking.room?.image && (
+                  <div className="mt-8">
+                    <div className="relative h-64 w-full rounded-2xl overflow-hidden shadow-md group">
                       <Image
                         src={booking.room.image}
                         alt={booking.roomName}
                         fill
-                        className="object-cover"
+                        className="object-cover transition-transform duration-700 group-hover:scale-105"
                       />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                      <div className="absolute bottom-4 left-4 text-white font-playfair text-xl font-bold drop-shadow-md">
+                        {booking.roomName}
+                      </div>
                     </div>
                   </div>
                 )}
