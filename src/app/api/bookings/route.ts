@@ -195,11 +195,11 @@ export async function POST(request: NextRequest) {
                 bookingDetails: {
                     ...booking,
                     phone,
-                    roomName: booking.room?.name,
+                    roomName: booking.room?.name || booking.rooms?.[0]?.name,
                     checkInDate: booking.dates?.checkIn,
                     checkOutDate: booking.dates?.checkOut,
                     numberOfGuests: booking.guests,
-                    room: booking.room
+                    room: booking.room || booking.rooms?.[0]
                 },
                 confirmationId,
                 totalPrice: booking.totalPrice || booking.pricing?.totalUSD || 0,
