@@ -66,10 +66,13 @@ export default function RoomClientPage({ roomData, otherRooms }: RoomClientPageP
                 </div>
             </section>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 max-w-7xl mx-auto p-4 lg:p-8 gap-8 lg:gap-12">
+            {/* Booking Bar */}
+            <BookingBar variant="horizontal" roomSlug={room.slug} />
 
-                {/* Left Column (Content) */}
-                <div className="lg:col-span-2 space-y-12">
+            <div className="max-w-4xl mx-auto p-4 lg:p-8 space-y-12">
+
+                {/* Content */}
+                <div className="space-y-12">
                     {/* Room Description */}
                     <section>
                         <h2 className="text-4xl font-playfair font-bold text-shpc-ink mb-4">Your Private Retreat</h2>
@@ -146,27 +149,10 @@ export default function RoomClientPage({ roomData, otherRooms }: RoomClientPageP
                     </section>
                 </div>
 
-                {/* Right Column (Booking Widget) */}
-                <div className="lg:col-span-1">
-                    <div className="sticky top-24">
-                        <Card className="shadow-lg rounded-2xl">
-                            <CardHeader>
-                                <CardTitle className="text-2xl font-bold">Book Your Stay</CardTitle>
-                                <CardDescription>Select your dates to see the price.</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <BookingBar
-                                    variant="vertical"
-                                    roomSlug={room.slug}
-                                    disableSticky
-                                    className="border-none shadow-none p-0"
-                                />
-                            </CardContent>
-                        </Card>
-                    </div>
-                </div>
 
             </div>
+
+
 
             <div className="max-w-7xl mx-auto px-6 py-12">
                 <Separator />
@@ -234,6 +220,6 @@ export default function RoomClientPage({ roomData, otherRooms }: RoomClientPageP
                 {/* Enhance Your Stay Section */}
                 <GuestServicesCarousel />
             </div>
-        </div>
+        </div >
     );
 }
