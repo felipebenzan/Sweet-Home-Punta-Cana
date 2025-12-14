@@ -10,7 +10,19 @@ import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
-export default function BookingBar() {
+interface BookingBarProps {
+    variant?: 'horizontal' | 'vertical';
+    roomSlug?: string;
+    disableSticky?: boolean;
+    className?: string;
+}
+
+export default function BookingBar({
+    variant = 'horizontal',
+    roomSlug,
+    disableSticky = false,
+    className
+}: BookingBarProps) {
     const barRef = React.useRef<HTMLDivElement>(null);
     const searchParams = useSearchParams();
     const router = useRouter();
@@ -43,6 +55,8 @@ export default function BookingBar() {
 
     // Direct DOM manipulation for sticky styling to avoid re-renders
     React.useEffect(() => {
+        if (disableSticky) return;
+
         const bar = barRef.current;
         if (!bar) return;
 
@@ -62,7 +76,7 @@ export default function BookingBar() {
         window.addEventListener('scroll', handleScroll, { passive: true });
         handleScroll(); // Check on mount
         return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
+    }, [disableSticky]);
 
     const handleSearch = () => {
         if (!date?.from || !date?.to) return;
@@ -72,27 +86,39 @@ export default function BookingBar() {
         params.set('departure', format(date.to, 'yyyy-MM-dd'));
         params.set('numAdults', guests.toString());
 
+        if (roomSlug) {
+            params.set('room', roomSlug);
+        }
+
         router.push(`/search?${params.toString()}`);
     };
+
+    const isVertical = variant === 'vertical';
 
     return (
         <div
             ref={barRef}
             className={cn(
-                "w-full bg-white/95 backdrop-blur-sm transition-all duration-300 ease-in-out z-[900]",
-                "sticky",
-                "border-t border-b border-neutral-100", // Default state
-                "py-3"
+                "w-full transition-all duration-300 ease-in-out z-[900]",
+                !disableSticky && "bg-white/95 backdrop-blur-sm sticky border-t border-b border-neutral-100 py-3",
+                disableSticky && "static bg-transparent",
+                className
             )}
             style={{
-                top: 'var(--header-offset, 64px)',
+                top: !disableSticky ? 'var(--header-offset, 64px)' : 'auto',
             }}
         >
-            <div className="max-w-6xl mx-auto px-6">
-                <div className="grid grid-cols-[1.3fr_1fr_1fr] md:flex md:flex-row items-center gap-2 md:gap-4 md:justify-center">
+            <div className={cn(
+                !isVertical && "max-w-6xl mx-auto px-6",
+                isVertical && "w-full"
+            )}>
+                <div className={cn(
+                    !isVertical && "grid grid-cols-[1.3fr_1fr_1fr] md:flex md:flex-row items-center gap-2 md:gap-4 md:justify-center",
+                    isVertical && "flex flex-col gap-4"
+                )}>
 
                     {/* Date Picker */}
-                    <div className="w-full md:w-auto flex-1 md:max-w-sm">
+                    <div className={cn("w-full", !isVertical && "md:w-auto flex-1 md:max-w-sm")}>
                         <Popover>
                             <PopoverTrigger asChild>
                                 <Button
@@ -100,7 +126,8 @@ export default function BookingBar() {
                                     variant={"outline"}
                                     className={cn(
                                         "w-full justify-start text-left font-normal h-12 px-3 md:px-4 overflow-hidden",
-                                        !date && "text-muted-foreground"
+                                        !date && "text-muted-foreground",
+                                        isVertical && "bg-background"
                                     )}
                                 >
                                     <CalendarIcon className="mr-2 h-4 w-4 shrink-0" />
@@ -134,10 +161,14 @@ export default function BookingBar() {
                     </div>
 
                     {/* Guests Input */}
-                    <div className="w-auto md:w-[200px]">
+                    <div className={cn("w-full", !isVertical && "w-auto md:w-[200px]")}>
                         <Popover>
                             <PopoverTrigger asChild>
-                                <Button variant={'outline'} className="w-full justify-center md:justify-start text-left font-normal h-12 px-3 md:px-4">
+                                <Button variant={'outline'} className={cn(
+                                    "w-full justify-start text-left font-normal h-12 px-3 md:px-4",
+                                    !isVertical && "justify-center md:justify-start",
+                                    isVertical && "bg-background"
+                                )}>
                                     <Users className="h-4 w-4 md:mr-2" />
                                     <span className="ml-1 text-xs md:text-sm truncate">
                                         {guests} {guests === 1 ? 'Guest' : 'Guests'}
@@ -155,13 +186,16 @@ export default function BookingBar() {
                     </div>
 
                     {/* Submit Button */}
-                    <div className="w-auto md:w-auto">
+                    <div className={cn("w-full", !isVertical && "w-auto md:w-auto")}>
                         <Button
-                            className="w-full bg-shpc-yellow text-shpc-ink hover:bg-shpc-yellow/90 font-semibold h-12 px-4 md:px-8"
+                            className={cn(
+                                "w-full bg-shpc-yellow text-shpc-ink hover:bg-shpc-yellow/90 font-semibold h-12 px-4 md:px-8",
+                                isVertical && "text-base"
+                            )}
                             onClick={handleSearch}
                         >
-                            <span className="hidden md:inline">Check Availability</span>
-                            <span className="md:hidden">Search</span>
+                            <span className={cn(!isVertical && "hidden md:inline")}>Check Availability</span>
+                            <span className={cn(!isVertical && "md:hidden", isVertical && "hidden")}>Search</span>
                         </Button>
                     </div>
                 </div>

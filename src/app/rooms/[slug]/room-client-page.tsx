@@ -12,7 +12,7 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { Separator } from "@/components/ui/separator";
 import RoomCard from "@/components/room-card";
 import Link from "next/link";
-import DateSearch from "@/components/date-search";
+import BookingBar from "@/components/booking-bar";
 import { cn } from "@/lib/utils";
 import GuestServicesCarousel from "@/components/guest-services-carousel";
 import type { Room } from "@/lib/types";
@@ -155,7 +155,12 @@ export default function RoomClientPage({ roomData, otherRooms }: RoomClientPageP
                                 <CardDescription>Select your dates to see the price.</CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <DateSearch roomSlug={room.slug} />
+                                <BookingBar
+                                    variant="vertical"
+                                    roomSlug={room.slug}
+                                    disableSticky
+                                    className="border-none shadow-none p-0"
+                                />
                             </CardContent>
                         </Card>
                     </div>
