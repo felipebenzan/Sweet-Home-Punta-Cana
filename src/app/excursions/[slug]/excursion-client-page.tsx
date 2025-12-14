@@ -437,7 +437,7 @@ function BookingForm({
   bundledItems: BundledItem[];
   onBundledItemChange: (id: string, updatedValues: Partial<BundledItem>) => void;
   onRemoveBundledItem: (id: string) => void;
-  onRemoveBundledItem: (id: string) => void;
+
   isBookable: boolean;
   isMobile?: boolean;
 }) {
