@@ -82,6 +82,7 @@ export default function LaundryServicePage() {
     const handleContinueStep1 = () => {
         if (validateStep1()) {
             setCurrentStep(2);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     };
 
@@ -498,94 +499,96 @@ export default function LaundryServicePage() {
                         )}
                     </div>
 
-                    {/* Right Column - Summary Sidebar */}
-                    <div className={cn("lg:sticky lg:top-24 h-fit", currentStep === 2 && "order-first lg:order-none")}>
-                        <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-                            {/* Header */}
-                            <div className="p-6 md:p-10 border-b border-neutral-200">
-                                <h3 className="font-playfair text-2xl font-semibold text-shpc-ink uppercase tracking-wide">
-                                    Service Summary
-                                </h3>
-                            </div>
-
-                            {/* Details */}
-                            <div className="p-6 md:p-10 space-y-6">
-                                <div className="space-y-5">
-                                    <div className="flex justify-between items-start">
-                                        <span className="text-sm text-neutral-500 font-inter uppercase tracking-wide">Service</span>
-                                        <span className="font-inter font-semibold text-shpc-ink text-right">Wash & Fold</span>
-                                    </div>
-
-                                    {date && (
-                                        <div className="flex justify-between items-start">
-                                            <span className="text-sm text-neutral-500 font-inter uppercase tracking-wide">Date</span>
-                                            <span className="font-inter font-semibold text-shpc-ink">{format(date, 'MMM d, yyyy')}</span>
-                                        </div>
-                                    )}
-
-                                    {roomNumber && (
-                                        <div className="flex justify-between items-start">
-                                            <span className="text-sm text-neutral-500 font-inter uppercase tracking-wide">Room</span>
-                                            <span className="font-inter font-semibold text-shpc-ink">{roomNumber}</span>
-                                        </div>
-                                    )}
-
-                                    <div className="flex justify-between items-start">
-                                        <span className="text-sm text-neutral-500 font-inter uppercase tracking-wide">Bags</span>
-                                        <span className="font-inter font-semibold text-shpc-ink">{bags}</span>
-                                    </div>
-
-                                    {pickupTime && (
-                                        <div className="flex justify-between items-start">
-                                            <span className="text-sm text-neutral-500 font-inter uppercase tracking-wide">Pickup</span>
-                                            <span className="font-inter font-semibold text-shpc-ink">{pickupTime}</span>
-                                        </div>
-                                    )}
-
-                                    <div className="flex justify-between items-start">
-                                        <span className="text-sm text-neutral-500 font-inter uppercase tracking-wide">Delivery</span>
-                                        <span className="font-inter font-semibold text-shpc-ink">Before 5:00 PM</span>
-                                    </div>
+                    {/* Right Column - Summary Sidebar - Hidden on Step 1 */}
+                    {currentStep > 1 && (
+                        <div className={cn("lg:sticky lg:top-24 h-fit", currentStep === 2 && "order-first lg:order-none")}>
+                            <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+                                {/* Header */}
+                                <div className="p-6 md:p-10 border-b border-neutral-200">
+                                    <h3 className="font-playfair text-2xl font-semibold text-shpc-ink uppercase tracking-wide">
+                                        Service Summary
+                                    </h3>
                                 </div>
 
-                                {/* Price Block */}
-                                <div className="bg-shpc-ink rounded-lg p-8 text-center space-y-3 mt-8">
-                                    <p className="text-white/70 text-xs font-inter uppercase tracking-widest">
-                                        Total Amount
-                                    </p>
-                                    <p className="text-white text-5xl font-bold font-playfair">
-                                        ${total.toFixed(2)}
-                                    </p>
-                                    <p className="text-white/60 text-xs font-inter">
-                                        USD · All taxes included
-                                    </p>
-                                </div>
+                                {/* Details */}
+                                <div className="p-6 md:p-10 space-y-6">
+                                    <div className="space-y-5">
+                                        <div className="flex justify-between items-start">
+                                            <span className="text-sm text-neutral-500 font-inter uppercase tracking-wide">Service</span>
+                                            <span className="font-inter font-semibold text-shpc-ink text-right">Wash & Fold</span>
+                                        </div>
 
-                                {/* Inclusions */}
-                                <div className="pt-6 space-y-4">
-                                    <p className="font-playfair text-base font-semibold text-shpc-ink">Included:</p>
-                                    <div className="space-y-3 text-sm text-neutral-700 font-inter">
-                                        <div className="flex items-center gap-3">
-                                            <Check className="h-4 w-4 text-shpc-yellow shrink-0" strokeWidth={3} />
-                                            <span>Professional wash & fold</span>
+                                        {date && (
+                                            <div className="flex justify-between items-start">
+                                                <span className="text-sm text-neutral-500 font-inter uppercase tracking-wide">Date</span>
+                                                <span className="font-inter font-semibold text-shpc-ink">{format(date, 'MMM d, yyyy')}</span>
+                                            </div>
+                                        )}
+
+                                        {roomNumber && (
+                                            <div className="flex justify-between items-start">
+                                                <span className="text-sm text-neutral-500 font-inter uppercase tracking-wide">Room</span>
+                                                <span className="font-inter font-semibold text-shpc-ink">{roomNumber}</span>
+                                            </div>
+                                        )}
+
+                                        <div className="flex justify-between items-start">
+                                            <span className="text-sm text-neutral-500 font-inter uppercase tracking-wide">Bags</span>
+                                            <span className="font-inter font-semibold text-shpc-ink">{bags}</span>
                                         </div>
-                                        <div className="flex items-center gap-3">
-                                            <Check className="h-4 w-4 text-shpc-yellow shrink-0" strokeWidth={3} />
-                                            <span>Same-day delivery</span>
+
+                                        {pickupTime && (
+                                            <div className="flex justify-between items-start">
+                                                <span className="text-sm text-neutral-500 font-inter uppercase tracking-wide">Pickup</span>
+                                                <span className="font-inter font-semibold text-shpc-ink">{pickupTime}</span>
+                                            </div>
+                                        )}
+
+                                        <div className="flex justify-between items-start">
+                                            <span className="text-sm text-neutral-500 font-inter uppercase tracking-wide">Delivery</span>
+                                            <span className="font-inter font-semibold text-shpc-ink">Before 5:00 PM</span>
                                         </div>
-                                        <div className="flex items-center gap-3">
-                                            <Check className="h-4 w-4 text-shpc-yellow shrink-0" strokeWidth={3} />
-                                            <span>Quality detergent & softener</span>
-                                        </div>
-                                        <div className="flex items-center gap-3">
-                                            <Check className="h-4 w-4 text-shpc-yellow shrink-0" strokeWidth={3} />
-                                            <span>Neatly folded & packaged</span>
+                                    </div>
+
+                                    {/* Price Block */}
+                                    <div className="bg-shpc-ink rounded-lg p-8 text-center space-y-3 mt-8">
+                                        <p className="text-white/70 text-xs font-inter uppercase tracking-widest">
+                                            Total Amount
+                                        </p>
+                                        <p className="text-white text-5xl font-bold font-playfair">
+                                            ${total.toFixed(2)}
+                                        </p>
+                                        <p className="text-white/60 text-xs font-inter">
+                                            USD · All taxes included
+                                        </p>
+                                    </div>
+
+                                    {/* Inclusions */}
+                                    <div className="pt-6 space-y-4">
+                                        <p className="font-playfair text-base font-semibold text-shpc-ink">Included:</p>
+                                        <div className="space-y-3 text-sm text-neutral-700 font-inter">
+                                            <div className="flex items-center gap-3">
+                                                <Check className="h-4 w-4 text-shpc-yellow shrink-0" strokeWidth={3} />
+                                                <span>Professional wash & fold</span>
+                                            </div>
+                                            <div className="flex items-center gap-3">
+                                                <Check className="h-4 w-4 text-shpc-yellow shrink-0" strokeWidth={3} />
+                                                <span>Same-day delivery</span>
+                                            </div>
+                                            <div className="flex items-center gap-3">
+                                                <Check className="h-4 w-4 text-shpc-yellow shrink-0" strokeWidth={3} />
+                                                <span>Quality detergent & softener</span>
+                                            </div>
+                                            <div className="flex items-center gap-3">
+                                                <Check className="h-4 w-4 text-shpc-yellow shrink-0" strokeWidth={3} />
+                                                <span>Neatly folded & packaged</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    )}
                 </div>
             </section>
         </div>
