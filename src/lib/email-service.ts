@@ -1,4 +1,7 @@
 import { Resend } from 'resend';
+import { render } from '@react-email/render';
+import ReservationConfirmationEmail from '@/emails/reservation-confirmation';
+import { BookingDetails } from '@/lib/types';
 
 const resend = new Resend(process.env.RESEND_API_KEY || 're_123_build_placeholder');
 
@@ -31,6 +34,73 @@ export async function sendBookingConfirmation(data: BookingEmailData) {
 
     // Normalize details: Standalone has nested 'details', Room+Transfer has flattened properties
     const details = bookingDetails.details || bookingDetails;
+
+    // -------------------------------------------------------------------------
+    // NEW: Use React Email for Room Bookings
+    // -------------------------------------------------------------------------
+    if (normalizedBookingType === 'room') {
+        const checkIn = bookingDetails.checkInDate ? new Date(bookingDetails.checkInDate) : new Date();
+        const checkOut = bookingDetails.checkOutDate ? new Date(bookingDetails.checkOutDate) : new Date();
+        const nights = Math.ceil((checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60 * 24));
+
+        const bookingData: BookingDetails = {
+            confirmationId: confirmationId,
+            rooms: [{
+                id: "room-1",
+                name: bookingDetails.roomName || 'Luxury Room',
+                bedding: "King",
+                price: (totalPrice / (nights || 1)) || 0,
+                image: bookingDetails.room?.image || "https://images.unsplash.com/photo-1540541338287-41700207dee6?q=80&w=2070&auto=format&fit=crop",
+                capacity: bookingDetails.room?.capacity || 2,
+                slug: bookingDetails.room?.slug || "luxury-room"
+            }],
+            dates: {
+                from: bookingDetails.checkInDate || new Date().toISOString(),
+                to: bookingDetails.checkOutDate || new Date().toISOString()
+            },
+            guests: bookingDetails.numberOfGuests || 1,
+            nights: nights || 1,
+            totalPrice: totalPrice,
+            guestInfo: {
+                firstName: guestName.split(' ')[0],
+                lastName: guestName.split(' ').slice(1).join(' '),
+                email: guestEmail,
+                phone: bookingDetails.phone || bookingDetails.guestPhone || ''
+            },
+            // Check for airport transfer in serviceBookings if available
+            airportPickup: bookingDetails.serviceBookings?.find((sb: any) => sb.type === 'airport_transfer')
+                ? {
+                    tripType: 'one-way', // Default or derive
+                    price: bookingDetails.serviceBookings.find((sb: any) => sb.type === 'airport_transfer').total || 0,
+                    // Map other transfer details if possible, but minimal is fine for now
+                }
+                : undefined
+        };
+
+        try {
+            const emailHtml = await render(ReservationConfirmationEmail({ bookingDetails: bookingData }));
+
+            await resend.emails.send({
+                from: fromAddress,
+                to: [guestEmail],
+                bcc: [
+                    process.env.BOOKING_NOTIFICATION_EMAIL || 'info@sweethomepuntacana.com',
+                    'sweethomepc123@gmail.com'
+                ],
+                subject,
+                html: emailHtml,
+            });
+
+            console.log(`✅ [React Email] Room booking confirmation sent to ${guestEmail}`);
+            return { success: true, html: emailHtml };
+        } catch (error) {
+            console.error('❌ Failed to send component-based email:', error);
+            // Fallback to legacy string template if component fails? 
+            // Better to return error to debug.
+            return { success: false, error, html: '' };
+        }
+    }
+    // -------------------------------------------------------------------------
 
     // Helper to format date
     const formatDate = (dateStr: string) => {
