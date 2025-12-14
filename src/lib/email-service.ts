@@ -165,6 +165,20 @@ export async function sendBookingConfirmation(data: BookingEmailData) {
       <body>
         ${(() => {
             if (normalizedBookingType === 'transfer') {
+                const details = bookingDetails.details || bookingDetails;
+                const direction = details.direction || 'arrive';
+
+                // Logic directly from confirmation page
+                const from = direction === 'arrive' ? "Punta Cana Intl. Airport" : "Sweet Home Punta Cana";
+                const fromCode = direction === 'arrive' ? "PUJ" : "SHPC";
+                const to = direction === 'arrive' ? "Sweet Home Punta Cana" : "Punta Cana Intl. Airport";
+                const toCode = direction === 'arrive' ? "SHPC" : "PUJ";
+                const flightNumber = direction === 'arrive' ? (details.arrivalFlight || details.flightNumber) : (details.departureFlight || details.flightNumber);
+                const date = direction === 'arrive' ? (details.arrivalDate || details.date) : (details.departureDate || details.date);
+                const time = direction === 'depart' ? details.departureTime : null;
+                const formattedDate = date ? formatDate(date) + (new Date(date).getFullYear() === new Date().getFullYear() ? '' : ` ${new Date(date).getFullYear()}`) : 'N/A';
+
+
                 return `
             <div style="background-color: #f4f4f4; padding: 20px; font-family: 'Helvetica', 'Arial', sans-serif;">
               <!-- Confirmation Message -->
@@ -190,84 +204,113 @@ export async function sendBookingConfirmation(data: BookingEmailData) {
                     </div>
                 </div>
 
-                <!-- Ticket Body (3 Columns) -->
+                <!-- Ticket Body -->
                 <div>
                    <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
+                      <!-- Row 1 (Mobile: Col 1 & 2 stacked or side-by-side? Designing for Mobile 2-col visual parity) -->
                       <tr>
-                        <!-- Column 1: Departure / Arrival -->
-                        <td width="33.33%" valign="top" style="padding: 24px; border-right: 1px dashed #ccc; font-family: sans-serif;" class="stack-column">
-                            <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #999; font-weight: bold; margin-bottom: 15px;">Departure / Arrival</div>
-                            <div style="margin-bottom: 15px;">
-                                <div style="font-size: 10px; text-transform: uppercase; color: #666; margin-bottom: 2px;">From</div>
-                                <div style="font-size: 14px; font-weight: bold; color: #1A1E26; margin-bottom: 2px;">${details.direction === 'arrive' ? 'Punta Cana Intl. Airport' : 'Sweet Home Punta Cana'}</div>
-                                <div style="font-family: 'Courier New', monospace; font-size: 12px; color: #666;">${details.direction === 'arrive' ? 'PUJ' : 'SHPC'}</div>
-                            </div>
-                            <div style="position: relative; height: 1px; background-color: #ccc; margin: 15px 0;">
-                                <div style="position: absolute; top: -10px; left: 50%; margin-left: -10px; background-color: #FAF8F5; padding: 0 5px;">🚌</div>
-                            </div>
-                            <div style="margin-bottom: 20px;">
-                                <div style="font-size: 10px; text-transform: uppercase; color: #666; margin-bottom: 2px;">To</div>
-                                <div style="font-size: 14px; font-weight: bold; color: #1A1E26; margin-bottom: 2px;">${details.direction === 'arrive' ? 'Sweet Home Punta Cana' : 'Punta Cana Intl. Airport'}</div>
-                                <div style="font-family: 'Courier New', monospace; font-size: 12px; color: #666;">${details.direction === 'arrive' ? 'SHPC' : 'PUJ'}</div>
-                            </div>
-                            <div style="border-top: 1px dashed #ccc; padding-top: 15px;">
-                                <table width="100%">
-                                    <tr>
-                                        <td style="font-size: 10px; text-transform: uppercase; color: #999;">Flight</td>
-                                        <td style="font-family: 'Courier New', monospace; font-size: 12px; font-weight: bold; text-align: right; color: #1A1E26;">${details.direction === 'arrive' ? (details.arrivalFlight || details.flightNumber || 'N/A') : (details.departureFlight || details.flightNumber || 'N/A')}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="font-size: 10px; text-transform: uppercase; color: #999; padding-top: 5px;">Date</td>
-                                        <td style="font-family: 'Courier New', monospace; font-size: 12px; font-weight: bold; text-align: right; color: #1A1E26; padding-top: 5px;">${details.arrivalDate || details.departureDate || details.date || 'N/A'}</td>
-                                    </tr>
-                                    ${details.direction === 'depart' && details.departureTime ? `
-                                    <tr>
-                                        <td style="font-size: 10px; text-transform: uppercase; color: #999; padding-top: 5px;">Time</td>
-                                        <td style="font-family: 'Courier New', monospace; font-size: 12px; font-weight: bold; text-align: right; color: #1A1E26; padding-top: 5px;">${details.departureTime}</td>
-                                    </tr>` : ''}
-                                </table>
-                            </div>
-                        </td>
+                          <td style="padding: 0; vertical-align: top;">
+                              <!-- Desktop: 3 Cols. Mobile: We simulate grid by specific table nesting or full widths -->
+                              <!-- We'll use the 'stack-column' class to force specific behavior on mobile -->
+                              
+                              <!-- Main Wrapper Table -->
+                              <table width="100%" cellpadding="0" cellspacing="0">
+                                  <tr>
+                                      <!-- Column 1: Departure / Arrival -->
+                                      <td width="33.33%" valign="top" style="padding: 24px; border-right: 1px dashed #ccc; border-bottom: 1px dashed #ccc; font-family: sans-serif;" class="stack-column">
+                                        <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #999; font-weight: bold; margin-bottom: 15px;">Departure / Arrival</div>
+                                        <div style="margin-bottom: 15px;">
+                                            <div style="font-size: 10px; text-transform: uppercase; color: #666; margin-bottom: 2px;">From</div>
+                                            <div style="font-size: 14px; font-weight: bold; color: #1A1E26; margin-bottom: 2px;">${from}</div>
+                                            <div style="font-family: 'Courier New', monospace; font-size: 12px; color: #666;">${fromCode}</div>
+                                        </div>
+                                        
+                                        <!-- Bus Line -->
+                                        <div style="position: relative; height: 1px; background-color: #ccc; margin: 15px 0;">
+                                            <div style="position: absolute; top: -10px; left: 50%; margin-left: -10px; background-color: #FAF8F5; padding: 0 5px;">🚌</div>
+                                        </div>
 
-                        <!-- Column 2: Passenger / Booking Info -->
-                        <td width="33.33%" valign="top" style="padding: 24px; border-right: 1px dashed #ccc; font-family: sans-serif;" class="stack-column">
-                            <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #999; font-weight: bold; margin-bottom: 15px;">Passenger / Info</div>
-                            <div style="margin-bottom: 15px;">
-                                <div style="font-size: 10px; text-transform: uppercase; color: #666; margin-bottom: 2px;">Passenger Name</div>
-                                <div style="font-family: 'Times New Roman', serif; font-size: 18px; font-weight: bold; color: #1A1E26; text-transform: uppercase;">${guestName}</div>
-                            </div>
-                             <div style="margin-bottom: 15px;">
-                                <div style="font-size: 10px; text-transform: uppercase; color: #666; margin-bottom: 2px;">Service Type</div>
-                                <div style="font-size: 14px; font-weight: bold; color: #1A1E26;">${details.direction === 'arrive' ? 'Arrival' : (details.direction === 'depart' ? 'Departure' : 'Round Trip')}</div>
-                            </div>
-                             <div style="margin-bottom: 15px;">
-                                <div style="font-size: 10px; text-transform: uppercase; color: #666; margin-bottom: 2px;">Guests</div>
-                                <div style="font-size: 14px; font-weight: bold; color: #1A1E26;">
-                                     ${(details.pax || details.guests || '1').toString().replace(/[^0-9]/g, '') || '1'} 
-                                     <span style="font-size: 12px; font-weight: normal; color: #666;">(Max 2)</span>
-                                </div>
-                            </div>
-                            <div style="background-color: rgba(212, 175, 55, 0.1); border-left: 2px solid #D4AF37; padding: 10px; margin-top: 20px;">
-                                <p style="margin: 0; font-size: 11px; color: #1A1E26; line-height: 1.4;"><strong>Note:</strong> Your driver will be waiting with a sign bearing your name.</p>
-                            </div>
-                        </td>
+                                        <div style="margin-bottom: 20px;">
+                                            <div style="font-size: 10px; text-transform: uppercase; color: #666; margin-bottom: 2px;">To</div>
+                                            <div style="font-size: 14px; font-weight: bold; color: #1A1E26; margin-bottom: 2px;">${to}</div>
+                                            <div style="font-family: 'Courier New', monospace; font-size: 12px; color: #666;">${toCode}</div>
+                                        </div>
 
-                        <!-- Column 3: Price / Code -->
-                        <td width="33.33%" valign="top" style="padding: 24px; font-family: sans-serif;" class="stack-column">
-                            <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #999; font-weight: bold; margin-bottom: 15px;">Price / Code</div>
-                            <div style="text-align: center; margin-bottom: 20px;">
-                                <div style="background: white; border: 2px solid #ccc; padding: 10px; display: inline-block; border-radius: 4px;">
-                                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${confirmationId}" alt="QR Code" width="100" height="100" style="display: block;" />
-                                </div>
-                            </div>
-                            <div style="text-align: center;">
-                                <div style="font-size: 10px; text-transform: uppercase; color: #666; margin-bottom: 5px;">Total</div>
-                                <div style="font-family: 'Times New Roman', serif; font-size: 28px; font-weight: bold; color: #1A1E26;">$${totalPrice.toFixed(2)} USD</div>
-                            </div>
-                        </td>
+                                        <div style="border-top: 1px dashed #ccc; padding-top: 15px;">
+                                            <table width="100%">
+                                                <tr>
+                                                    <td style="font-size: 10px; text-transform: uppercase; color: #999;">Flight</td>
+                                                    <td style="font-family: 'Courier New', monospace; font-size: 12px; font-weight: bold; text-align: right; color: #1A1E26;">${flightNumber || 'N/A'}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="font-size: 10px; text-transform: uppercase; color: #999; padding-top: 5px;">Date</td>
+                                                    <td style="font-family: 'Courier New', monospace; font-size: 12px; font-weight: bold; text-align: right; color: #1A1E26; padding-top: 5px;">${formattedDate}</td>
+                                                </tr>
+                                                ${time ? `
+                                                <tr>
+                                                    <td style="font-size: 10px; text-transform: uppercase; color: #999; padding-top: 5px;">Pickup Time</td>
+                                                    <td style="font-family: 'Courier New', monospace; font-size: 12px; font-weight: bold; text-align: right; color: #1A1E26; padding-top: 5px;">${time} EST</td>
+                                                </tr>` : ''}
+                                            </table>
+                                        </div>
+                                      </td>
+
+                                      <!-- Column 3 (Moved to pos 2 for email logic to match visual priority if needed, but let's stick to page layout: Dep | Pass | QR on Desktop. Page Mobile: Dep|QR then Pass) -->
+                                      <!-- Replicating Page Layout: Mobile [Dep | QR] <-- Row 1. [Pass] <-- Row 2. -->
+                                      <!-- Desktop: [Dep | Pass | QR] -->
+                                      <!-- This is hard in tables without duplication or complex display:none. -->
+                                      <!-- Let's stick to a linear stack that looks good. The user said '1:1', implying the confirmation page layout. -->
+                                      <!-- Implementing Desktop [Dep | Pass | QR]. Mobile will naturally stack [Dep] [Pass] [QR] unless we force it. -->
+                                      <!-- Force Mobile Order: Dep -> QR -> Pass? -->
+                                      
+                                      <!-- Let's try standard 3-col. Mobile will stack. -->
+                                      
+                                      <!-- Column 2: Passenger Info -->
+                                      <td width="33.33%" valign="top" style="padding: 24px; border-right: 1px dashed #ccc; border-bottom: 1px dashed #ccc; font-family: sans-serif;" class="stack-column">
+                                         <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #999; font-weight: bold; margin-bottom: 15px;">Passenger / Info</div>
+                                         <div style="margin-bottom: 15px;">
+                                            <div style="font-size: 10px; text-transform: uppercase; color: #666; margin-bottom: 2px;">Passenger Name</div>
+                                            <div style="font-family: 'Times New Roman', serif; font-size: 18px; font-weight: bold; color: #1A1E26; text-transform: uppercase;">${guestName}</div>
+                                         </div>
+                                         <div style="margin-bottom: 15px;">
+                                            <div style="font-size: 10px; text-transform: uppercase; color: #666; margin-bottom: 2px;">Booking Ref</div>
+                                            <div style="font-family: monospace; font-size: 12px; font-weight: bold; color: #1A1E26;">${confirmationId}</div>
+                                         </div>
+                                         <div style="margin-bottom: 15px;">
+                                            <div style="font-size: 10px; text-transform: uppercase; color: #666; margin-bottom: 2px;">Service Type</div>
+                                            <div style="font-size: 14px; font-weight: bold; color: #1A1E26;">${direction === 'arrive' ? 'Arrival' : (direction === 'depart' ? 'Departure' : 'Round Trip')}</div>
+                                         </div>
+                                         <div style="background-color: rgba(212, 175, 55, 0.1); border-left: 2px solid #D4AF37; padding: 10px; margin-top: 20px;">
+                                            <p style="margin: 0; font-size: 11px; color: #1A1E26; line-height: 1.4;"><strong>Note:</strong> Your driver will be waiting with a sign bearing your name.</p>
+                                        </div>
+                                      </td>
+
+                                      <!-- Column 3: Price / Code -->
+                                      <td width="33.33%" valign="top" style="padding: 24px; border-bottom: 1px dashed #ccc; font-family: sans-serif;" class="stack-column">
+                                        <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #999; font-weight: bold; margin-bottom: 15px;">Booking Code</div>
+                                         <div style="text-align: center; margin-bottom: 20px;">
+                                            <div style="background: white; border: 2px solid #ccc; padding: 10px; display: inline-block; border-radius: 4px;">
+                                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${confirmationId}" alt="QR Code" width="100" height="100" style="display: block;" />
+                                            </div>
+                                            <div style="font-family: monospace; font-size: 10px; color: #999; margin-top: 5px;">${confirmationId.substring(0, 8).toUpperCase()}</div>
+                                        </div>
+                                      </td>
+                                  </tr>
+                              </table>
+                          </td>
                       </tr>
                    </table>
                 </div>
+                
+                 <!-- Total Paid Section (New Footer 1:1) -->
+                 <div style="background-color: #f0f0f0; border-top: 1px dashed #ccc; padding: 20px; text-align: center;">
+                    <div style="font-family: 'Times New Roman', serif; font-size: 24px; font-weight: bold; color: #1A1E26; margin-bottom: 5px;">
+                        Total Paid: $${totalPrice.toFixed(2)} US
+                    </div>
+                    <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #666;">
+                        All taxes and fees included
+                    </div>
+                 </div>
 
                 <!-- Footer -->
                 <div style="background-color: #FAF8F5; border-top: 2px dashed #ccc; padding: 15px; text-align: center;">
