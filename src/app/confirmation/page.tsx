@@ -578,10 +578,7 @@ function ConfirmationContent() {
                   <p className="text-muted-foreground">Payment Processed On</p>
                   <p className="font-medium">{format(new Date(booking.createdAt), "MMM dd, yyyy")}</p>
                 </div>
-                <div>
-                  <p className="text-muted-foreground">Cancellation Policy</p>
-                  <p className="font-medium text-green-600">Free cancellation up to 48h before arrival.</p>
-                </div>
+
               </div>
 
               <div className="bg-shpc-sand p-3 rounded-lg text-center">

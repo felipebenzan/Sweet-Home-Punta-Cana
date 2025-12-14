@@ -283,10 +283,7 @@ export default function ReservationConfirmationEmail({
                     <Text style={label}>Payment Processed On</Text>
                     <Text style={valueMedium}>{format(new Date(), "MMM dd, yyyy")}</Text>
                   </Column>
-                  <Column className="mobile-stack" style={{ paddingBottom: '12px' }}>
-                    <Text style={label}>Cancellation Policy</Text>
-                    <Text style={{ ...valueMedium, color: '#16A34A' }}>Free cancellation up to 48h before arrival.</Text>
-                  </Column>
+
                 </Row>
 
                 <Section style={{ backgroundColor: '#FAF7F3', padding: '8px', borderRadius: '6px', textAlign: 'center', marginTop: '8px' }}>
