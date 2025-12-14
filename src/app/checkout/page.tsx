@@ -408,51 +408,9 @@ function CheckoutPageComponent() {
               </CardContent>
             </Card>
 
-            {!showPayPalButtons ? (
-              <Button size="lg" className="w-full h-14 text-lg font-semibold bg-shpc-yellow hover:bg-shpc-yellow/90 text-white shadow-lg transition-all transform hover:scale-[1.01]" onClick={handleProceedToPayment} disabled={isProcessing}>
-                {isProcessing ? <Loader2 className="animate-spin mr-2" /> : 'Proceed to Payment'}
-              </Button>
-            ) : (
-              <>
-                {finalPrice > 0 && (
-                  <PayPalButtonsWrapper
-                    amount={finalPrice.toFixed(2)}
-                    currency="USD"
-                    onPaymentSuccess={handlePaymentSuccess}
-                    onPaymentError={handlePaymentError}
-                    onPaymentCancel={handlePaymentCancel}
-                  />
-                )}
-                {finalPrice === 0 && (
-                  <Button size="lg" className="w-full h-12" onClick={() => handlePaymentSuccess('N/A', 'N/A')} disabled={isProcessing}>
-                    {isProcessing ? <Loader2 className="animate-spin" /> : 'Confirm Free Booking'}
-                  </Button>
-                )}
-                <Button variant="outline" className="w-full h-12 mt-2" onClick={() => setShowPayPalButtons(false)} disabled={isProcessing}>
-                  Cancel Payment
-                </Button>
-              </>
-            )}
-
-            {initError && (
-              <Card className="mt-4 bg-destructive/10 border-destructive">
-                <CardHeader>
-                  <CardTitle className="text-destructive text-lg">Booking Failed</CardTitle>
-                  <CardDescription className="text-destructive/80">The following error occurred: {initError.message}</CardDescription>
-                </CardHeader>
-                {initError.payload && (
-                  <CardContent>
-                    <p className="text-sm font-semibold mb-2">Data Sent to Server:</p>
-                    <pre className="text-xs whitespace-pre-wrap font-mono bg-background/50 p-2 rounded-md">
-                      <code>{JSON.stringify(initError.payload, null, 2)}</code>
-                    </pre>
-                  </CardContent>
-                )}
-              </Card>
-            )}
           </div>
 
-          <div className="lg:sticky top-24">
+          <div className="lg:sticky top-24 w-full lg:w-96">
             <CheckoutSummary
               bookingDetails={bookingDetails}
               pickupPrice={pickupPrice}
@@ -463,6 +421,51 @@ function CheckoutPageComponent() {
               returnDate={returnDate}
               returnFlightNumber={returnFlightNumber}
             />
+
+            <div className="mt-6 flex flex-col gap-4">
+              {!showPayPalButtons ? (
+                <Button size="lg" className="w-full h-14 text-lg font-semibold bg-shpc-yellow hover:bg-shpc-yellow/90 text-white shadow-lg transition-all transform hover:scale-[1.01]" onClick={handleProceedToPayment} disabled={isProcessing}>
+                  {isProcessing ? <Loader2 className="animate-spin mr-2" /> : 'Proceed to Payment'}
+                </Button>
+              ) : (
+                <>
+                  {finalPrice > 0 && (
+                    <PayPalButtonsWrapper
+                      amount={finalPrice.toFixed(2)}
+                      currency="USD"
+                      onPaymentSuccess={handlePaymentSuccess}
+                      onPaymentError={handlePaymentError}
+                      onPaymentCancel={handlePaymentCancel}
+                    />
+                  )}
+                  {finalPrice === 0 && (
+                    <Button size="lg" className="w-full h-12" onClick={() => handlePaymentSuccess('N/A', 'N/A')} disabled={isProcessing}>
+                      {isProcessing ? <Loader2 className="animate-spin" /> : 'Confirm Free Booking'}
+                    </Button>
+                  )}
+                  <Button variant="outline" className="w-full h-12" onClick={() => setShowPayPalButtons(false)} disabled={isProcessing}>
+                    Cancel Payment
+                  </Button>
+                </>
+              )}
+
+              {initError && (
+                <Card className="bg-destructive/10 border-destructive">
+                  <CardHeader>
+                    <CardTitle className="text-destructive text-lg">Booking Failed</CardTitle>
+                    <CardDescription className="text-destructive/80">The following error occurred: {initError.message}</CardDescription>
+                  </CardHeader>
+                  {initError.payload && (
+                    <CardContent>
+                      <p className="text-sm font-semibold mb-2">Data Sent to Server:</p>
+                      <pre className="text-xs whitespace-pre-wrap font-mono bg-background/50 p-2 rounded-md">
+                        <code>{JSON.stringify(initError.payload, null, 2)}</code>
+                      </pre>
+                    </CardContent>
+                  )}
+                </Card>
+              )}
+            </div>
           </div>
         </div>
       </div>

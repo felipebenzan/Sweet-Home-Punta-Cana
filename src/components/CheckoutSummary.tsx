@@ -30,7 +30,7 @@ export default function CheckoutSummary({
     const finalPrice = totalPrice + pickupPrice;
 
     return (
-        <Card className="shadow-soft rounded-2xl w-full lg:w-96">
+        <Card className="shadow-soft rounded-2xl w-full">
             <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                     <span className="text-2xl">💰</span> Booking Summary
