@@ -9,8 +9,9 @@ import { parseISO, isWithinInterval } from "date-fns";
 function mapRoom(room: any): Room {
     return {
         ...room,
-        amenities: JSON.parse(room.amenities),
-        gallery: room.gallery ? JSON.parse(room.gallery) : undefined,
+        image: room.image || "https://images.unsplash.com/photo-1540541338287-41700207dee6?q=80&w=2070&auto=format&fit=crop",
+        amenities: typeof room.amenities === 'string' ? JSON.parse(room.amenities) : (room.amenities || []),
+        gallery: room.gallery ? (typeof room.gallery === 'string' ? JSON.parse(room.gallery) : room.gallery) : undefined,
     };
 }
 
