@@ -499,7 +499,7 @@ export default function LaundryServicePage() {
                     </div>
 
                     {/* Right Column - Summary Sidebar */}
-                    <div className="lg:sticky lg:top-24 h-fit">
+                    <div className={cn("lg:sticky lg:top-24 h-fit", currentStep === 2 && "order-first lg:order-none")}>
                         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
                             {/* Header */}
                             <div className="p-6 md:p-10 border-b border-neutral-200">
