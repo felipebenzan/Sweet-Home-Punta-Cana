@@ -164,35 +164,35 @@ export default function RoomClientPage({ roomData, otherRooms }: RoomClientPageP
                 {/* Policies */}
                 <section className="py-12">
                     <h2 className="text-4xl font-playfair font-bold text-shpc-ink mb-6 text-center">Policies & Important Notes</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <Card className="bg-shpc-sand/50 border-none text-center">
-                            <CardHeader className="items-center gap-4 pb-2">
-                                <Clock className="h-8 w-8 text-shpc-ink" />
-                                <CardTitle className="text-lg">Check-in / Out</CardTitle>
+                    <div className="grid grid-cols-3 gap-2 md:gap-6">
+                        <Card className="bg-shpc-sand/50 border-none text-center p-2 md:p-6">
+                            <CardHeader className="items-center gap-2 md:gap-4 pb-1 md:pb-2 p-0">
+                                <Clock className="h-5 w-5 md:h-8 md:w-8 text-shpc-ink" />
+                                <CardTitle className="text-xs md:text-lg whitespace-nowrap">Check-in / Out</CardTitle>
                             </CardHeader>
-                            <CardContent className="text-sm text-muted-foreground space-y-1">
-                                <p><strong>Check-in:</strong> 3:00 PM</p>
-                                <p><strong>Check-out:</strong> 11:00 AM</p>
+                            <CardContent className="text-[10px] md:text-sm text-muted-foreground space-y-0.5 md:space-y-1 p-0 mt-2">
+                                <p><strong>In:</strong> 3:00 PM</p>
+                                <p><strong>Out:</strong> 11:00 AM</p>
                             </CardContent>
                         </Card>
-                        <Card className="bg-shpc-sand/50 border-none text-center">
-                            <CardHeader className="items-center gap-4 pb-2">
-                                <Ban className="h-8 w-8 text-shpc-ink" />
-                                <CardTitle className="text-lg">Occupancy</CardTitle>
+                        <Card className="bg-shpc-sand/50 border-none text-center p-2 md:p-6">
+                            <CardHeader className="items-center gap-2 md:gap-4 pb-1 md:pb-2 p-0">
+                                <Ban className="h-5 w-5 md:h-8 md:w-8 text-shpc-ink" />
+                                <CardTitle className="text-xs md:text-lg">Occupancy</CardTitle>
                             </CardHeader>
-                            <CardContent className="text-sm text-muted-foreground space-y-1">
-                                <p>Maximum {room.capacity} guests.</p>
-                                <p>Adults only (18+)</p>
+                            <CardContent className="text-[10px] md:text-sm text-muted-foreground space-y-0.5 md:space-y-1 p-0 mt-2">
+                                <p>Max {room.capacity} guests.</p>
+                                <p>Adults (18+)</p>
                             </CardContent>
                         </Card>
-                        <Card className="bg-shpc-sand/50 border-none text-center">
-                            <CardHeader className="items-center gap-4 pb-2">
-                                <FileText className="h-8 w-8 text-shpc-ink" />
-                                <CardTitle className="text-lg">House Rules</CardTitle>
+                        <Card className="bg-shpc-sand/50 border-none text-center p-2 md:p-6">
+                            <CardHeader className="items-center gap-2 md:gap-4 pb-1 md:pb-2 p-0">
+                                <FileText className="h-5 w-5 md:h-8 md:w-8 text-shpc-ink" />
+                                <CardTitle className="text-xs md:text-lg">House Rules</CardTitle>
                             </CardHeader>
-                            <CardContent className="text-sm text-muted-foreground space-y-1">
-                                <p>No smoking inside.</p>
-                                <p>Quiet hours after 11 PM.</p>
+                            <CardContent className="text-[10px] md:text-sm text-muted-foreground space-y-0.5 md:space-y-1 p-0 mt-2">
+                                <p>No smoking.</p>
+                                <p>Quiet &gt; 11 PM.</p>
                             </CardContent>
                         </Card>
                     </div>
