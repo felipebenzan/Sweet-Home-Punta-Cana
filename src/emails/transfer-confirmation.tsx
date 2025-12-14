@@ -83,7 +83,18 @@ export default function TransferConfirmationEmail({
 
   return (
     <Html>
-      <Head />
+      <Head>
+        <style>
+          {`
+            @media only screen and (max-width: 600px) {
+              .mobile-stack {
+                display: block !important;
+                width: 100% !important;
+              }
+            }
+          `}
+        </style>
+      </Head>
       <Preview>{previewText}</Preview>
       <Body style={main}>
         <Container style={container}>
@@ -91,7 +102,7 @@ export default function TransferConfirmationEmail({
             <Link href="https://www.sweethomepc.com">
               <Img
                 src={`${baseUrl}/sweet-home-logo.png`}
-                width="480"
+                width="240"
                 alt="Sweet Home Punta Cana"
                 style={logo}
               />
@@ -116,7 +127,7 @@ export default function TransferConfirmationEmail({
             <Section style={content}>
               <Row>
                 {/* Left Column */}
-                <Column style={leftColumn}>
+                <Column className="mobile-stack" style={leftColumn}>
                   <Row>
                     <Column style={{ width: '50%' }}>
                       <Text style={label}>From</Text>
@@ -138,12 +149,12 @@ export default function TransferConfirmationEmail({
                 </Column>
 
                 {/* Dashed Separator */}
-                <Column style={separatorColumn}>
+                <Column className="mobile-hide" style={separatorColumn}>
                   <div style={dashedLine}></div>
                 </Column>
 
                 {/* Right Column */}
-                <Column style={rightColumn}>
+                <Column className="mobile-stack" style={rightColumn}>
                   <Text style={label}>Direction</Text>
                   <Text style={largeDetail}>{directionLabel}</Text>
                   <Hr style={solidHr} />
@@ -182,10 +193,10 @@ export default function TransferConfirmationEmail({
           <Section style={enhanceStaySection}>
             <Section style={enhanceStayBox}>
               <Row>
-                <Column style={imageColumn}>
+                <Column className="mobile-stack" style={imageColumn}>
                   <Img src="https://iampuntacana.com/wp-content/uploads/2025/09/unnamed.png" alt="Scooter" style={promoImage} />
                 </Column>
-                <Column style={textColumn}>
+                <Column className="mobile-stack" style={textColumn}>
                   <Text style={enhanceStayTitle}>Need a ride?</Text>
                   <Text style={enhanceStayText}>Get a scooter delivered to your door.</Text>
                   <Button style={learnMoreButton} href="https://www.scooterspc.com">Learn More</Button>
@@ -231,7 +242,7 @@ const main = {
 };
 
 const container = {
-  maxWidth: "640px",
+  maxWidth: "600px",
   backgroundColor: "#ffffff",
   margin: "0 auto",
   padding: "40px 24px",

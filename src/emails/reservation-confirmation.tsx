@@ -35,7 +35,7 @@ export default function ReservationConfirmationEmail({
   const room = rooms[0];
   const shortId = confirmationId ? confirmationId.substring(0, 7).toUpperCase() : 'CONFIRM';
   const previewText = `Your reservation for ${room.name} is confirmed!`;
-  
+
   const fromDate = parseISO(dates.from);
   const toDate = parseISO(dates.to);
   const nights = differenceInDays(toDate, fromDate);
@@ -44,8 +44,8 @@ export default function ReservationConfirmationEmail({
   const qrValue = `${shortId}-${room.slug}`;
 
   const renderPickupDetails = () => {
-    if (!airportPickup || airportPickup.tripType === 'none') return null;
-    
+    if (!airportPickup || (airportPickup.tripType !== 'one-way' && airportPickup.tripType !== 'round-trip')) return null;
+
     const arrivalInfo = `${airportPickup.airline || ''} ${airportPickup.flightNumber || ''}`.trim() || 'TBD';
     const returnInfo = `${airportPickup.returnFlightNumber || 'Flight TBD'}`;
     const arrivalDateFormatted = airportPickup.arrivalDate ? format(parseISO(airportPickup.arrivalDate), 'MMM dd, yyyy') : 'Date TBD';
@@ -61,7 +61,7 @@ export default function ReservationConfirmationEmail({
           </Text>
         </Column>
         <Column align="right">
-          <Text style={{...itemDetail, fontFamily: 'monospace'}}>${airportPickup.price.toFixed(2)}</Text>
+          <Text style={{ ...itemDetail, fontFamily: 'monospace' }}>${airportPickup.price.toFixed(2)}</Text>
         </Column>
       </Row>
     )
@@ -69,13 +69,27 @@ export default function ReservationConfirmationEmail({
 
   return (
     <Html>
-      <Head />
+      <Head>
+        <style>
+          {`
+            @media only screen and (max-width: 600px) {
+              .mobile-stack {
+                display: block !important;
+                width: 100% !important;
+              }
+              .mobile-center {
+                text-align: center !important;
+              }
+            }
+          `}
+        </style>
+      </Head>
       <Preview>{previewText}</Preview>
       <Body style={main}>
         <Container style={container}>
           <Section style={logoSection}>
-             <Text style={logoText}>Sweet Home Punta Cana</Text>
-             <Text style={logoSubtitle}>Guest House</Text>
+            <Text style={logoText}>Sweet Home Punta Cana</Text>
+            <Text style={logoSubtitle}>Guest House</Text>
           </Section>
           <Section style={contentSection}>
             <Text style={paragraph}>Hi {guestInfo?.firstName || 'Guest'},</Text>
@@ -83,135 +97,135 @@ export default function ReservationConfirmationEmail({
               Thank you for booking your stay with us. We're excited to welcome you to paradise!
             </Text>
           </Section>
-          
+
           <Section style={contentSection}>
             {/* QR Code and Reservation ID */}
             <Section style={box}>
-               <Row>
-                  <Column style={{ width: '100px', paddingTop: '8px' }}>
-                      <Img
-                        src={`https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${qrValue}`}
-                        alt="QR Code"
-                        width="80"
-                        height="80"
-                      />
-                  </Column>
-                  <Column>
-                      <Text style={smallMutedText}>Reservation ID</Text>
-                      <Text style={bookingIdText}>{shortId}</Text>
-                      <Text style={smallMutedText}>Keep this for check-in.</Text>
-                  </Column>
-               </Row>
+              <Row>
+                <Column className="mobile-stack" style={{ width: '100px', paddingTop: '8px' }}>
+                  <Img
+                    src={`https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${qrValue}`}
+                    alt="QR Code"
+                    width="80"
+                    height="80"
+                  />
+                </Column>
+                <Column className="mobile-stack">
+                  <Text style={smallMutedText}>Reservation ID</Text>
+                  <Text style={bookingIdText}>{shortId}</Text>
+                  <Text style={smallMutedText}>Keep this for check-in.</Text>
+                </Column>
+              </Row>
             </Section>
-            
+
             {/* Reservation Details */}
             <Section style={box}>
-               <Text style={heading}>Your Reservation</Text>
-               <Row>
-                  <Column style={{ width: '120px' }}>
-                      <Img src={room.image} width="100" height="75" alt={room.name} style={{ borderRadius: '8px' }} />
-                  </Column>
-                   <Column>
-                      <Text style={itemStrong}>{room.name}</Text>
-                      <Text style={itemDetail}>{room.bedding} Bed</Text>
-                  </Column>
-               </Row>
-               <Hr style={hr} />
-               <Row>
-                  <Column>
-                      <Text style={{...itemDetail, textAlign: 'left'}}><strong>Dates:</strong> {format(fromDate, "MMM dd")} - {format(toDate, "MMM dd, yyyy")}</Text>
-                  </Column>
-                  <Column align="right">
-                       <Text style={{...itemDetail, textAlign: 'right'}}><strong>Guests:</strong> {guests}</Text>
-                  </Column>
-               </Row>
+              <Text style={heading}>Your Reservation</Text>
+              <Row>
+                <Column style={{ width: '120px' }}>
+                  <Img src={room.image} width="100" height="75" alt={room.name} style={{ borderRadius: '8px' }} />
+                </Column>
+                <Column>
+                  <Text style={itemStrong}>{room.name}</Text>
+                  <Text style={itemDetail}>{room.bedding} Bed</Text>
+                </Column>
+              </Row>
+              <Hr style={hr} />
+              <Row>
+                <Column>
+                  <Text style={{ ...itemDetail, textAlign: 'left' }}><strong>Dates:</strong> {format(fromDate, "MMM dd")} - {format(toDate, "MMM dd, yyyy")}</Text>
+                </Column>
+                <Column align="right">
+                  <Text style={{ ...itemDetail, textAlign: 'right' }}><strong>Guests:</strong> {guests}</Text>
+                </Column>
+              </Row>
             </Section>
 
             {/* Payment Summary */}
             <Section style={box}>
-               <Text style={heading}>Payment Summary</Text>
-               <Text style={smallMutedText}>Receipt sent to {guestInfo?.email}</Text>
-               <Hr style={hr} />
-               <Row style={summaryRow}>
-                  <Column>
-                      <Text style={{...itemDetail, fontWeight: 'bold' }}>Room Subtotal</Text>
-                      <Text style={{...itemDetail, fontSize: '12px' }}>{nights} {nights === 1 ? 'night' : 'nights'}</Text>
-                  </Column>
-                  <Column align="right"><Text style={{...itemDetail, fontFamily: 'monospace'}}>${roomSubtotal.toFixed(2)}</Text></Column>
-               </Row>
-               {renderPickupDetails()}
-               <Row style={summaryRow}>
-                  <Column>
-                      <Text style={{...itemDetail, color: '#28a745', fontWeight: 'bold' }}>✓ All taxes & fees included</Text>
-                  </Column>
-               </Row>
-               <Hr style={hr} />
-               <Row style={summaryRow}>
-                  <Column><Text style={itemDetail}>Subtotal</Text></Column>
-                  <Column align="right"><Text style={{...itemDetail, fontFamily: 'monospace'}}>${totalPrice.toFixed(2)}</Text></Column>
-               </Row>
-               <Row style={summaryRow}>
-                  <Column><Text style={{...itemDetail, fontWeight: 'bold'}}>Total Paid (USD)</Text></Column>
-                  <Column align="right"><Text style={{...itemDetail, fontWeight: 'bold', fontFamily: 'monospace'}}>${totalPrice.toFixed(2)}</Text></Column>
-               </Row>
-               <Row style={summaryRow}>
-                  <Column><Text style={{...itemDetail, fontWeight: 'bold'}}>Balance Due</Text></Column>
-                  <Column align="right"><Text style={{...itemDetail, fontWeight: 'bold', fontFamily: 'monospace'}}>$0.00</Text></Column>
-               </Row>
-               <Hr style={hr} />
-               <Text style={{...smallMutedText, textAlign: 'left'}}>
-                  Paid on: {format(new Date(), 'MMM dd, yyyy')} • Method: Visa ••••4242<br/>
-                  Transaction ID: ch_3Pq...{Math.floor(Math.random()*9000+1000)}<br/>
-                  Billing name: {guestInfo?.firstName} {guestInfo?.lastName}
-               </Text>
+              <Text style={heading}>Payment Summary</Text>
+              <Text style={smallMutedText}>Receipt sent to {guestInfo?.email}</Text>
+              <Hr style={hr} />
+              <Row style={summaryRow}>
+                <Column>
+                  <Text style={{ ...itemDetail, fontWeight: 'bold' }}>Room Subtotal</Text>
+                  <Text style={{ ...itemDetail, fontSize: '12px' }}>{nights} {nights === 1 ? 'night' : 'nights'}</Text>
+                </Column>
+                <Column align="right"><Text style={{ ...itemDetail, fontFamily: 'monospace' }}>${roomSubtotal.toFixed(2)}</Text></Column>
+              </Row>
+              {renderPickupDetails()}
+              <Row style={summaryRow}>
+                <Column>
+                  <Text style={{ ...itemDetail, color: '#28a745', fontWeight: 'bold' }}>✓ All taxes & fees included</Text>
+                </Column>
+              </Row>
+              <Hr style={hr} />
+              <Row style={summaryRow}>
+                <Column><Text style={itemDetail}>Subtotal</Text></Column>
+                <Column align="right"><Text style={{ ...itemDetail, fontFamily: 'monospace' }}>${totalPrice.toFixed(2)}</Text></Column>
+              </Row>
+              <Row style={summaryRow}>
+                <Column><Text style={{ ...itemDetail, fontWeight: 'bold' }}>Total Paid (USD)</Text></Column>
+                <Column align="right"><Text style={{ ...itemDetail, fontWeight: 'bold', fontFamily: 'monospace' }}>${totalPrice.toFixed(2)}</Text></Column>
+              </Row>
+              <Row style={summaryRow}>
+                <Column><Text style={{ ...itemDetail, fontWeight: 'bold' }}>Balance Due</Text></Column>
+                <Column align="right"><Text style={{ ...itemDetail, fontWeight: 'bold', fontFamily: 'monospace' }}>$0.00</Text></Column>
+              </Row>
+              <Hr style={hr} />
+              <Text style={{ ...smallMutedText, textAlign: 'left' }}>
+                Paid on: {format(new Date(), 'MMM dd, yyyy')} • Method: Visa ••••4242<br />
+                Transaction ID: ch_3Pq...{Math.floor(Math.random() * 9000 + 1000)}<br />
+                Billing name: {guestInfo?.firstName} {guestInfo?.lastName}
+              </Text>
             </Section>
 
             {/* Check-in info */}
             <Section style={box}>
-                <Text style={{...itemDetail, textAlign: 'left'}}><strong>Check-in:</strong> 3:00 PM • <strong>Check-out:</strong> 11:00 AM</Text>
-                <Text style={{...itemDetail, textAlign: 'left'}}><strong>Cancellation:</strong> Free cancellation up to 48h before arrival.</Text>
+              <Text style={{ ...itemDetail, textAlign: 'left' }}><strong>Check-in:</strong> 3:00 PM • <strong>Check-out:</strong> 11:00 AM</Text>
+              <Text style={{ ...itemDetail, textAlign: 'left' }}><strong>Cancellation:</strong> Free cancellation up to 48h before arrival.</Text>
             </Section>
           </Section>
 
           <Section style={{ textAlign: 'center' as const, margin: '32px 0' }}>
             <Button style={button} href={`${baseUrl}/guest-services`}>
-                Enhance Your Stay →
+              Enhance Your Stay →
             </Button>
           </Section>
-          
+
           <Section style={contentSection}>
-           <Section style={enhanceStayBox}>
-                  <Row style={{verticalAlign: 'middle'}}>
-                      <Column style={imageColumn}>
-                          <Img src="https://iampuntacana.com/wp-content/uploads/2025/09/unnamed.png" alt="Scooter" style={promoImage} />
-                      </Column>
-                      <Column style={textColumn}>
-                          <Text style={enhanceStayTitle}>Need a ride?</Text>
-                          <Text style={enhanceStayText}>Get a scooter delivered to your door.</Text>
-                          <Button style={learnMoreButton} href="https://www.scooterspc.com">Learn More</Button>
-                      </Column>
-                  </Row>
-           </Section>
+            <Section style={enhanceStayBox}>
+              <Row style={{ verticalAlign: 'middle' }}>
+                <Column className="mobile-stack" style={imageColumn}>
+                  <Img src="https://iampuntacana.com/wp-content/uploads/2025/09/unnamed.png" alt="Scooter" style={promoImage} />
+                </Column>
+                <Column className="mobile-stack" style={textColumn}>
+                  <Text style={enhanceStayTitle}>Need a ride?</Text>
+                  <Text style={enhanceStayText}>Get a scooter delivered to your door.</Text>
+                  <Button style={learnMoreButton} href="https://www.scooterspc.com">Learn More</Button>
+                </Column>
+              </Row>
+            </Section>
           </Section>
 
           <Section style={socialsSection}>
-              <Row>
-                <Column align="center" style={socialsIconContainer}>
-                  <Link href="https://www.facebook.com/sweethomepc/">
-                    <Img src="https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/facebook%20sweet%20home%20punta%20cana%20guest%20house.png?alt=media&token=9576b0e2-0d2d-4c8f-89a5-d97e0bbd56a7" alt="Facebook" width="24" height="24" />
-                  </Link>
-                </Column>
-                <Column align="center" style={socialsIconContainer}>
-                  <Link href="https://www.instagram.com/sweethome_puntacana/">
-                    <Img src="https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/instagram%20sweet%20home%20punta%20cana.png?alt=media&token=27380234-317d-49d1-ac8b-527d171308d1" alt="Instagram" width="24" height="24" />
-                  </Link>
-                </Column>
-                <Column align="center" style={socialsIconContainer}>
-                  <Link href="https://www.youtube.com/@IAMPUNTACANA">
-                    <Img src="https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/youtube%20sweet%20home%20punta%20cana%20i%20am%20punta%20cana%20scooters%20punta%20cana.jpg?alt=media&token=f1eb40ef-feda-4780-b892-2e554237ae98" alt="YouTube" width="24" height="24" />
-                  </Link>
-                </Column>
-              </Row>
+            <Row>
+              <Column align="center" style={socialsIconContainer}>
+                <Link href="https://www.facebook.com/sweethomepc/">
+                  <Img src="https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/facebook%20sweet%20home%20punta%20cana%20guest%20house.png?alt=media&token=9576b0e2-0d2d-4c8f-89a5-d97e0bbd56a7" alt="Facebook" width="24" height="24" />
+                </Link>
+              </Column>
+              <Column align="center" style={socialsIconContainer}>
+                <Link href="https://www.instagram.com/sweethome_puntacana/">
+                  <Img src="https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/instagram%20sweet%20home%20punta%20cana.png?alt=media&token=27380234-317d-49d1-ac8b-527d171308d1" alt="Instagram" width="24" height="24" />
+                </Link>
+              </Column>
+              <Column align="center" style={socialsIconContainer}>
+                <Link href="https://www.youtube.com/@IAMPUNTACANA">
+                  <Img src="https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/youtube%20sweet%20home%20punta%20cana%20i%20am%20punta%20cana%20scooters%20punta%20cana.jpg?alt=media&token=f1eb40ef-feda-4780-b892-2e554237ae98" alt="YouTube" width="24" height="24" />
+                </Link>
+              </Column>
+            </Row>
           </Section>
 
           <Text style={footer}>
@@ -230,7 +244,7 @@ const main = {
 };
 
 const container = {
-  maxWidth: "680px",
+  maxWidth: "600px",
   margin: "0 auto",
   padding: "32px 0 48px",
 };
@@ -341,25 +355,25 @@ const hr = {
 };
 
 const enhanceStayBox = {
-    backgroundColor: '#FDF9F4',
-    border: '1px solid #e5e5e5',
-    borderRadius: '16px',
-    padding: '20px',
+  backgroundColor: '#FDF9F4',
+  border: '1px solid #e5e5e5',
+  borderRadius: '16px',
+  padding: '20px',
 }
 
 const enhanceStayTitle = {
-    fontSize: '16px',
-    fontWeight: 'bold',
-    color: '#1C1C1C',
-    margin: '0 0 4px 0',
-    textAlign: 'left' as const,
+  fontSize: '16px',
+  fontWeight: 'bold',
+  color: '#1C1C1C',
+  margin: '0 0 4px 0',
+  textAlign: 'left' as const,
 }
 
 const enhanceStayText = {
-    fontSize: '14px',
-    color: '#434A54',
-    margin: '0 0 12px 0',
-    textAlign: 'left' as const,
+  fontSize: '14px',
+  color: '#434A54',
+  margin: '0 0 12px 0',
+  textAlign: 'left' as const,
 }
 
 const imageColumn = {
@@ -404,4 +418,3 @@ const footer = {
   paddingTop: "24px",
 };
 
-    

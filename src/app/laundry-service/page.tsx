@@ -239,7 +239,7 @@ export default function LaundryServicePage() {
 
                         {/* STEP 1: Service Details */}
                         {currentStep === 1 && (
-                            <div className="bg-white rounded-lg p-10 shadow-sm space-y-10">
+                            <div className="bg-white rounded-lg p-6 md:p-10 shadow-sm space-y-10">
                                 <h2 className="font-playfair text-3xl font-semibold text-shpc-ink">
                                     1. Service Details
                                 </h2>
@@ -387,7 +387,7 @@ export default function LaundryServicePage() {
 
                         {/* STEP 2: Guest Info & Pay */}
                         {currentStep === 2 && (
-                            <div className="bg-white rounded-lg p-10 shadow-sm space-y-10">
+                            <div className="bg-white rounded-lg p-6 md:p-10 shadow-sm space-y-10">
                                 <h2 className="font-playfair text-3xl font-semibold text-shpc-ink">
                                     2. Guest Information & Payment
                                 </h2>
@@ -502,14 +502,14 @@ export default function LaundryServicePage() {
                     <div className="lg:sticky lg:top-24 h-fit">
                         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
                             {/* Header */}
-                            <div className="p-10 border-b border-neutral-200">
+                            <div className="p-6 md:p-10 border-b border-neutral-200">
                                 <h3 className="font-playfair text-2xl font-semibold text-shpc-ink uppercase tracking-wide">
                                     Service Summary
                                 </h3>
                             </div>
 
                             {/* Details */}
-                            <div className="p-10 space-y-6">
+                            <div className="p-6 md:p-10 space-y-6">
                                 <div className="space-y-5">
                                     <div className="flex justify-between items-start">
                                         <span className="text-sm text-neutral-500 font-inter uppercase tracking-wide">Service</span>

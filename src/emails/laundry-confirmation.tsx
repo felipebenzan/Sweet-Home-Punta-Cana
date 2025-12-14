@@ -42,7 +42,21 @@ export default function LaundryConfirmationEmail({
 
   return (
     <Html>
-      <Head />
+      <Head>
+        <style>
+          {`
+            @media only screen and (max-width: 600px) {
+              .mobile-stack {
+                display: block !important;
+                width: 100% !important;
+              }
+              .mobile-hide {
+                display: none !important;
+              }
+            }
+          `}
+        </style>
+      </Head>
       <Preview>{previewText}</Preview>
       <Body style={main}>
         <Container style={container}>
@@ -130,10 +144,10 @@ export default function LaundryConfirmationEmail({
           <Section style={enhanceStaySection}>
             <Section style={enhanceStayBox}>
               <Row>
-                <Column style={imageColumn}>
+                <Column className="mobile-stack" style={imageColumn}>
                   <Img src="https://iampuntacana.com/wp-content/uploads/2025/09/unnamed.png" alt="Scooter" style={promoImage} />
                 </Column>
-                <Column style={textColumn}>
+                <Column className="mobile-stack" style={textColumn}>
                   <Text style={enhanceStayTitle}>Need a ride?</Text>
                   <Text style={enhanceStayText}>Get a scooter delivered to your door.</Text>
                   <Button style={learnMoreButton} href="https://www.scooterspc.com">Learn More</Button>
@@ -181,7 +195,7 @@ const main = {
 };
 
 const container = {
-  maxWidth: "640px",
+  maxWidth: "600px",
   backgroundColor: "#ffffff",
   margin: "0 auto",
   padding: "40px 24px",

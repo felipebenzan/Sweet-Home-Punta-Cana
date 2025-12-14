@@ -312,7 +312,7 @@ function AirportTransferPageComponent() {
 
             {/* STEP 1: Selection */}
             {currentStep === 1 && (
-              <div className="bg-white rounded-lg p-10 shadow-sm space-y-10">
+              <div className="bg-white rounded-lg p-6 md:p-10 shadow-sm space-y-10">
                 <h2 className="font-playfair text-3xl font-semibold text-shpc-ink">
                   1. Choose Your Route
                 </h2>
@@ -485,7 +485,7 @@ function AirportTransferPageComponent() {
 
             {/* STEP 2: Details */}
             {currentStep === 2 && (
-              <div className="bg-white rounded-lg p-10 shadow-sm space-y-10">
+              <div className="bg-white rounded-lg p-6 md:p-10 shadow-sm space-y-10">
                 <h2 className="font-playfair text-3xl font-semibold text-shpc-ink">
                   2. Flight & Guest Details
                 </h2>
@@ -547,7 +547,7 @@ function AirportTransferPageComponent() {
 
             {/* STEP 3: Review & Confirm - Boarding Pass Style */}
             {currentStep === 3 && (
-              <div className="bg-white rounded-lg p-10 shadow-sm space-y-10">
+              <div className="bg-white rounded-lg p-6 md:p-10 shadow-sm space-y-10">
                 <div className="space-y-2">
                   <h2 className="font-playfair text-4xl font-semibold text-shpc-ink">
                     3. Review & Confirm Your Trip
@@ -735,14 +735,14 @@ function AirportTransferPageComponent() {
           <div className="lg:sticky lg:top-24 h-fit">
             <div className="bg-white rounded-lg shadow-lg overflow-hidden">
               {/* Header */}
-              <div className="p-10 border-b border-neutral-200">
+              <div className="p-6 md:p-10 border-b border-neutral-200">
                 <h3 className="font-playfair text-2xl font-semibold text-shpc-ink uppercase tracking-wide">
                   Your Ticket Summary
                 </h3>
               </div>
 
               {/* Itinerary Details */}
-              <div className="p-10 space-y-6">
+              <div className="p-6 md:p-10 space-y-6">
                 <div className="space-y-5">
                   <div className="flex justify-between items-start">
                     <span className="text-sm text-neutral-500 font-inter uppercase tracking-wide">Route</span>
