@@ -42,14 +42,8 @@ export default function LaundryServicePage() {
 
     const [termsAccepted, setTermsAccepted] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
-    const [showPaypal, setShowPaypal] = useState(false);
 
-    // Scroll to top of wizard when payment mode is toggled
-    useEffect(() => {
-        if (showPaypal && wizardRef.current) {
-            wizardRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-    }, [showPaypal]);
+
 
     const total = useMemo(() => bags * PRICE_PER_BAG, [bags]);
 
@@ -86,7 +80,7 @@ export default function LaundryServicePage() {
         }
     };
 
-    const handleProceed = () => {
+    const handleContinueStep2 = () => {
         if (!guestName || !guestEmail) {
             toast({ title: "Missing Information", description: "Please provide your name and email.", variant: "destructive" });
             return;
@@ -99,8 +93,8 @@ export default function LaundryServicePage() {
             toast({ title: "Terms Required", description: "Please accept the service policy.", variant: "destructive" });
             return;
         }
-        setIsProcessing(true);
-        setShowPaypal(true);
+        setCurrentStep(3);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     const onPaymentSuccess = async (paypalOrderId: string, paypalTransactionId: string) => {
@@ -150,26 +144,24 @@ export default function LaundryServicePage() {
                 duration: 20000,
             });
             setIsProcessing(false);
-            setShowPaypal(false);
         }
     };
 
     const onPaymentError = (err: any) => {
         console.error('PayPal Error:', err);
         toast({ title: 'Payment Failed', description: 'An error occurred with the PayPal transaction.', variant: 'destructive' });
-        setShowPaypal(false);
         setIsProcessing(false);
     };
 
     const onPaymentCancel = () => {
         toast({ title: 'Payment Cancelled', description: 'You have cancelled the payment.' });
-        setShowPaypal(false);
         setIsProcessing(false);
     };
 
     const steps = [
         { number: 1, label: "Service Details" },
-        { number: 2, label: "Guest Info & Pay" }
+        { number: 2, label: "Guest Info" },
+        { number: 3, label: "Review & Pay" }
     ];
 
     const wizardRef = React.useRef<HTMLDivElement>(null);
@@ -386,122 +378,127 @@ export default function LaundryServicePage() {
                             </div>
                         )}
 
-                        {/* STEP 2: Guest Info & Pay */}
+                        {/* STEP 2: Guest Info */}
                         {currentStep === 2 && (
                             <div className="bg-white rounded-lg p-6 md:p-10 shadow-sm space-y-10">
                                 <h2 className="font-playfair text-3xl font-semibold text-shpc-ink">
-                                    2. Guest Information & Payment
+                                    2. Guest Information
                                 </h2>
 
-                                {!showPaypal ? (
-                                    <>
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                            <LuxuryInput
-                                                icon={<User className="h-5 w-5" />}
-                                                label="Full Name"
-                                                value={guestName}
-                                                onChange={setGuestName}
-                                                placeholder="John Doe"
-                                                required
-                                            />
-                                            <LuxuryInput
-                                                icon={<Mail className="h-5 w-5" />}
-                                                label="Email Address"
-                                                type="email"
-                                                value={guestEmail}
-                                                onChange={setGuestEmail}
-                                                placeholder="john@example.com"
-                                                required
-                                            />
-                                            <LuxuryInput
-                                                icon={<Phone className="h-5 w-5" />}
-                                                label="Phone Number (Optional)"
-                                                type="tel"
-                                                value={guestPhone}
-                                                onChange={setGuestPhone}
-                                                placeholder="+1 (555) 000-0000"
-                                            />
-                                            <LuxuryInput
-                                                icon={<MapPin className="h-5 w-5" />}
-                                                label="Room Number"
-                                                value={roomNumber}
-                                                onChange={setRoomNumber}
-                                                placeholder="e.g., 101"
-                                                required
-                                            />
-                                        </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <LuxuryInput
+                                        icon={<User className="h-5 w-5" />}
+                                        label="Full Name"
+                                        value={guestName}
+                                        onChange={setGuestName}
+                                        placeholder="John Doe"
+                                        required
+                                    />
+                                    <LuxuryInput
+                                        icon={<Mail className="h-5 w-5" />}
+                                        label="Email Address"
+                                        type="email"
+                                        value={guestEmail}
+                                        onChange={setGuestEmail}
+                                        placeholder="john@example.com"
+                                        required
+                                    />
+                                    <LuxuryInput
+                                        icon={<Phone className="h-5 w-5" />}
+                                        label="Phone Number (Optional)"
+                                        type="tel"
+                                        value={guestPhone}
+                                        onChange={setGuestPhone}
+                                        placeholder="+1 (555) 000-0000"
+                                    />
+                                    <LuxuryInput
+                                        icon={<MapPin className="h-5 w-5" />}
+                                        label="Room Number"
+                                        value={roomNumber}
+                                        onChange={setRoomNumber}
+                                        placeholder="e.g., 101"
+                                        required
+                                    />
+                                </div>
 
-                                        {/* Terms */}
-                                        <div className="flex items-start space-x-3 pt-4 border-t border-neutral-200">
-                                            <Checkbox
-                                                id="terms"
-                                                checked={termsAccepted}
-                                                onCheckedChange={(checked) => setTermsAccepted(checked as boolean)}
-                                                className="mt-1"
-                                            />
-                                            <label htmlFor="terms" className="text-sm text-neutral-600 font-inter leading-relaxed">
-                                                I accept the{' '}
-                                                <Link href="/terms/laundry" target="_blank" className="text-shpc-yellow hover:text-shpc-yellow/80 underline">
-                                                    Laundry Service Policy
-                                                </Link>
-                                                .
-                                            </label>
-                                        </div>
+                                {/* Terms */}
+                                <div className="flex items-start space-x-3 pt-4 border-t border-neutral-200">
+                                    <Checkbox
+                                        id="terms"
+                                        checked={termsAccepted}
+                                        onCheckedChange={(checked) => setTermsAccepted(checked as boolean)}
+                                        className="mt-1"
+                                    />
+                                    <label htmlFor="terms" className="text-sm text-neutral-600 font-inter leading-relaxed">
+                                        I accept the{' '}
+                                        <Link href="/terms/laundry" target="_blank" className="text-shpc-yellow hover:text-shpc-yellow/80 underline">
+                                            Laundry Service Policy
+                                        </Link>
+                                        .
+                                    </label>
+                                </div>
 
-                                        {/* Action Buttons */}
-                                        <div className="grid grid-cols-2 gap-4 pt-2">
-                                            <Button
-                                                onClick={() => setCurrentStep(1)}
-                                                variant="outline"
-                                                className="py-7 border-neutral-300 font-semibold"
-                                            >
-                                                BACK
-                                            </Button>
-                                            <Button
-                                                onClick={handleProceed}
-                                                disabled={isProcessing}
-                                                className="bg-shpc-yellow hover:bg-shpc-yellow/90 text-shpc-ink font-semibold py-7"
-                                            >
-                                                {isProcessing ? (
-                                                    <>
-                                                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                                                        Preparing...
-                                                    </>
-                                                ) : (
-                                                    'PAY AND BOOK NOW'
-                                                )}
-                                            </Button>
-                                        </div>
-                                    </>
-                                ) : (
-                                    <div className="space-y-6">
-                                        <h3 className="font-playfair text-2xl font-semibold text-center text-shpc-ink">
-                                            Complete Your Secure Payment
-                                        </h3>
-                                        <PayPalButtonsWrapper
-                                            amount={total.toString()}
-                                            currency={CURRENCY}
-                                            onPaymentSuccess={onPaymentSuccess}
-                                            onPaymentError={onPaymentError}
-                                            onPaymentCancel={onPaymentCancel}
-                                        />
-                                        <Button
-                                            variant="outline"
-                                            className="w-full border-neutral-300 py-6"
-                                            onClick={onPaymentCancel}
-                                            disabled={isProcessing}
-                                        >
-                                            Back
-                                        </Button>
+                                {/* Action Buttons */}
+                                <div className="grid grid-cols-2 gap-4 pt-2">
+                                    <Button
+                                        onClick={() => setCurrentStep(1)}
+                                        variant="outline"
+                                        className="py-7 border-neutral-300 font-semibold"
+                                    >
+                                        BACK
+                                    </Button>
+                                    <Button
+                                        onClick={handleContinueStep2}
+                                        className="bg-shpc-yellow hover:bg-shpc-yellow/90 text-shpc-ink font-semibold py-7"
+                                    >
+                                        REVIEW & PAY
+                                        <ArrowRight className="ml-2 h-5 w-5" />
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* STEP 3: Payment */}
+                        {currentStep === 3 && (
+                            <div className="bg-white rounded-lg p-6 md:p-10 shadow-sm space-y-10">
+                                <h2 className="font-playfair text-3xl font-semibold text-shpc-ink">
+                                    3. Review & Pay
+                                </h2>
+
+                                <div className="space-y-6">
+                                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-start gap-3">
+                                        <Info className="h-5 w-5 text-blue-600 shrink-0 mt-0.5" />
+                                        <p className="text-sm text-blue-800 font-inter">
+                                            Please review your order summary before proceeding to payment.
+                                        </p>
                                     </div>
-                                )}
+
+                                    <h3 className="font-playfair text-2xl font-semibold text-center text-shpc-ink">
+                                        Complete Your Secure Payment
+                                    </h3>
+                                    <PayPalButtonsWrapper
+                                        amount={total.toString()}
+                                        currency={CURRENCY}
+                                        onPaymentSuccess={onPaymentSuccess}
+                                        onPaymentError={onPaymentError}
+                                        onPaymentCancel={onPaymentCancel}
+                                    />
+                                    <Button
+                                        variant="outline"
+                                        className="w-full border-neutral-300 py-6"
+                                        onClick={() => setCurrentStep(2)}
+                                        disabled={isProcessing}
+                                    >
+                                        Back to Guest Info
+                                    </Button>
+                                </div>
                             </div>
                         )}
                     </div>
 
-                    {/* Right Column - Summary Sidebar - Hidden on Step 1 */}
-                    {currentStep > 1 && (
-                        <div className={cn("lg:sticky lg:top-24 h-fit", currentStep === 2 && "order-first lg:order-none")}>
+                    {/* Right Column - Summary Sidebar - Visible ONLY on Step 3 */}
+                    {currentStep === 3 && (
+                        <div className={cn("lg:sticky lg:top-24 h-fit", currentStep === 3 && "order-first lg:order-none")}>
                             <div className="bg-white rounded-lg shadow-lg overflow-hidden">
                                 {/* Header */}
                                 <div className="p-6 md:p-10 border-b border-neutral-200">
