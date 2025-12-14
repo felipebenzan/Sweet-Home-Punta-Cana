@@ -252,8 +252,8 @@ export default function ExcursionClientPage({ excursion, otherExcursions }: { ex
           {/* Practical Info */}
           <section>
             <h2 className="font-playfair text-4xl font-bold text-shpc-ink mb-8">Practical Information</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="md:col-span-2">
+            <div className="grid grid-cols-2 gap-6">
+              <div className="col-span-2">
                 <div className="bg-shpc-sand/30 border border-shpc-edge rounded-lg p-8">
                   <div className="flex items-center gap-4 mb-4">
                     <MapPin className="h-7 w-7 text-shpc-yellow" />
@@ -286,7 +286,7 @@ export default function ExcursionClientPage({ excursion, otherExcursions }: { ex
                 </div>
                 <p className="font-inter text-neutral-700">{excursion.practicalInfo.duration}</p>
               </div>
-              <div className="md:col-span-2">
+              <div className="col-span-2">
                 <div className="bg-shpc-sand/30 border border-shpc-edge rounded-lg p-8">
                   <div className="flex items-center gap-4 mb-4">
                     <Info className="h-7 w-7 text-shpc-yellow" />
