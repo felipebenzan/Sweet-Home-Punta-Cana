@@ -34,7 +34,7 @@ export default function ReservationConfirmationEmail({
   const { rooms, dates, guests, totalPrice, guestInfo, confirmationId, airportPickup } = bookingDetails;
   const room = rooms[0];
   const shortId = confirmationId ? confirmationId.substring(0, 7).toUpperCase() : 'CONFIRM';
-  const previewText = `Your reservation for ${room.name} is confirmed!`;
+  const previewText = `Pack your bags ${guestInfo?.firstName || 'Guest'}, your booking is confirmed!`;
 
   const fromDate = parseISO(dates.from);
   const toDate = parseISO(dates.to);
@@ -42,30 +42,6 @@ export default function ReservationConfirmationEmail({
   const roomSubtotal = room.price * nights;
 
   const qrValue = `${shortId}-${room.slug}`;
-
-  const renderPickupDetails = () => {
-    if (!airportPickup || (airportPickup.tripType !== 'one-way' && airportPickup.tripType !== 'round-trip')) return null;
-
-    const arrivalInfo = `${airportPickup.airline || ''} ${airportPickup.flightNumber || ''}`.trim() || 'TBD';
-    const returnInfo = `${airportPickup.returnFlightNumber || 'Flight TBD'}`;
-    const arrivalDateFormatted = airportPickup.arrivalDate ? format(parseISO(airportPickup.arrivalDate), 'MMM dd, yyyy') : 'Date TBD';
-    const returnDateFormatted = airportPickup.returnDate ? format(parseISO(airportPickup.returnDate), 'MMM dd, yyyy') : 'Date TBD';
-
-    return (
-      <Row style={summaryRow}>
-        <Column>
-          <Text style={{ ...itemDetail, fontWeight: 'bold' }}>Airport Pickup (PUJ)</Text>
-          <Text style={{ ...itemDetail, fontSize: '12px' }}>
-            {airportPickup.tripType === 'one-way' && `Arrival • ${arrivalInfo} • ${arrivalDateFormatted}`}
-            {airportPickup.tripType === 'round-trip' && `Round Trip • Arr: ${arrivalInfo} ${arrivalDateFormatted} • Dep: ${returnInfo} ${returnDateFormatted}`}
-          </Text>
-        </Column>
-        <Column align="right">
-          <Text style={{ ...itemDetail, fontFamily: 'monospace' }}>${airportPickup.price.toFixed(2)}</Text>
-        </Column>
-      </Row>
-    )
-  }
 
   return (
     <Html>
@@ -80,6 +56,9 @@ export default function ReservationConfirmationEmail({
               .mobile-center {
                 text-align: center !important;
               }
+              .mobile-hide {
+                display: none !important;
+              }
             }
           `}
         </style>
@@ -87,334 +66,368 @@ export default function ReservationConfirmationEmail({
       <Preview>{previewText}</Preview>
       <Body style={main}>
         <Container style={container}>
-          <Section style={logoSection}>
-            <Text style={logoText}>Sweet Home Punta Cana</Text>
-            <Text style={logoSubtitle}>Guest House</Text>
-          </Section>
-          <Section style={contentSection}>
-            <Text style={paragraph}>Hi {guestInfo?.firstName || 'Guest'},</Text>
-            <Text style={paragraph}>
-              Thank you for booking your stay with us. We're excited to welcome you to paradise!
+          {/* Header Image/Logo */}
+          <Section style={headerSection}>
+            <Img
+              src="https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/sweet-home-logo.png?alt=media"
+              width="200"
+              alt="Sweet Home Punta Cana"
+              style={{ margin: '0 auto' }}
+            />
+            <Text style={headerTitle}>Pack your bags {guestInfo?.firstName}, your booking is confirmed!</Text>
+            <Text style={headerSubtitle}>
+              We are thrilled to confirm your reservation at our beautiful Punta Cana guest house!
             </Text>
           </Section>
 
           <Section style={contentSection}>
-            {/* QR Code and Reservation ID */}
-            <Section style={box}>
-              <Row>
-                <Column className="mobile-stack" style={{ width: '100px', paddingTop: '8px' }}>
-                  <Img
-                    src={`https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${qrValue}`}
-                    alt="QR Code"
-                    width="80"
-                    height="80"
-                  />
-                </Column>
-                <Column className="mobile-stack">
-                  <Text style={smallMutedText}>Reservation ID</Text>
-                  <Text style={bookingIdText}>{shortId}</Text>
-                  <Text style={smallMutedText}>Keep this for check-in.</Text>
-                </Column>
-              </Row>
+
+            {/* Reservation Details (Guest Info & ID) */}
+            <Section style={card}>
+              <Section style={cardHeader}>
+                <Text style={cardTitle}>✅ Reservation Details</Text>
+              </Section>
+              <Section style={cardContent}>
+                <Row>
+                  <Column className="mobile-stack" style={{ verticalAlign: 'top', paddingRight: '16px' }}>
+                    <Text style={label}>Reservation ID</Text>
+                    <Text style={valueLarge}>{shortId}</Text>
+
+                    <Row style={{ marginTop: '16px' }}>
+                      <Column className="mobile-stack" style={{ paddingRight: '16px', paddingBottom: '16px' }}>
+                        <Text style={label}>Guest Name</Text>
+                        <Text style={valueMedium}>{guestInfo?.firstName} {guestInfo?.lastName}</Text>
+                      </Column>
+                      <Column className="mobile-stack">
+                        <Text style={label}>Confirmation Sent To</Text>
+                        <Text style={valueMedium}>{guestInfo?.email}</Text>
+                        {guestInfo?.phone && <Text style={smallText}>{guestInfo.phone}</Text>}
+                      </Column>
+                    </Row>
+                    <Text style={label}>Guest House</Text>
+                    <Text style={valueMedium}>Sweet Home Punta Cana</Text>
+                  </Column>
+
+                  {/* QR Code Column */}
+                  <Column className="mobile-stack" style={{ width: '140px', verticalAlign: 'top' }}>
+                    <Section style={{ backgroundColor: '#FAF7F3', padding: '16px', borderRadius: '12px', textAlign: 'center' }}>
+                      <Img
+                        src={`https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${qrValue}`}
+                        alt="QR Code"
+                        width="100"
+                        height="100"
+                        style={{ margin: '0 auto', backgroundColor: 'white', padding: '4px', borderRadius: '4px' }}
+                      />
+                      <Text style={{ ...smallText, textAlign: 'center', marginTop: '8px' }}>
+                        📌 Keep this for check-in
+                      </Text>
+                    </Section>
+                  </Column>
+                </Row>
+              </Section>
             </Section>
 
-            {/* Reservation Details */}
-            <Section style={box}>
-              <Text style={heading}>Your Reservation</Text>
-              <Row>
-                <Column style={{ width: '120px' }}>
-                  <Img src={room.image} width="100" height="75" alt={room.name} style={{ borderRadius: '8px' }} />
-                </Column>
-                <Column>
-                  <Text style={itemStrong}>{room.name}</Text>
-                  <Text style={itemDetail}>{room.bedding} Bed</Text>
-                </Column>
-              </Row>
-              <Hr style={hr} />
-              <Row>
-                <Column>
-                  <Text style={{ ...itemDetail, textAlign: 'left' }}><strong>Dates:</strong> {format(fromDate, "MMM dd")} - {format(toDate, "MMM dd, yyyy")}</Text>
-                </Column>
-                <Column align="right">
-                  <Text style={{ ...itemDetail, textAlign: 'right' }}><strong>Guests:</strong> {guests}</Text>
-                </Column>
-              </Row>
+            {/* Your Stay & Room */}
+            <Section style={card}>
+              <Section style={cardHeader}>
+                <Text style={cardTitle}>📅 Your Stay & Room</Text>
+              </Section>
+              <Section style={cardContent}>
+                <Row>
+                  <Column className="mobile-stack" style={{ width: '100px', paddingRight: '16px', verticalAlign: 'top' }}>
+                    <Img src={room.image} width="100" height="100" style={{ borderRadius: '8px', objectFit: 'cover' }} alt="Room" />
+                  </Column>
+                  <Column className="mobile-stack" style={{ verticalAlign: 'top' }}>
+                    <Row>
+                      <Column className="mobile-stack" style={{ paddingRight: '16px', paddingBottom: '12px' }}>
+                        <Text style={label}>Dates</Text>
+                        <Text style={valueMedium}>{format(fromDate, "MMM dd")} – {format(toDate, "MMM dd, yyyy")}</Text>
+                      </Column>
+                      <Column className="mobile-stack" style={{ paddingBottom: '12px' }}>
+                        <Text style={label}>Guests</Text>
+                        <Text style={valueMedium}>{guests} {guests === 1 ? 'Guest' : 'Guests'}</Text>
+                      </Column>
+                    </Row>
+                    <Row>
+                      <Column className="mobile-stack" style={{ paddingBottom: '12px' }}>
+                        <Text style={label}>Room Type</Text>
+                        <Text style={valueMedium}>{room.name}</Text>
+                      </Column>
+                    </Row>
+                    <Row>
+                      <Column style={{ paddingRight: '16px' }}>
+                        <Text style={label}>Check-in Time</Text>
+                        <Text style={valueMedium}>3:00 PM</Text>
+                      </Column>
+                      <Column>
+                        <Text style={label}>Check-out Time</Text>
+                        <Text style={valueMedium}>11:00 AM</Text>
+                      </Column>
+                    </Row>
+                  </Column>
+                </Row>
+              </Section>
             </Section>
+
+            {/* Airport Transfer Section (Conditional) */}
+            {bookingDetails.airportPickup && (
+              <Section style={card}>
+                <Section style={{ ...cardHeader, backgroundColor: '#EFF6FF', borderBottom: '1px solid #DBEAFE' }}>
+                  <Row>
+                    <Column><Text style={{ ...cardTitle, color: '#1E3A8A' }}>✈️ Airport Transfer (Confirmed)</Text></Column>
+                    <Column align="right" style={{ width: '50px' }}>
+                      <Img src={`https://api.qrserver.com/v1/create-qr-code/?size=60x60&data=TRANSFER-${shortId}`} width="40" height="40" alt="QR" style={{ backgroundColor: 'white', padding: '2px', borderRadius: '4px' }} />
+                    </Column>
+                  </Row>
+                  <Text style={{ ...smallText, color: '#1E40AF', marginTop: '4px' }}>
+                    Seamless transfer arranged.
+                  </Text>
+                </Section>
+                <Section style={cardContent}>
+
+                  {airportPickup?.airline && (
+                    <Row style={{ marginBottom: '16px' }}>
+                      <Column className="mobile-stack" style={{ paddingRight: '16px', paddingBottom: '12px' }}>
+                        <Text style={label}>Airline</Text>
+                        <Text style={valueMedium}>{airportPickup.airline}</Text>
+                      </Column>
+                      <Column className="mobile-stack" style={{ paddingBottom: '12px' }}>
+                        <Text style={label}>Flight Number</Text>
+                        <Text style={valueMedium}>{airportPickup.flightNumber}</Text>
+                      </Column>
+                    </Row>
+                  )}
+
+                  <Row style={{ marginBottom: '16px' }}>
+                    <Column>
+                      <Text style={label}>Transfer Total</Text>
+                      <Text style={valueLarge}>${airportPickup?.price.toFixed(2)}</Text>
+                    </Column>
+                  </Row>
+
+                  <Section style={{ backgroundColor: '#EFF6FF', padding: '12px', borderRadius: '8px', border: '1px solid #DBEAFE' }}>
+                    <Text style={{ ...smallText, color: '#1E3A8A', fontWeight: 'bold' }}>🌟 Peace of Mind Promise</Text>
+                    <Text style={{ ...smallText, color: '#1E3A8A' }}>
+                      Your driver will be waiting for you at the airport exit holding a sign with your name.
+                    </Text>
+                  </Section>
+                </Section>
+              </Section>
+            )}
+
 
             {/* Payment Summary */}
-            <Section style={box}>
-              <Text style={heading}>Payment Summary</Text>
-              <Text style={smallMutedText}>Receipt sent to {guestInfo?.email}</Text>
-              <Hr style={hr} />
-              <Row style={summaryRow}>
-                <Column>
-                  <Text style={{ ...itemDetail, fontWeight: 'bold' }}>Room Subtotal</Text>
-                  <Text style={{ ...itemDetail, fontSize: '12px' }}>{nights} {nights === 1 ? 'night' : 'nights'}</Text>
-                </Column>
-                <Column align="right"><Text style={{ ...itemDetail, fontFamily: 'monospace' }}>${roomSubtotal.toFixed(2)}</Text></Column>
-              </Row>
-              {renderPickupDetails()}
-              <Row style={summaryRow}>
-                <Column>
-                  <Text style={{ ...itemDetail, color: '#28a745', fontWeight: 'bold' }}>✓ All taxes & fees included</Text>
-                </Column>
-              </Row>
-              <Hr style={hr} />
-              <Row style={summaryRow}>
-                <Column><Text style={itemDetail}>Subtotal</Text></Column>
-                <Column align="right"><Text style={{ ...itemDetail, fontFamily: 'monospace' }}>${totalPrice.toFixed(2)}</Text></Column>
-              </Row>
-              <Row style={summaryRow}>
-                <Column><Text style={{ ...itemDetail, fontWeight: 'bold' }}>Total Paid (USD)</Text></Column>
-                <Column align="right"><Text style={{ ...itemDetail, fontWeight: 'bold', fontFamily: 'monospace' }}>${totalPrice.toFixed(2)}</Text></Column>
-              </Row>
-              <Row style={summaryRow}>
-                <Column><Text style={{ ...itemDetail, fontWeight: 'bold' }}>Balance Due</Text></Column>
-                <Column align="right"><Text style={{ ...itemDetail, fontWeight: 'bold', fontFamily: 'monospace' }}>$0.00</Text></Column>
-              </Row>
-              <Hr style={hr} />
-              <Text style={{ ...smallMutedText, textAlign: 'left' }}>
-                Paid on: {format(new Date(), 'MMM dd, yyyy')} • Method: Visa ••••4242<br />
-                Transaction ID: ch_3Pq...{Math.floor(Math.random() * 9000 + 1000)}<br />
-                Billing name: {guestInfo?.firstName} {guestInfo?.lastName}
+            <Section style={card}>
+              <Section style={cardHeader}>
+                <Text style={cardTitle}>💰 Payment Summary</Text>
+              </Section>
+              <Section style={cardContent}>
+                <Row style={{ marginBottom: '4px' }}>
+                  <Column><Text style={itemDetail}>Subtotal</Text></Column>
+                  <Column align="right"><Text style={valueMedium}>${totalPrice.toFixed(2)}</Text></Column>
+                </Row>
+                <Row style={{ marginBottom: '4px' }}>
+                  <Column><Text style={{ ...itemDetail, fontWeight: 'bold', color: '#1C1C1C', fontSize: '18px' }}>Total Paid (USD)</Text></Column>
+                  <Column align="right"><Text style={{ ...valueMedium, fontWeight: 'bold', fontSize: '18px' }}>${totalPrice.toFixed(2)}</Text></Column>
+                </Row>
+                <Row style={{ marginBottom: '16px' }}>
+                  <Column><Text style={itemDetail}>Balance Due at Check-in</Text></Column>
+                  <Column align="right"><Text style={valueMedium}>$0.00</Text></Column>
+                </Row>
+
+                <Hr style={hr} />
+
+                <Row>
+                  <Column className="mobile-stack" style={{ paddingBottom: '12px', paddingRight: '16px' }}>
+                    <Text style={label}>Payment Processed On</Text>
+                    <Text style={valueMedium}>{format(new Date(), "MMM dd, yyyy")}</Text>
+                  </Column>
+                  <Column className="mobile-stack" style={{ paddingBottom: '12px' }}>
+                    <Text style={label}>Cancellation Policy</Text>
+                    <Text style={{ ...valueMedium, color: '#16A34A' }}>Free cancellation up to 48h before arrival.</Text>
+                  </Column>
+                </Row>
+
+                <Section style={{ backgroundColor: '#FAF7F3', padding: '8px', borderRadius: '6px', textAlign: 'center', marginTop: '8px' }}>
+                  <Text style={{ ...smallText, color: '#4B5563', fontWeight: 'bold' }}>✨ All taxes included, no hidden fees.</Text>
+                </Section>
+              </Section>
+            </Section>
+
+            {/* Next Steps Buttons */}
+            <Section style={{ textAlign: 'center', marginBottom: '32px' }}>
+              <Text style={{ fontSize: '20px', fontWeight: 'bold', color: '#1C1C1C', marginBottom: '16px' }}>📝 Next Steps</Text>
+              <Button style={outlineButton} href={`${baseUrl}/confirmation?bid=${confirmationId}`}>
+                View Booking Online
+              </Button>
+              <Button style={primaryButton} href={`${baseUrl}/guest-services`}>
+                Enhance Your Stay
+              </Button>
+            </Section>
+
+            {/* Footer Links (Common) */}
+            <Section style={{ textAlign: 'center', marginBottom: '32px' }}>
+              <Text style={{ fontSize: '14px', color: '#6B7280' }}>
+                💬 Need help? <Link href="https://wa.me/18095105465" style={{ color: '#1C1C1C', fontWeight: 'bold', textDecoration: 'underline' }}>Chat with us on WhatsApp.</Link>
               </Text>
             </Section>
 
-            {/* Check-in info */}
-            <Section style={box}>
-              <Text style={{ ...itemDetail, textAlign: 'left' }}><strong>Check-in:</strong> 3:00 PM • <strong>Check-out:</strong> 11:00 AM</Text>
-              <Text style={{ ...itemDetail, textAlign: 'left' }}><strong>Cancellation:</strong> Free cancellation up to 48h before arrival.</Text>
-            </Section>
-          </Section>
+            <Text style={footer}>
+              Sweet Home Punta Cana, Bávaro, Punta Cana, Dominican Republic<br />
+              www.sweethomepuntacana.com
+            </Text>
 
-          <Section style={{ textAlign: 'center' as const, margin: '32px 0' }}>
-            <Button style={button} href={`${baseUrl}/guest-services`}>
-              Enhance Your Stay →
-            </Button>
           </Section>
-
-          <Section style={contentSection}>
-            <Section style={enhanceStayBox}>
-              <Row style={{ verticalAlign: 'middle' }}>
-                <Column className="mobile-stack" style={imageColumn}>
-                  <Img src="https://iampuntacana.com/wp-content/uploads/2025/09/unnamed.png" alt="Scooter" style={promoImage} />
-                </Column>
-                <Column className="mobile-stack" style={textColumn}>
-                  <Text style={enhanceStayTitle}>Need a ride?</Text>
-                  <Text style={enhanceStayText}>Get a scooter delivered to your door.</Text>
-                  <Button style={learnMoreButton} href="https://www.scooterspc.com">Learn More</Button>
-                </Column>
-              </Row>
-            </Section>
-          </Section>
-
-          <Section style={socialsSection}>
-            <Row>
-              <Column align="center" style={socialsIconContainer}>
-                <Link href="https://www.facebook.com/sweethomepc/">
-                  <Img src="https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/facebook%20sweet%20home%20punta%20cana%20guest%20house.png?alt=media&token=9576b0e2-0d2d-4c8f-89a5-d97e0bbd56a7" alt="Facebook" width="24" height="24" />
-                </Link>
-              </Column>
-              <Column align="center" style={socialsIconContainer}>
-                <Link href="https://www.instagram.com/sweethome_puntacana/">
-                  <Img src="https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/instagram%20sweet%20home%20punta%20cana.png?alt=media&token=27380234-317d-49d1-ac8b-527d171308d1" alt="Instagram" width="24" height="24" />
-                </Link>
-              </Column>
-              <Column align="center" style={socialsIconContainer}>
-                <Link href="https://www.youtube.com/@IAMPUNTACANA">
-                  <Img src="https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/youtube%20sweet%20home%20punta%20cana%20i%20am%20punta%20cana%20scooters%20punta%20cana.jpg?alt=media&token=f1eb40ef-feda-4780-b892-2e554237ae98" alt="YouTube" width="24" height="24" />
-                </Link>
-              </Column>
-            </Row>
-          </Section>
-
-          <Text style={footer}>
-            Sweet Home Punta Cana, Bávaro, Punta Cana, Dominican Republic
-          </Text>
         </Container>
       </Body>
     </Html>
   );
 }
 
+// Styles
 const main = {
   backgroundColor: "#FAF7F3",
-  fontFamily:
-    '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Ubuntu,sans-serif',
+  fontFamily: '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Ubuntu,sans-serif',
 };
 
 const container = {
   maxWidth: "600px",
   margin: "0 auto",
-  padding: "32px 0 48px",
+  padding: "0",
+};
+
+const headerSection = {
+  backgroundColor: '#1C1C1C',
+  padding: '40px 20px',
+  textAlign: 'center' as const,
+  backgroundImage: 'url(https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&q=80)',
+  backgroundSize: 'cover',
+  backgroundPosition: 'center',
+};
+
+const headerTitle = {
+  color: '#FFFFFF',
+  fontSize: '28px',
+  fontWeight: 'bold',
+  fontFamily: '"Playfair Display", serif',
+  margin: '20px 0 10px',
+  textShadow: '0 2px 4px rgba(0,0,0,0.5)',
+};
+
+const headerSubtitle = {
+  color: 'rgba(255,255,255,0.9)',
+  fontSize: '16px',
+  margin: '0',
+  textShadow: '0 1px 2px rgba(0,0,0,0.5)',
 };
 
 const contentSection = {
-  padding: '0 40px',
-  textAlign: 'left' as const,
+  padding: '24px',
+  marginTop: '-20px',
+  position: 'relative' as const,
+  zIndex: 10,
 };
 
-const logoSection = {
-  padding: '16px 0 32px 0',
-  textAlign: "center" as const,
+const card = {
+  backgroundColor: '#FFFFFF',
+  borderRadius: '16px',
+  marginBottom: '24px',
+  overflow: 'hidden',
+  boxShadow: '0 4px 6px rgba(0,0,0,0.05)',
+  border: '1px solid #E5E7EB',
 };
 
-const logoText = {
-  fontFamily: '"Playfair Display", "Times New Roman", serif',
+const cardHeader = {
+  backgroundColor: '#FEFCE8', // shpc-yellow/10
+  padding: '16px 24px',
+  borderBottom: '1px solid #FEF08A',
+};
+
+const cardTitle = {
+  fontSize: '18px',
+  fontWeight: 'bold',
+  color: '#1C1C1C',
+  margin: '0',
+  fontFamily: '"Playfair Display", serif',
+};
+
+const cardContent = {
+  padding: '24px',
+};
+
+const label = {
+  fontSize: '11px',
+  textTransform: 'uppercase' as const,
+  fontWeight: 'bold',
+  color: '#6B7280', // muted-foreground
+  margin: '0 0 4px 0',
+  letterSpacing: '0.05em',
+};
+
+const valueMedium = {
+  fontSize: '15px',
+  color: '#1F2937', // shpc-ink
+  fontWeight: 500,
+  margin: '0',
+};
+
+const valueLarge = {
   fontSize: '24px',
   fontWeight: 'bold',
-  color: '#0F1115',
-  margin: 0,
-};
-
-const logoSubtitle = {
-  fontFamily: '"Dancing Script", cursive',
-  fontSize: '20px',
-  color: '#0F1115',
-  margin: '-5px 0 0 0',
-};
-
-const paragraph = {
-  fontSize: "16px",
-  lineHeight: "1.7",
-  color: "#2D3A4A",
-  marginBottom: '24px',
-  textAlign: 'left' as const,
-};
-
-const heading = {
-  fontSize: "18px",
-  lineHeight: "1.3",
-  fontWeight: "700",
-  color: "#484848",
-  marginBottom: '12px',
-  textAlign: 'left' as const,
-};
-
-const box = {
-  padding: "24px",
-  backgroundColor: "#FDF9F4",
-  border: "1px solid #e5e5e5",
-  borderRadius: "16px",
-  marginBottom: "24px"
+  color: '#1C1C1C',
+  margin: '0',
+  letterSpacing: '-0.025em',
 };
 
 const itemDetail = {
-  fontSize: "14px",
-  lineHeight: "1.5",
-  color: "#525f7f",
+  fontSize: '14px',
+  color: '#4B5563',
   margin: '0',
-  textAlign: 'left' as const,
 };
 
-const itemStrong = {
-  ...itemDetail,
-  fontWeight: 'bold',
-  color: '#484848',
-  fontSize: '16px'
-}
-
-const smallMutedText = {
-  fontSize: "12px",
-  color: "#8898aa",
-  margin: '0 0 4px 0',
-  textAlign: 'left' as const,
-}
-
-const bookingIdText = {
-  fontSize: "20px",
-  fontWeight: 'bold',
-  color: '#484848',
-  fontFamily: 'monospace',
-  margin: 0,
-  textAlign: 'left' as const,
-}
-
-const summaryRow = {
-  width: "100%",
-  marginBottom: '8px'
+const smallText = {
+  fontSize: '12px',
+  color: '#6B7280',
+  margin: '0',
 };
 
-const button = {
+const hr = {
+  borderColor: "#E5E7EB",
+  margin: "16px 0",
+};
+
+const primaryButton = {
   backgroundColor: "#F5C343",
-  borderRadius: "8px",
+  borderRadius: "12px",
   color: "#1C1C1C",
   fontSize: "16px",
   fontWeight: "bold",
   textDecoration: "none",
   textAlign: "center" as const,
-  display: "block",
-  width: "240px",
-  padding: "14px",
-  margin: "24px auto"
+  display: "inline-block",
+  padding: "14px 24px",
+  margin: "8px",
+  boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
 };
 
-const hr = {
-  borderColor: "#e5e5e5",
-  margin: "16px 0",
-};
-
-const enhanceStayBox = {
-  backgroundColor: '#FDF9F4',
-  border: '1px solid #e5e5e5',
-  borderRadius: '16px',
-  padding: '20px',
-}
-
-const enhanceStayTitle = {
-  fontSize: '16px',
-  fontWeight: 'bold',
-  color: '#1C1C1C',
-  margin: '0 0 4px 0',
-  textAlign: 'left' as const,
-}
-
-const enhanceStayText = {
-  fontSize: '14px',
-  color: '#434A54',
-  margin: '0 0 12px 0',
-  textAlign: 'left' as const,
-}
-
-const imageColumn = {
-  width: '35%',
-  paddingRight: '20px',
-};
-
-const textColumn = {
-  width: '65%',
-  verticalAlign: 'middle',
-};
-
-const promoImage = {
-  width: '100%',
-  maxWidth: '120px',
-  borderRadius: '8px',
-};
-
-const learnMoreButton = {
-  backgroundColor: '#EDEDED',
-  color: '#1C1C1C',
-  borderRadius: '6px',
-  padding: '8px 16px',
-  fontSize: '14px',
-  textDecoration: 'none',
-};
-
-const socialsSection = {
-  textAlign: 'center' as const,
-  padding: '20px 0 10px 0',
-};
-
-const socialsIconContainer = {
-  padding: '0 8px',
+const outlineButton = {
+  backgroundColor: "#FFFFFF",
+  borderRadius: "12px",
+  color: "#1C1C1C",
+  fontSize: "16px",
+  fontWeight: "bold",
+  textDecoration: "none",
+  textAlign: "center" as const,
+  display: "inline-block",
+  padding: "14px 24px",
+  margin: "8px",
+  border: '2px solid #F5C343',
 };
 
 const footer = {
-  color: "#8898aa",
+  color: "#9CA3AF",
   fontSize: "12px",
-  lineHeight: "16px",
+  lineHeight: "1.5",
   textAlign: "center" as const,
-  paddingTop: "24px",
+  marginTop: "24px",
 };
-
