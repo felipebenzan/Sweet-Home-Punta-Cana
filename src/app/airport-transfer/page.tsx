@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useMemo, useState, Suspense, useEffect } from "react";
-import { Calendar as CalendarIcon, Clock, Plane, Info, Loader2, Users, Mail, Phone, Check, ArrowRight, Bus } from "lucide-react";
+import { Calendar as CalendarIcon, Clock, Plane, Info, Loader2, Users, Mail, Phone, Check, ArrowRight, Bus, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -305,7 +305,11 @@ function AirportTransferPageComponent() {
 
       {/* Main Content - 2 Column Layout */}
       <section className="max-w-7xl mx-auto px-6 py-16">
-        <div className="grid grid-cols-1 lg:grid-cols-[60%_40%] gap-12">
+        {/* Main Content - Layout Adapts to Step */}
+        <div className={cn(
+          "grid grid-cols-1 gap-12",
+          currentStep === 3 ? "lg:grid-cols-[60%_40%]" : "max-w-3xl mx-auto"
+        )}>
 
           {/* Left Column - Booking Form (60%) */}
           <div className="space-y-12" ref={wizardRef}>
@@ -335,10 +339,35 @@ function AirportTransferPageComponent() {
                     </button>
                   ))}
                 </div>
-
-                <div className="text-center py-4">
-                  <p className="font-inter text-neutral-600">
-                    {DIRECTION_DETAILS[direction].route}
+                {/* Secure Badge */}
+                <div className="p-6 bg-neutral-50 border-t border-neutral-200">
+                  <div className="flex items-center justify-center gap-2 text-neutral-500 text-xs font-inter">
+                    <span>🔒 Secure SSL Payment</span>
+                  </div>
+                </div>
+                <div className="text-center py-6 space-y-2">
+                  <div className="flex items-center justify-center gap-3 font-bold text-black text-lg md:text-xl">
+                    <span>Route</span>
+                    {direction === 'depart' ? (
+                      <>
+                        <span>Sweet Home</span>
+                        <Home className="w-5 h-5 md:w-6 md:h-6" />
+                        <ArrowRight className="w-4 h-4 md:w-5 md:h-5 text-neutral-400" />
+                        <span>PUJ Airport</span>
+                        <Bus className="w-5 h-5 md:w-6 md:h-6" />
+                      </>
+                    ) : (
+                      <>
+                        <span>PUJ Airport</span>
+                        <Bus className="w-5 h-5 md:w-6 md:h-6" />
+                        {direction === 'round' && <ArrowRight className="w-4 h-4 md:w-5 md:h-5 text-neutral-400" />}
+                        <span>Sweet Home</span>
+                        <Home className="w-5 h-5 md:w-6 md:h-6" />
+                      </>
+                    )}
+                  </div>
+                  <p className="text-sm font-medium text-neutral-800">
+                    Total: ${total} USD all fees and taxes included.
                   </p>
                 </div>
 
@@ -731,82 +760,84 @@ function AirportTransferPageComponent() {
             )}
           </div>
 
-          {/* Right Column - Luxury Ticket Summary (40%) */}
-          <div className="lg:sticky lg:top-24 h-fit">
-            <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-              {/* Header */}
-              <div className="p-6 md:p-10 border-b border-neutral-200">
-                <h3 className="font-playfair text-2xl font-semibold text-shpc-ink uppercase tracking-wide">
-                  Your Ticket Summary
-                </h3>
-              </div>
-
-              {/* Itinerary Details */}
-              <div className="p-6 md:p-10 space-y-6">
-                <div className="space-y-5">
-                  <div className="flex justify-between items-start">
-                    <span className="text-sm text-neutral-500 font-inter uppercase tracking-wide">Route</span>
-                    <span className="font-inter font-semibold text-shpc-ink text-right">{DIRECTION_DETAILS[direction].short}</span>
-                  </div>
-
-                  {showArrival && arrivalDate && (
-                    <div className="flex justify-between items-start">
-                      <span className="text-sm text-neutral-500 font-inter uppercase tracking-wide">Arrival</span>
-                      <span className="font-inter font-semibold text-shpc-ink">{format(arrivalDate, "MMM do yyyy")}</span>
-                    </div>
-                  )}
-
-                  {showDeparture && departureDate && (
-                    <div className="flex justify-between items-start">
-                      <span className="text-sm text-neutral-500 font-inter uppercase tracking-wide">Departure</span>
-                      <span className="font-inter font-semibold text-shpc-ink">{format(departureDate, "MMM do yyyy")} {departureTime}</span>
-                    </div>
-                  )}
-
-                  <div className="flex justify-between items-start">
-                    <span className="text-sm text-neutral-500 font-inter uppercase tracking-wide">Passengers</span>
-                    <span className="font-inter font-semibold text-shpc-ink">{passengers}</span>
-                  </div>
+          {/* Right Column - Luxury Ticket Summary (Only on Step 3) */}
+          {currentStep === 3 && (
+            <div className="lg:sticky lg:top-24 h-fit">
+              <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+                {/* Header */}
+                <div className="p-6 md:p-10 border-b border-neutral-200">
+                  <h3 className="font-playfair text-2xl font-semibold text-shpc-ink uppercase tracking-wide">
+                    Your Ticket Summary
+                  </h3>
                 </div>
 
-                {/* Price Block - Luxury Receipt Style */}
-                <div className="bg-shpc-ink rounded-lg p-8 text-center space-y-3 mt-8">
-                  <p className="text-white/70 text-xs font-inter uppercase tracking-widest">
-                    Total Amount
-                  </p>
-                  <p className="text-white text-5xl font-bold font-playfair">
-                    ${total.toFixed(2)}
-                  </p>
-                  <p className="text-white/60 text-xs font-inter">
-                    USD · All taxes included
-                  </p>
-                </div>
+                {/* Itinerary Details */}
+                <div className="p-6 md:p-10 space-y-6">
+                  <div className="space-y-5">
+                    <div className="flex justify-between items-start">
+                      <span className="text-sm text-neutral-500 font-inter uppercase tracking-wide">Route</span>
+                      <span className="font-inter font-semibold text-shpc-ink text-right">{DIRECTION_DETAILS[direction].short}</span>
+                    </div>
 
-                {/* Inclusions */}
-                <div className="pt-6 space-y-4">
-                  <p className="font-playfair text-base font-semibold text-shpc-ink">Included:</p>
-                  <div className="space-y-3 text-sm text-neutral-700 font-inter">
-                    <div className="flex items-center gap-3">
-                      <Check className="h-4 w-4 text-shpc-yellow shrink-0" strokeWidth={3} />
-                      <span>24/7 Flight tracking</span>
+                    {showArrival && arrivalDate && (
+                      <div className="flex justify-between items-start">
+                        <span className="text-sm text-neutral-500 font-inter uppercase tracking-wide">Arrival</span>
+                        <span className="font-inter font-semibold text-shpc-ink">{format(arrivalDate, "MMM do yyyy")}</span>
+                      </div>
+                    )}
+
+                    {showDeparture && departureDate && (
+                      <div className="flex justify-between items-start">
+                        <span className="text-sm text-neutral-500 font-inter uppercase tracking-wide">Departure</span>
+                        <span className="font-inter font-semibold text-shpc-ink">{format(departureDate, "MMM do yyyy")} {departureTime}</span>
+                      </div>
+                    )}
+
+                    <div className="flex justify-between items-start">
+                      <span className="text-sm text-neutral-500 font-inter uppercase tracking-wide">Passengers</span>
+                      <span className="font-inter font-semibold text-shpc-ink">{passengers}</span>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <Check className="h-4 w-4 text-shpc-yellow shrink-0" strokeWidth={3} />
-                      <span>Meet & greet service</span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <Check className="h-4 w-4 text-shpc-yellow shrink-0" strokeWidth={3} />
-                      <span>Luggage assistance</span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <Check className="h-4 w-4 text-shpc-yellow shrink-0" strokeWidth={3} />
-                      <span>Professional driver</span>
+                  </div>
+
+                  {/* Price Block - Luxury Receipt Style */}
+                  <div className="bg-shpc-ink rounded-lg p-8 text-center space-y-3 mt-8">
+                    <p className="text-white/70 text-xs font-inter uppercase tracking-widest">
+                      Total Amount
+                    </p>
+                    <p className="text-white text-5xl font-bold font-playfair">
+                      ${total.toFixed(2)}
+                    </p>
+                    <p className="text-white/60 text-xs font-inter">
+                      USD · All taxes included
+                    </p>
+                  </div>
+
+                  {/* Inclusions */}
+                  <div className="pt-6 space-y-4">
+                    <p className="font-playfair text-base font-semibold text-shpc-ink">Included:</p>
+                    <div className="space-y-3 text-sm text-neutral-700 font-inter">
+                      <div className="flex items-center gap-3">
+                        <Check className="h-4 w-4 text-shpc-yellow shrink-0" strokeWidth={3} />
+                        <span>24/7 Flight tracking</span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <Check className="h-4 w-4 text-shpc-yellow shrink-0" strokeWidth={3} />
+                        <span>Meet & greet service</span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <Check className="h-4 w-4 text-shpc-yellow shrink-0" strokeWidth={3} />
+                        <span>Luggage assistance</span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <Check className="h-4 w-4 text-shpc-yellow shrink-0" strokeWidth={3} />
+                        <span>Professional driver</span>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
       </section>
     </div>
