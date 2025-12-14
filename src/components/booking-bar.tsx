@@ -114,7 +114,7 @@ export default function BookingBar() {
                                                 format(date.from, "MMM dd")
                                             )
                                         ) : (
-                                            <span>Dates</span>
+                                            <span>Select Dates</span>
                                         )}
                                     </span>
                                 </Button>
@@ -139,8 +139,9 @@ export default function BookingBar() {
                             <PopoverTrigger asChild>
                                 <Button variant={'outline'} className="w-full justify-center md:justify-start text-left font-normal h-12 px-3 md:px-4">
                                     <Users className="h-4 w-4 md:mr-2" />
-                                    <span className="hidden md:inline">{guests} {guests === 1 ? 'Guest' : 'Guests'}</span>
-                                    <span className="md:hidden ml-1 text-xs">{guests}</span>
+                                    <span className="ml-1 text-xs md:text-sm truncate">
+                                        {guests} {guests === 1 ? 'Guest' : 'Guests'}
+                                    </span>
                                 </Button>
                             </PopoverTrigger>
                             <PopoverContent className="w-48 pointer-events-auto">
