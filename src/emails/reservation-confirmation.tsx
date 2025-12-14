@@ -136,7 +136,7 @@ export default function ReservationConfirmationEmail({
                 {/* Row 1: Dates & Guests */}
                 <Row style={{ marginBottom: '16px' }}>
                   <Column className="mobile-stack" style={{ paddingRight: '16px', paddingBottom: '12px', width: '50%', verticalAlign: 'top' }}>
-                    <Text style={label}>Dates</Text>
+                    <Text style={label}>🗓 Dates</Text>
                     <Text style={valueMedium}>
                       {dates?.from && dates?.to
                         ? `${format(parseISO(dates.from), "MMM dd")} – ${format(parseISO(dates.to), "MMM dd, yyyy")}`
@@ -144,7 +144,7 @@ export default function ReservationConfirmationEmail({
                     </Text>
                   </Column>
                   <Column className="mobile-stack" style={{ paddingBottom: '12px', width: '50%', verticalAlign: 'top' }}>
-                    <Text style={label}>Guests</Text>
+                    <Text style={label}>👥 Guests</Text>
                     <Text style={valueMedium}>{guests} {guests === 1 ? 'Guest' : 'Guests'}</Text>
                   </Column>
                 </Row>
@@ -152,22 +152,37 @@ export default function ReservationConfirmationEmail({
                 {/* Row 2: Room Type */}
                 <Row style={{ marginBottom: '16px' }}>
                   <Column>
-                    <Text style={label}>Room Type</Text>
+                    <Text style={label}>🏠 Room Type</Text>
                     <Text style={valueMedium}>{room.name}</Text>
                   </Column>
                 </Row>
 
                 {/* Row 3: Check-in & Check-out */}
-                <Row>
+                <Row style={{ marginBottom: '24px' }}>
                   <Column className="mobile-stack" style={{ paddingRight: '16px', width: '50%' }}>
-                    <Text style={label}>Check-in Time</Text>
+                    <Text style={label}>🕒 Check-in Time</Text>
                     <Text style={valueMedium}>3:00 PM</Text>
                   </Column>
                   <Column className="mobile-stack" style={{ width: '50%' }}>
-                    <Text style={label}>Check-out Time</Text>
+                    <Text style={label}>🕚 Check-out Time</Text>
                     <Text style={valueMedium}>11:00 AM</Text>
                   </Column>
                 </Row>
+
+                {/* Room Preview */}
+                <Text style={label}>Room Preview</Text>
+                <Img
+                  src={room.image}
+                  width="100%"
+                  height="auto"
+                  style={{
+                    width: '100%',
+                    borderRadius: '8px',
+                    objectFit: 'cover',
+                    aspectRatio: '16/9'
+                  }}
+                  alt={room.name}
+                />
               </Section>
             </Section>
 
