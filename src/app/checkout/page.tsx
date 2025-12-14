@@ -408,23 +408,9 @@ function CheckoutPageComponent() {
               </CardContent>
             </Card>
 
-          </div>
-
-          <div className="lg:sticky top-24 w-full lg:w-96">
-            <CheckoutSummary
-              bookingDetails={bookingDetails}
-              pickupPrice={pickupPrice}
-              tripType={tripType}
-              airline={airline}
-              flightNumber={flightNumber}
-              arrivalDate={arrivalDate}
-              returnDate={returnDate}
-              returnFlightNumber={returnFlightNumber}
-            />
-
-            <div className="mt-6 flex flex-col gap-4">
+            <div className="flex flex-col gap-4">
               {!showPayPalButtons ? (
-                <Button size="lg" className="w-full h-14 text-lg font-semibold bg-shpc-yellow hover:bg-shpc-yellow/90 text-white shadow-lg transition-all transform hover:scale-[1.01]" onClick={handleProceedToPayment} disabled={isProcessing}>
+                <Button size="lg" className="w-full h-14 text-lg font-semibold bg-shpc-yellow hover:bg-shpc-yellow/90 text-shpc-ink shadow-lg transition-all transform hover:scale-[1.01]" onClick={handleProceedToPayment} disabled={isProcessing}>
                   {isProcessing ? <Loader2 className="animate-spin mr-2" /> : 'Proceed to Payment'}
                 </Button>
               ) : (
@@ -466,6 +452,22 @@ function CheckoutPageComponent() {
                 </Card>
               )}
             </div>
+
+          </div>
+
+          <div className="lg:sticky top-24 w-full lg:w-96">
+            <CheckoutSummary
+              bookingDetails={bookingDetails}
+              pickupPrice={pickupPrice}
+              tripType={tripType}
+              airline={airline}
+              flightNumber={flightNumber}
+              arrivalDate={arrivalDate}
+              returnDate={returnDate}
+              returnFlightNumber={returnFlightNumber}
+            />
+
+
           </div>
         </div>
       </div>
