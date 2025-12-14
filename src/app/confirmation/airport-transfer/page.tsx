@@ -146,11 +146,11 @@ function TransferConfirmationContent() {
                             </div>
                         </div>
 
-                        {/* Ticket Body - 3 Columns */}
-                        <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-dashed divide-shpc-edge">
+                        {/* Ticket Body */}
+                        <div className="grid grid-cols-2 md:grid-cols-3 bg-white">
 
-                            {/* Column 1: Departure/Arrival */}
-                            <div className="p-6 space-y-6">
+                            {/* Section 1: Departure/Arrival */}
+                            <div className="p-6 space-y-6 col-span-1 order-1 border-r border-dashed border-shpc-edge md:border-b-0 border-b">
                                 <div>
                                     <p className="text-xs uppercase tracking-wider font-semibold text-neutral-500 mb-3">
                                         Departure / Arrival
@@ -168,7 +168,7 @@ function TransferConfirmationContent() {
 
                                     <div className="flex items-center justify-center py-2">
                                         <div className="h-px w-full bg-shpc-edge relative">
-                                            <Bus className="h-4 w-4 text-shpc-yellow absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#FAF8F5]" />
+                                            <Bus className="h-4 w-4 text-shpc-yellow absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white" />
                                         </div>
                                     </div>
 
@@ -201,8 +201,23 @@ function TransferConfirmationContent() {
                                 </div>
                             </div>
 
-                            {/* Column 2: Passenger/Booking Info */}
-                            <div className="p-6 space-y-6">
+                            {/* Section 2: QR Code (Mobile: Top Right, Desktop: Right) */}
+                            <div className="p-6 col-span-1 order-2 md:order-3 md:col-span-1 border-b border-dashed border-shpc-edge md:border-b-0 md:border-l flex flex-col items-center justify-center space-y-4">
+                                <div>
+                                    <p className="text-xs uppercase tracking-wider font-semibold text-neutral-500 mb-2 text-center">
+                                        Booking Code
+                                    </p>
+                                </div>
+                                <div className="w-28 h-28 bg-white border-2 border-shpc-edge rounded-lg flex items-center justify-center p-2">
+                                    <QRCode value={`TRANSFER-${booking.id}`} size={100} style={{ height: "auto", maxWidth: "100%", width: "100%" }} />
+                                </div>
+                                <p className="font-mono text-xs text-center text-neutral-400 break-all max-w-[120px]">
+                                    {booking.id.substring(0, 8).toUpperCase()}
+                                </p>
+                            </div>
+
+                            {/* Section 3: Passenger Info (Mobile: Full Width Bottom, Desktop: Middle) */}
+                            <div className="p-6 space-y-6 col-span-2 order-3 md:order-2 md:col-span-1 md:border-r md:border-dashed md:border-shpc-edge">
                                 <div>
                                     <p className="text-xs uppercase tracking-wider font-semibold text-neutral-500 mb-3">
                                         Passenger / Booking Info
@@ -240,31 +255,16 @@ function TransferConfirmationContent() {
                                     </div>
                                 </div>
                             </div>
+                        </div>
 
-                            {/* Column 3: Price/QR */}
-                            <div className="p-6 space-y-6">
-                                <div>
-                                    <p className="text-xs uppercase tracking-wider font-semibold text-neutral-500 mb-3">
-                                        Price / Code
-                                    </p>
-                                </div>
-
-                                <div className="space-y-6">
-                                    {/* QR Code */}
-                                    <div className="flex justify-center">
-                                        <div className="w-32 h-32 bg-white border-2 border-shpc-edge rounded-lg flex items-center justify-center p-2">
-                                            <QRCode value={`TRANSFER-${booking.id}`} size={100} style={{ height: "auto", maxWidth: "100%", width: "100%" }} />
-                                        </div>
-                                    </div>
-
-                                    <div className="text-center">
-                                        <p className="text-xs text-neutral-500 uppercase tracking-wide mb-2">Total</p>
-                                        <p className="font-playfair font-bold text-shpc-ink text-3xl">
-                                            ${booking.total?.toFixed(2)} USD
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
+                        {/* Total Paid Section */}
+                        <div className="bg-[#f0f0f0] border-t border-dashed border-shpc-edge p-5 flex flex-col items-center justify-center">
+                            <p className="font-playfair font-bold text-2xl text-shpc-ink">
+                                Total Paid: ${booking.total?.toFixed(2)} US
+                            </p>
+                            <p className="text-xs font-inter text-neutral-600 mt-1 uppercase tracking-wide">
+                                All taxes and fees included
+                            </p>
                         </div>
 
                         {/* Ticket Footer */}
