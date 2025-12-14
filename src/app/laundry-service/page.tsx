@@ -173,11 +173,11 @@ export default function LaundryServicePage() {
             return;
         }
 
-        if (wizardRef.current) {
-            setTimeout(() => {
-                wizardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }, 100);
-        }
+        // Always scroll to top on step change to ensure user sees the new content from the start
+        // This is especially important for Step 3 where Summary is at the top (order-first)
+        setTimeout(() => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, 100);
     }, [currentStep]);
 
     return (
