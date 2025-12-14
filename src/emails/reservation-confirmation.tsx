@@ -84,42 +84,53 @@ export default function ReservationConfirmationEmail({
 
             {/* Reservation Details (Guest Info & ID) */}
             <Section style={card}>
-              <Section style={cardHeader}>
-                <Text style={cardTitle}>✅ Reservation Details</Text>
+              <Section style={{ ...cardHeader, backgroundColor: '#FEFCE8', borderBottom: '1px solid #FEF08A' }}>
+                <Text style={{ ...cardTitle, fontFamily: '"Playfair Display", serif', fontSize: '20px', display: 'flex', alignItems: 'center' }}>
+                  <span style={{ marginRight: '8px', fontSize: '24px' }}>✅</span> Reservation Details
+                </Text>
               </Section>
               <Section style={cardContent}>
                 <Row>
                   <Column className="mobile-stack" style={{ verticalAlign: 'top', paddingRight: '16px' }}>
-                    <Text style={label}>Reservation ID</Text>
-                    <Text style={valueLarge}>{shortId}</Text>
 
-                    <Row style={{ marginTop: '16px' }}>
-                      <Column className="mobile-stack" style={{ paddingRight: '16px', paddingBottom: '16px' }}>
+                    {/* ID */}
+                    <Section style={{ marginBottom: '20px' }}>
+                      <Text style={label}>Reservation ID</Text>
+                      <Text style={{ ...valueLarge, fontSize: '32px' }}>{shortId}</Text>
+                    </Section>
+
+                    {/* Guest & Email Grid */}
+                    <Row style={{ marginBottom: '20px' }}>
+                      <Column className="mobile-stack" style={{ paddingRight: '12px', paddingBottom: '12px', width: '50%', verticalAlign: 'top' }}>
                         <Text style={label}>Guest Name</Text>
-                        <Text style={valueMedium}>{guestInfo?.firstName} {guestInfo?.lastName}</Text>
+                        <Text style={{ ...valueMedium, fontWeight: '500' }}>{guestInfo?.firstName} {guestInfo?.lastName}</Text>
                       </Column>
-                      <Column className="mobile-stack">
+                      <Column className="mobile-stack" style={{ paddingBottom: '12px', width: '50%', verticalAlign: 'top' }}>
                         <Text style={label}>Confirmation Sent To</Text>
                         <Text style={valueMedium}>{guestInfo?.email}</Text>
-                        {guestInfo?.phone && <Text style={smallText}>{guestInfo.phone}</Text>}
+                        {guestInfo?.phone && <Text style={{ ...smallText, marginTop: '4px' }}>{guestInfo.phone}</Text>}
                       </Column>
                     </Row>
-                    <Text style={label}>Guest House</Text>
-                    <Text style={valueMedium}>Sweet Home Punta Cana</Text>
+
+                    {/* Guest House */}
+                    <Section>
+                      <Text style={label}>Guest House</Text>
+                      <Text style={valueMedium}>Sweet Home Punta Cana</Text>
+                    </Section>
                   </Column>
 
-                  {/* QR Code Column */}
-                  <Column className="mobile-stack" style={{ width: '140px', verticalAlign: 'top' }}>
-                    <Section style={{ backgroundColor: '#FAF7F3', padding: '16px', borderRadius: '12px', textAlign: 'center' }}>
+                  {/* QR Code Column (Right) */}
+                  <Column className="mobile-stack" style={{ width: '150px', verticalAlign: 'top', paddingLeft: '8px' }}>
+                    <Section style={{ backgroundColor: '#FAF7F3', padding: '16px', borderRadius: '12px', textAlign: 'center', border: '1px solid #E5E5E5' }}>
                       <Img
                         src={`https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${qrValue}`}
                         alt="QR Code"
                         width="100"
                         height="100"
-                        style={{ margin: '0 auto', backgroundColor: 'white', padding: '4px', borderRadius: '4px' }}
+                        style={{ margin: '0 auto', display: 'block', backgroundColor: 'white', padding: '6px', borderRadius: '8px' }}
                       />
-                      <Text style={{ ...smallText, textAlign: 'center', marginTop: '8px' }}>
-                        📌 Keep this for check-in
+                      <Text style={{ ...smallText, textAlign: 'center', marginTop: '10px', lineHeight: '1.3' }}>
+                        📌 Keep this ID and QR Code handy for quick check-in!
                       </Text>
                     </Section>
                   </Column>
