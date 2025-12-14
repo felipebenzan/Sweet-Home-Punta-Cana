@@ -97,7 +97,7 @@ export default async function ExcursionsPage() {
               className="object-cover opacity-40"
               data-ai-hint="scooter rental"
             />
-            <div className="relative p-12 lg:p-16 flex flex-col md:flex-row items-center justify-between gap-8 text-center md:text-left">
+            <div className="relative p-6 md:p-12 lg:p-16 flex flex-col md:flex-row items-center justify-between gap-8 text-center md:text-left">
               <div className="max-w-xl">
                 <h2 className="text-3xl md:text-4xl font-bold font-playfair">Explore on Two Wheels</h2>
                 <p className="mt-4 text-lg text-white/80">“From Sweet Home to Every Corner of Paradise – Rent Your Scooter Today”</p>
