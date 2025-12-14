@@ -89,33 +89,34 @@ export default function BookingBar() {
             }}
         >
             <div className="max-w-6xl mx-auto px-6">
-                <div className="flex flex-col md:flex-row items-center gap-4 justify-center md:gap-8">
+                <div className="grid grid-cols-[1fr_auto_auto] md:flex md:flex-row items-center gap-2 md:gap-4 md:justify-center">
 
                     {/* Date Picker */}
-                    <div className="w-full md:w-auto flex-1 max-w-sm">
+                    <div className="w-full md:w-auto flex-1 md:max-w-sm">
                         <Popover>
                             <PopoverTrigger asChild>
                                 <Button
                                     id="date"
                                     variant={"outline"}
                                     className={cn(
-                                        "w-full justify-start text-left font-normal h-12",
+                                        "w-full justify-start text-left font-normal h-12 px-3 md:px-4 overflow-hidden",
                                         !date && "text-muted-foreground"
                                     )}
                                 >
-                                    <CalendarIcon className="mr-2 h-4 w-4" />
-                                    {date?.from ? (
-                                        date.to ? (
-                                            <>
-                                                {format(date.from, "LLL dd, y")} -{" "}
-                                                {format(date.to, "LLL dd, y")}
-                                            </>
+                                    <CalendarIcon className="mr-2 h-4 w-4 shrink-0" />
+                                    <span className="truncate text-xs md:text-sm">
+                                        {date?.from ? (
+                                            date.to ? (
+                                                <>
+                                                    {format(date.from, "MMM dd")} - {format(date.to, "MMM dd")}
+                                                </>
+                                            ) : (
+                                                format(date.from, "MMM dd")
+                                            )
                                         ) : (
-                                            format(date.from, "LLL dd, y")
-                                        )
-                                    ) : (
-                                        <span>Check-in - Check-out</span>
-                                    )}
+                                            <span>Dates</span>
+                                        )}
+                                    </span>
                                 </Button>
                             </PopoverTrigger>
                             <PopoverContent className="w-auto p-0 pointer-events-auto" align="start">
@@ -133,12 +134,13 @@ export default function BookingBar() {
                     </div>
 
                     {/* Guests Input */}
-                    <div className="w-full md:w-auto w-[200px]">
+                    <div className="w-auto md:w-[200px]">
                         <Popover>
                             <PopoverTrigger asChild>
-                                <Button variant={'outline'} className="w-full justify-start text-left font-normal h-12">
-                                    <Users className="mr-2 h-4 w-4" />
-                                    <span>{guests} {guests === 1 ? 'Guest' : 'Guests'}</span>
+                                <Button variant={'outline'} className="w-full justify-center md:justify-start text-left font-normal h-12 px-3 md:px-4">
+                                    <Users className="h-4 w-4 md:mr-2" />
+                                    <span className="hidden md:inline">{guests} {guests === 1 ? 'Guest' : 'Guests'}</span>
+                                    <span className="md:hidden ml-1 text-xs">{guests}</span>
                                 </Button>
                             </PopoverTrigger>
                             <PopoverContent className="w-48 pointer-events-auto">
@@ -152,12 +154,13 @@ export default function BookingBar() {
                     </div>
 
                     {/* Submit Button */}
-                    <div className="w-full md:w-auto">
+                    <div className="w-auto md:w-auto">
                         <Button
-                            className="w-full bg-shpc-yellow text-shpc-ink hover:bg-shpc-yellow/90 font-semibold h-12 px-8"
+                            className="w-full bg-shpc-yellow text-shpc-ink hover:bg-shpc-yellow/90 font-semibold h-12 px-4 md:px-8"
                             onClick={handleSearch}
                         >
-                            Check Availability
+                            <span className="hidden md:inline">Check Availability</span>
+                            <span className="md:hidden">Check</span>
                         </Button>
                     </div>
                 </div>
