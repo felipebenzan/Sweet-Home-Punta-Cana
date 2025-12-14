@@ -35,8 +35,13 @@ interface RoomClientPageProps {
     otherRooms: Room[];
 }
 
+import Autoplay from "embla-carousel-autoplay";
+
 export default function RoomClientPage({ roomData, otherRooms }: RoomClientPageProps) {
     const room = roomData;
+    const plugin = React.useRef(
+        Autoplay({ delay: 3000, stopOnInteraction: true })
+    );
 
     const taglineParts = [
         `Sleeps ${room.capacity}`,
@@ -127,7 +132,7 @@ export default function RoomClientPage({ roomData, otherRooms }: RoomClientPageP
                     {/* Amenities */}
                     <section>
                         <h2 className="text-4xl font-playfair font-bold text-shpc-ink mb-6">Amenities</h2>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-6">
+                        <div className="grid grid-cols-2 gap-6">
                             {room.amenities.map((amenity) => {
                                 const iconKey = amenity.toLowerCase();
                                 return (
@@ -159,7 +164,7 @@ export default function RoomClientPage({ roomData, otherRooms }: RoomClientPageP
                 {/* Policies */}
                 <section className="py-12">
                     <h2 className="text-4xl font-playfair font-bold text-shpc-ink mb-6 text-center">Policies & Important Notes</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <Card className="bg-shpc-sand/50 border-none text-center">
                             <CardHeader className="items-center gap-4 pb-2">
                                 <Clock className="h-8 w-8 text-shpc-ink" />
@@ -182,16 +187,6 @@ export default function RoomClientPage({ roomData, otherRooms }: RoomClientPageP
                         </Card>
                         <Card className="bg-shpc-sand/50 border-none text-center">
                             <CardHeader className="items-center gap-4 pb-2">
-                                <CalendarIcon className="h-8 w-8 text-shpc-ink" />
-                                <CardTitle className="text-lg">Refund Policy</CardTitle>
-                            </CardHeader>
-                            <CardContent className="text-sm text-muted-foreground space-y-1">
-                                <p>Standard refund 72h before check-in.</p>
-                                <p>Reservations over $100 require cancellation 7 days before arrival.</p>
-                            </CardContent>
-                        </Card>
-                        <Card className="bg-shpc-sand/50 border-none text-center">
-                            <CardHeader className="items-center gap-4 pb-2">
                                 <FileText className="h-8 w-8 text-shpc-ink" />
                                 <CardTitle className="text-lg">House Rules</CardTitle>
                             </CardHeader>
@@ -208,11 +203,23 @@ export default function RoomClientPage({ roomData, otherRooms }: RoomClientPageP
                 {/* Other Rooms Section */}
                 <section className="py-12">
                     <h2 className="text-4xl font-playfair font-bold text-shpc-ink mb-6 text-center">Explore Other Rooms</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {otherRooms.map((otherRoom) => (
-                            <RoomCard key={otherRoom.id} room={otherRoom} linkToPage={true} />
-                        ))}
-                    </div>
+                    <Carousel
+                        opts={{ loop: true, align: "start" }}
+                        plugins={[plugin.current]}
+                        className="w-full max-w-5xl mx-auto"
+                        onMouseEnter={plugin.current.stop}
+                        onMouseLeave={plugin.current.reset}
+                    >
+                        <CarouselContent className="-ml-4">
+                            {otherRooms.map((otherRoom) => (
+                                <CarouselItem key={otherRoom.id} className="pl-4 md:basis-1/2 lg:basis-1/3">
+                                    <RoomCard room={otherRoom} linkToPage={true} />
+                                </CarouselItem>
+                            ))}
+                        </CarouselContent>
+                        <CarouselPrevious className="hidden md:flex" />
+                        <CarouselNext className="hidden md:flex" />
+                    </Carousel>
                 </section>
 
                 <Separator />
