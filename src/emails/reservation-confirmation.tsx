@@ -133,37 +133,39 @@ export default function ReservationConfirmationEmail({
                 <Text style={cardTitle}>📅 Your Stay & Room</Text>
               </Section>
               <Section style={cardContent}>
-                <Row>
-                  <Column className="mobile-stack" style={{ width: '100px', paddingRight: '16px', verticalAlign: 'top' }}>
-                    <Img src={room.image} width="100" height="100" style={{ borderRadius: '8px', objectFit: 'cover' }} alt="Room" />
+                {/* Row 1: Dates & Guests */}
+                <Row style={{ marginBottom: '16px' }}>
+                  <Column className="mobile-stack" style={{ paddingRight: '16px', paddingBottom: '12px', width: '50%', verticalAlign: 'top' }}>
+                    <Text style={label}>Dates</Text>
+                    <Text style={valueMedium}>
+                      {dates?.from && dates?.to
+                        ? `${format(parseISO(dates.from), "MMM dd")} – ${format(parseISO(dates.to), "MMM dd, yyyy")}`
+                        : 'Dates Pending'}
+                    </Text>
                   </Column>
-                  <Column className="mobile-stack" style={{ verticalAlign: 'top' }}>
-                    <Row>
-                      <Column className="mobile-stack" style={{ paddingRight: '16px', paddingBottom: '12px' }}>
-                        <Text style={label}>Dates</Text>
-                        <Text style={valueMedium}>{format(fromDate, "MMM dd")} – {format(toDate, "MMM dd, yyyy")}</Text>
-                      </Column>
-                      <Column className="mobile-stack" style={{ paddingBottom: '12px' }}>
-                        <Text style={label}>Guests</Text>
-                        <Text style={valueMedium}>{guests} {guests === 1 ? 'Guest' : 'Guests'}</Text>
-                      </Column>
-                    </Row>
-                    <Row>
-                      <Column className="mobile-stack" style={{ paddingBottom: '12px' }}>
-                        <Text style={label}>Room Type</Text>
-                        <Text style={valueMedium}>{room.name}</Text>
-                      </Column>
-                    </Row>
-                    <Row>
-                      <Column style={{ paddingRight: '16px' }}>
-                        <Text style={label}>Check-in Time</Text>
-                        <Text style={valueMedium}>3:00 PM</Text>
-                      </Column>
-                      <Column>
-                        <Text style={label}>Check-out Time</Text>
-                        <Text style={valueMedium}>11:00 AM</Text>
-                      </Column>
-                    </Row>
+                  <Column className="mobile-stack" style={{ paddingBottom: '12px', width: '50%', verticalAlign: 'top' }}>
+                    <Text style={label}>Guests</Text>
+                    <Text style={valueMedium}>{guests} {guests === 1 ? 'Guest' : 'Guests'}</Text>
+                  </Column>
+                </Row>
+
+                {/* Row 2: Room Type */}
+                <Row style={{ marginBottom: '16px' }}>
+                  <Column>
+                    <Text style={label}>Room Type</Text>
+                    <Text style={valueMedium}>{room.name}</Text>
+                  </Column>
+                </Row>
+
+                {/* Row 3: Check-in & Check-out */}
+                <Row>
+                  <Column className="mobile-stack" style={{ paddingRight: '16px', width: '50%' }}>
+                    <Text style={label}>Check-in Time</Text>
+                    <Text style={valueMedium}>3:00 PM</Text>
+                  </Column>
+                  <Column className="mobile-stack" style={{ width: '50%' }}>
+                    <Text style={label}>Check-out Time</Text>
+                    <Text style={valueMedium}>11:00 AM</Text>
                   </Column>
                 </Row>
               </Section>
