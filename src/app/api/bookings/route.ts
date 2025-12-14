@@ -194,7 +194,8 @@ export async function POST(request: NextRequest) {
                 bookingType: booking.type || 'room',
                 bookingDetails: {
                     ...booking,
-                    phone // Explicitly pass the resolved phone number
+                    phone,
+                    roomName: booking.room?.name
                 },
                 confirmationId,
                 totalPrice: booking.totalPrice || booking.pricing?.totalUSD || 0,
