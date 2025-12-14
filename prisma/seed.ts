@@ -40,7 +40,23 @@ async function main() {
                 },
             });
         } else {
-            console.log(`Room already exists: ${room.name}`);
+            console.log(`Updating room: ${room.name}`);
+            await prisma.room.update({
+                where: { slug: room.slug },
+                data: {
+                    name: room.name,
+                    tagline: room.tagline,
+                    description: room.description,
+                    bedding: room.bedding,
+                    capacity: room.capacity,
+                    price: room.price,
+                    image: room.image,
+                    amenities: JSON.stringify(room.amenities),
+                    gallery: room.gallery ? JSON.stringify(room.gallery) : null,
+                    inventoryUnits: room.inventoryUnits || 1,
+                    cancellationPolicy: room.cancellationPolicy || null,
+                },
+            });
         }
     }
 

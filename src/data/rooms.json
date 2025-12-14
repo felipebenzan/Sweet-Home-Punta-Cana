@@ -8,7 +8,7 @@
         "bedding": "California King",
         "capacity": 2,
         "price": 85,
-        "image": "https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=800&h=600&fit=crop",
+        "image": "/1-Caribbean.png",
         "amenities": [
             "Air conditioning",
             "Free Wi-Fi",
@@ -22,9 +22,9 @@
             "Towels & toiletries"
         ],
         "gallery": [
-            "https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=1200&h=800&fit=crop",
-            "https://images.unsplash.com/photo-1590490360182-c33d57733427?w=1200&h=800&fit=crop",
-            "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=1200&h=800&fit=crop"
+            "/1-Caribbean.png",
+            "/2- Caribbean.png",
+            "/3- Caribbean.png"
         ],
         "inventoryUnits": 2
     },
@@ -37,7 +37,7 @@
         "bedding": "Queen",
         "capacity": 2,
         "price": 75,
-        "image": "https://images.unsplash.com/photo-1598928506311-c55ded91a20c?w=800&h=600&fit=crop",
+        "image": "/1-Tropical.png",
         "amenities": [
             "Air conditioning",
             "Free Wi-Fi",
@@ -51,9 +51,8 @@
             "Towels & toiletries"
         ],
         "gallery": [
-            "https://images.unsplash.com/photo-1598928506311-c55ded91a20c?w=1200&h=800&fit=crop",
-            "https://images.unsplash.com/photo-1560185893-a55cbc8c57e8?w=1200&h=800&fit=crop",
-            "https://images.unsplash.com/photo-1566665797739-1674de7a421a?w=1200&h=800&fit=crop"
+            "/1-Tropical.png",
+            "/2- Tropical.png"
         ],
         "inventoryUnits": 2
     },
@@ -66,7 +65,7 @@
         "bedding": "Full",
         "capacity": 2,
         "price": 65,
-        "image": "https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?w=800&h=600&fit=crop",
+        "image": "/1-Glamping.png",
         "amenities": [
             "Air conditioning",
             "Free Wi-Fi",
@@ -79,8 +78,9 @@
             "Towels & toiletries"
         ],
         "gallery": [
-            "https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?w=1200&h=800&fit=crop",
-            "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=1200&h=800&fit=crop"
+            "/1-Glamping.png",
+            "/2-Glamping.png",
+            "/3-Glamping.png"
         ],
         "inventoryUnits": 1
     }
