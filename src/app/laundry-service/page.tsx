@@ -461,7 +461,7 @@ export default function LaundryServicePage() {
                         {/* STEP 3: Payment */}
                         {currentStep === 3 && (
                             <div className="bg-white rounded-lg p-6 md:p-10 shadow-sm space-y-10">
-                                <h2 className="font-playfair text-3xl font-semibold text-shpc-ink">
+                                <h2 className="hidden lg:block font-playfair text-3xl font-semibold text-shpc-ink">
                                     3. Review & Pay
                                 </h2>
 
@@ -499,6 +499,11 @@ export default function LaundryServicePage() {
                     {/* Right Column - Summary Sidebar - Visible ONLY on Step 3 */}
                     {currentStep === 3 && (
                         <div className={cn("lg:sticky lg:top-24 h-fit", currentStep === 3 && "order-first lg:order-none")}>
+                            {/* Mobile-only Step 3 Header */}
+                            <h2 className="lg:hidden font-playfair text-3xl font-semibold text-shpc-ink mb-6">
+                                3. Review & Pay
+                            </h2>
+
                             <div className="bg-white rounded-lg shadow-lg overflow-hidden">
                                 {/* Header */}
                                 <div className="p-6 md:p-10 border-b border-neutral-200">
