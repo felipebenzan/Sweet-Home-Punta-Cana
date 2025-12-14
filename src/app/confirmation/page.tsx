@@ -233,7 +233,7 @@ function ConfirmationContent() {
       {/* Header */}
       <header className="relative h-[40vh] min-h-[300px] flex flex-col items-center justify-center text-center text-white p-6">
         <Image
-          src="https://images.unsplash.com/photo-1540541338287-41700207dee6?q=80&w=2070&auto=format&fit=crop"
+          src="/home-hero.png"
           alt="Luxury Resort"
           fill
           className="object-cover"

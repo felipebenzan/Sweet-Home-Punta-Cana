@@ -70,7 +70,7 @@ export default function ReservationConfirmationEmail({
           <Section
             style={{
               ...headerSection,
-              backgroundImage: "url('https://images.unsplash.com/photo-1540541338287-41700207dee6?q=80&w=2070&auto=format&fit=crop')",
+              backgroundImage: "url('https://sweet-home-punta-cana.vercel.app/home-hero.png')",
               backgroundSize: 'cover',
               backgroundPosition: 'center',
               padding: '0',
