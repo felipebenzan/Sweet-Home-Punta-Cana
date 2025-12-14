@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation';
 
 const navLinks = [
+  { href: '/', label: 'Home' },
   { href: '/rooms', label: 'Rooms' },
   { href: '/guest-services', label: 'Guest Services' },
   { href: '/excursions', label: 'Excursions' },
@@ -62,12 +63,12 @@ export default function Header() {
                 <SheetHeader>
                   <SheetTitle className="sr-only">Menu</SheetTitle>
                 </SheetHeader>
-                <nav className="flex flex-col gap-6 mt-8">
+                <nav className="flex flex-col gap-6 mt-8 overflow-y-auto max-h-[calc(100vh-100px)] pb-8">
                   {navLinks.map((link) => (
                     <Link
                       key={link.href}
                       href={link.href}
-                      className="text-lg font-medium text-neutral-600 transition-colors hover:text-shpc-ink"
+                      className="text-lg font-medium text-neutral-600 transition-colors hover:text-shpc-ink block py-2"
                     >
                       {link.label}
                     </Link>
