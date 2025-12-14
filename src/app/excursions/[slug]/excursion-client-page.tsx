@@ -211,6 +211,19 @@ export default function ExcursionClientPage({ excursion, otherExcursions }: { ex
         </div>
       </section>
 
+      {/* Mobile Booking Widget - Below Hero */}
+      <div className="lg:hidden bg-white p-4 border-b border-neutral-200">
+        <BookingForm
+          mainExcursion={{ ...excursion, ...mainExcursionState }}
+          onMainExcursionChange={setMainExcursionState}
+          bundledItems={bundledAsArray}
+          onBundledItemChange={handleBundledItemChange}
+          onRemoveBundledItem={(id) => handleToggleBundle({ id } as Excursion)}
+          isBookable={isBookable}
+          isMobile={true}
+        />
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-3 max-w-7xl mx-auto p-4 lg:p-8 gap-8 lg:gap-12">
 
         {/* Main Content - Left Column */}
@@ -380,7 +393,7 @@ export default function ExcursionClientPage({ excursion, otherExcursions }: { ex
         </div>
 
         {/* Booking Widget - Compact Sticky Sidebar */}
-        <div className="lg:col-span-1">
+        <div className="hidden lg:block lg:col-span-1">
           <div className="sticky top-24">
             <div className="bg-white rounded-lg shadow-lg mb-12">
               {/* Header */}
@@ -398,6 +411,7 @@ export default function ExcursionClientPage({ excursion, otherExcursions }: { ex
                 onBundledItemChange={handleBundledItemChange}
                 onRemoveBundledItem={(id) => handleToggleBundle({ id } as Excursion)}
                 isBookable={isBookable}
+                isMobile={false}
               />
             </div>
           </div>
@@ -423,7 +437,9 @@ function BookingForm({
   bundledItems: BundledItem[];
   onBundledItemChange: (id: string, updatedValues: Partial<BundledItem>) => void;
   onRemoveBundledItem: (id: string) => void;
+  onRemoveBundledItem: (id: string) => void;
   isBookable: boolean;
+  isMobile?: boolean;
 }) {
   const router = useRouter();
 
@@ -477,17 +493,25 @@ function BookingForm({
   const [bundleCalendarOpen, setBundleCalendarOpen] = React.useState<Record<string, boolean>>({});
 
   return (
-    <div className="space-y-0">
-      {/* Main Excursion */}
-      <div className="px-10 py-6 space-y-4">
-        <div className="flex items-center gap-3">
-          <Image src={mainExcursion.image} alt={mainExcursion.title} width={60} height={45} className="rounded-lg object-cover aspect-video" data-ai-hint="vacation excursion" />
-          <p className="font-inter font-semibold text-sm text-shpc-ink">{mainExcursion.title}</p>
-        </div>
+    <div className={cn("space-y-0", isMobile && "space-y-4")}>
+      {/* Main Excursion Inputs */}
+      <div className={cn(
+        isMobile ? "grid grid-cols-3 gap-2 items-end" : "px-10 py-6 space-y-4"
+      )}>
+        {/* Mobile: Hidden Title */}
+        {!isMobile && (
+          <div className="flex items-center gap-3">
+            <Image src={mainExcursion.image} alt={mainExcursion.title} width={60} height={45} className="rounded-lg object-cover aspect-video" data-ai-hint="vacation excursion" />
+            <p className="font-inter font-semibold text-sm text-shpc-ink">{mainExcursion.title}</p>
+          </div>
+        )}
 
         {/* Date Selection */}
         <div className="space-y-2">
-          <label className="font-inter text-xs font-medium text-neutral-700 flex items-center gap-2">
+          <label className={cn(
+            "font-inter text-xs font-medium text-neutral-700 flex items-center gap-2",
+            isMobile && "sr-only"
+          )}>
             <CalendarIcon className="h-3.5 w-3.5 text-neutral-500" />
             Date
           </label>
@@ -495,9 +519,13 @@ function BookingForm({
             <PopoverTrigger asChild>
               <Button
                 variant={'outline'}
-                className="w-full justify-start text-left font-normal text-sm border-0 border-b border-neutral-300 rounded-none hover:border-shpc-yellow focus:border-shpc-yellow px-0 py-3"
+                className={cn(
+                  "w-full justify-start text-left font-normal text-sm border-neutral-300 rounded-none hover:border-shpc-yellow focus:border-shpc-yellow px-0 py-3",
+                  !isMobile && "border-0 border-b",
+                  isMobile && "border h-12 px-3 rounded text-xs"
+                )}
               >
-                {mainExcursionDate ? format(mainExcursionDate, 'PPP') : <span className="text-neutral-400">Pick a date</span>}
+                {mainExcursionDate ? format(mainExcursionDate, isMobile ? 'MMM d' : 'PPP') : <span className="text-neutral-400">Date</span>}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
@@ -517,17 +545,24 @@ function BookingForm({
 
         {/* Adults Counter */}
         <div className="space-y-2">
-          <label className="font-inter text-xs font-medium text-neutral-700 flex items-center gap-2">
+          <label className={cn(
+            "font-inter text-xs font-medium text-neutral-700 flex items-center gap-2",
+            isMobile && "sr-only"
+          )}>
             <Users className="h-3.5 w-3.5 text-neutral-500" />
             Adults
           </label>
-          <div className="flex items-center justify-between py-3 border-b border-neutral-300">
-            <span className="text-xs text-neutral-600">${mainExcursion.price.adult}/person</span>
-            <div className="flex items-center gap-2">
+          <div className={cn(
+            "flex items-center justify-between py-3",
+            !isMobile && "border-b border-neutral-300",
+            isMobile && "border border-neutral-300 rounded h-12 px-2"
+          )}>
+            {!isMobile && <span className="text-xs text-neutral-600">${mainExcursion.price.adult}/person</span>}
+            <div className={cn("flex items-center gap-2 w-full justify-between", isMobile && "px-0")}>
               <Button
                 variant="outline"
                 size="icon"
-                className="h-7 w-7 rounded-full border-shpc-yellow text-shpc-yellow hover:bg-shpc-yellow hover:text-shpc-ink"
+                className="h-7 w-7 rounded-full border-shpc-yellow text-shpc-yellow hover:bg-shpc-yellow hover:text-shpc-ink shrink-0"
                 onClick={() => onMainExcursionChange({ ...mainExcursion, adults: Math.max(1, mainExcursion.adults - 1) })}
               >
                 <Minus className="h-3 w-3" />
@@ -536,7 +571,7 @@ function BookingForm({
               <Button
                 variant="outline"
                 size="icon"
-                className="h-7 w-7 rounded-full border-shpc-yellow text-shpc-yellow hover:bg-shpc-yellow hover:text-shpc-ink"
+                className="h-7 w-7 rounded-full border-shpc-yellow text-shpc-yellow hover:bg-shpc-yellow hover:text-shpc-ink shrink-0"
                 onClick={() => onMainExcursionChange({ ...mainExcursion, adults: mainExcursion.adults + 1 })}
               >
                 <Plus className="h-3 w-3" />
@@ -544,7 +579,20 @@ function BookingForm({
             </div>
           </div>
         </div>
+
+        {/* Mobile: Book Now Button in 3rd Column */}
+        {isMobile && (
+          <Button
+            size="lg"
+            className="w-full bg-shpc-yellow text-shpc-ink hover:bg-shpc-yellow/90 font-semibold h-12 text-xs px-1 uppercase leading-tight"
+            disabled={!isBookable}
+            onClick={handleBookNow}
+          >
+            BOOK NOW
+          </Button>
+        )}
       </div>
+
 
       {/* Bundled Items */}
       {
@@ -644,9 +692,9 @@ function BookingForm({
       }
 
       {/* Summary Section */}
-      <div className="border-t-2 border-neutral-300"></div>
-      <div className="px-10 py-6 space-y-4">
-        <h3 className="font-playfair text-lg font-semibold text-shpc-ink">Summary</h3>
+      <div className={cn("border-t-2 border-neutral-300", isMobile && "hidden")}></div>
+      <div className={cn("px-10 py-6 space-y-4", isMobile && "px-0 py-0")}>
+        {!isMobile && <h3 className="font-playfair text-lg font-semibold text-shpc-ink">Summary</h3>}
 
         <div className="space-y-2 text-sm font-inter">
           <div className="flex justify-between items-start">
@@ -672,26 +720,31 @@ function BookingForm({
         )}
 
         {/* Total - Prominent Display */}
-        <div className="pt-4 border-t-2 border-neutral-400">
-          <div className="flex justify-between items-baseline mb-1">
-            <span className="font-inter text-xs uppercase tracking-wide text-neutral-700">Total</span>
-            <span className="font-playfair text-3xl font-bold text-shpc-ink">${totalPrice.toFixed(2)}</span>
+        {/* Total - Prominent Display - Hidden on Mobile */}
+        {!isMobile && (
+          <div className="pt-4 border-t-2 border-neutral-400">
+            <div className="flex justify-between items-baseline mb-1">
+              <span className="font-inter text-xs uppercase tracking-wide text-neutral-700">Total</span>
+              <span className="font-playfair text-3xl font-bold text-shpc-ink">${totalPrice.toFixed(2)}</span>
+            </div>
+            <p className="text-xs text-green-600 font-inter flex items-center gap-1 justify-end">
+              <CheckCircle className="h-3 w-3" />
+              Taxes and fees included
+            </p>
           </div>
-          <p className="text-xs text-green-600 font-inter flex items-center gap-1 justify-end">
-            <CheckCircle className="h-3 w-3" />
-            Taxes and fees included
-          </p>
-        </div>
+        )}
 
-        {/* CTA Button */}
-        <Button
-          size="lg"
-          className="w-full bg-shpc-yellow text-shpc-ink hover:bg-shpc-yellow/90 font-semibold py-6 text-sm"
-          disabled={!isBookable}
-          onClick={handleBookNow}
-        >
-          {isBookable ? 'Book Now' : 'Complete selections'}
-        </Button>
+        {/* CTA Button - Desktop Only (Mobile is in column 3) */}
+        {!isMobile && (
+          <Button
+            size="lg"
+            className="w-full bg-shpc-yellow text-shpc-ink hover:bg-shpc-yellow/90 font-semibold py-6 text-sm"
+            disabled={!isBookable}
+            onClick={handleBookNow}
+          >
+            {isBookable ? 'Book Now' : 'Complete selections'}
+          </Button>
+        )}
         {!isBookable && (
           <p className="text-xs text-center text-neutral-500 font-inter">Please select a date for all excursions to continue.</p>
         )}
