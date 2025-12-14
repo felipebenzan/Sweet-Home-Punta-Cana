@@ -66,18 +66,31 @@ export default function ReservationConfirmationEmail({
       <Preview>{previewText}</Preview>
       <Body style={main}>
         <Container style={container}>
-          {/* Header Image/Logo */}
-          <Section style={headerSection}>
-            <Img
-              src="https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/sweet-home-logo.png?alt=media"
-              width="200"
-              alt="Sweet Home Punta Cana"
-              style={{ margin: '0 auto' }}
-            />
-            <Text style={headerTitle}>Pack your bags {guestInfo?.firstName}, your booking is confirmed!</Text>
-            <Text style={headerSubtitle}>
-              We are thrilled to confirm your reservation at our beautiful Punta Cana guest house!
-            </Text>
+          {/* Header Image/Logo with Background */}
+          <Section
+            style={{
+              ...headerSection,
+              backgroundImage: "url('https://images.unsplash.com/photo-1540541338287-41700207dee6?q=80&w=2070&auto=format&fit=crop')",
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              padding: '0',
+              textAlign: 'center'
+            }}
+          >
+            <Section style={{ padding: '40px 20px', backgroundColor: 'rgba(0,0,0,0.4)', borderRadius: '12px 12px 0 0' }}>
+              <Img
+                src="https://sweet-home-punta-cana.vercel.app/sweet-home-logo.png"
+                width="100"
+                alt="Sweet Home Punta Cana"
+                style={{ margin: '0 auto 24px auto', borderRadius: '50%', backgroundColor: 'white', padding: '12px', display: 'block' }}
+              />
+              <Text style={{ ...headerTitle, color: '#ffffff', textShadow: '0 2px 4px rgba(0,0,0,0.3)', marginBottom: '16px' }}>
+                Pack your bags {guestInfo?.firstName}, your booking is confirmed!
+              </Text>
+              <Text style={{ ...headerSubtitle, color: 'rgba(255,255,255,0.95)', textShadow: '0 1px 2px rgba(0,0,0,0.3)', maxWidth: '500px', margin: '0 auto' }}>
+                We are thrilled to confirm your reservation at our beautiful Punta Cana guest house!
+              </Text>
+            </Section>
           </Section>
 
           <Section style={contentSection}>

@@ -137,6 +137,7 @@ export async function getReservationById(
         createdAt: reservation.createdAt.toISOString(),
         updatedAt: reservation.updatedAt.toISOString(),
         roomName: reservation.room.name,
+        room: mapRoom(reservation.room),
         status: reservation.status as 'Confirmed' | 'Pending' | 'Cancelled',
         guestPhone: reservation.guestPhone || undefined,
         serviceBookings: reservation.serviceBookings.map((sb: any) => ({
@@ -175,6 +176,8 @@ export async function createReservation(data: any): Promise<Reservation> {
         createdAt: newReservation.createdAt.toISOString(),
         updatedAt: newReservation.updatedAt.toISOString(),
         roomName: newReservation.room.name,
+        room: mapRoom(newReservation.room),
+        guestPhone: newReservation.guestPhone || undefined,
         status: newReservation.status as 'Confirmed' | 'Pending' | 'Cancelled'
     };
 }
