@@ -196,13 +196,13 @@ function ConfirmationContent() {
           <div className="max-w-6xl mx-auto">
             <div className="relative rounded-2xl shadow-soft overflow-hidden bg-shpc-ink text-white">
               <Image
-                src="https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/vespa%20scooters%20rental%20sweet%20home%20punta%20cana.png?alt=media&token=3f42e248-bf5a-4979-8b2e-4f8dc746c4bf"
+                src="/scooters%20punta%20cana%20sweet%20home%20banner.png"
                 alt="Scooter against a tropical background"
                 fill
                 className="object-cover opacity-40"
                 data-ai-hint="scooter rental"
               />
-              <div className="relative p-12 lg:p-16 flex flex-col md:flex-row items-center justify-between gap-8 text-center md:text-left">
+              <div className="relative p-6 md:p-12 lg:p-16 flex flex-col md:flex-row items-center justify-between gap-8 text-center md:text-left">
                 <div className="max-w-xl">
                   <h2 className="text-3xl md:text-4xl font-bold font-playfair">
                     Explore on Two Wheels
