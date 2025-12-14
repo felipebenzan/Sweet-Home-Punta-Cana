@@ -161,7 +161,7 @@ export default function BookingBar() {
                             onClick={handleSearch}
                         >
                             <span className="hidden md:inline">Check Availability</span>
-                            <span className="md:hidden">Check</span>
+                            <span className="md:hidden">Search</span>
                         </Button>
                     </div>
                 </div>
