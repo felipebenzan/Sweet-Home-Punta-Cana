@@ -63,7 +63,7 @@ export default function LaundryConfirmationEmail({
           <Section style={logoSection}>
             <Link href="https://www.sweethomepc.com">
               <Img
-                src={`${baseUrl}/sweet-home-logo.png`}
+                src={`${baseUrl}/sweet-home-logo-2.png`}
                 width="480"
                 alt="Sweet Home Punta Cana"
                 style={logo}

@@ -101,7 +101,7 @@ export default function TransferConfirmationEmail({
           <Section style={logoSection}>
             <Link href="https://www.sweethomepc.com">
               <Img
-                src={`${baseUrl}/sweet-home-logo.png`}
+                src={`${baseUrl}/sweet-home-logo-2.png`}
                 width="240"
                 alt="Sweet Home Punta Cana"
                 style={logo}

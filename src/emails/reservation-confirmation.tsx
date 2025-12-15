@@ -79,7 +79,7 @@ export default function ReservationConfirmationEmail({
           >
             <Section style={{ padding: '40px 20px', backgroundColor: 'rgba(0,0,0,0.4)', borderRadius: '12px 12px 0 0' }}>
               <Img
-                src="https://sweet-home-punta-cana.vercel.app/sweet-home-logo.png"
+                src="https://sweet-home-punta-cana.vercel.app/sweet-home-logo-2.png"
                 width="100"
                 alt="Sweet Home Punta Cana"
                 style={{ margin: '0 auto 24px auto', borderRadius: '50%', backgroundColor: 'white', padding: '12px', display: 'block' }}

@@ -21,10 +21,10 @@ export const metadata: Metadata = {
     url: 'https://www.sweethomepc.com',
     images: [
       {
-        url: 'https://www.sweethomepc.com/sweet-home-logo.png',
+        url: 'https://www.sweethomepc.com/sweet-home-logo-2.png',
         width: 1200,
         height: 630,
-        alt: 'Sweet Home Punta Cana Logo',
+        alt: 'Sweet Home Punta Cana',
       },
     ],
   },

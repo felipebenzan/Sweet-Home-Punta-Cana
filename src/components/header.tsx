@@ -32,7 +32,7 @@ export default function Header() {
         <div className="relative flex h-full items-center justify-between">
           <Link href="/" className="flex items-center" aria-label="Sweet Home Punta Cana Home">
             <Image
-              src="/sweet-home-logo.png"
+              src="/sweet-home-logo-2.png"
               alt="Sweet Home Punta Cana Logo"
               width={1080}
               height={288}

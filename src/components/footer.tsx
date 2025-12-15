@@ -31,7 +31,7 @@ export default function Footer() {
           <div className="col-span-2 md:col-span-1">
             <Link href="/" className="block">
               <Image
-                src="/sweet-home-logo.png"
+                src="/sweet-home-logo-2.png"
                 alt="Sweet Home Punta Cana Logo"
                 width={1080}
                 height={288}
