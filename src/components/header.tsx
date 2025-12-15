@@ -30,13 +30,14 @@ export default function Header() {
     <header className="h-[var(--header-height)]">
       <div className="max-w-6xl mx-auto px-6 h-full">
         <div className="relative flex h-full items-center justify-between">
-          <Link href="/" className="flex items-center" aria-label="Sweet Home Punta Cana Home">
+          <Link href="/" className="-m-1.5 p-1.5 transition-opacity hover:opacity-80">
+            <span className="sr-only">Sweet Home Punta Cana</span>
             <Image
+              className="h-20 w-auto"
               src="/sweet-home-logo-2.png"
-              alt="Sweet Home Punta Cana Logo"
-              width={1080}
-              height={288}
-              className="object-contain h-32 w-auto"
+              alt="Sweet Home Punta Cana"
+              width={400}
+              height={120}
               priority
             />
           </Link>

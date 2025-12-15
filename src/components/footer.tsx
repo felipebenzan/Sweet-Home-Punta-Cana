@@ -29,14 +29,14 @@ export default function Footer() {
       <div className="max-w-6xl mx-auto px-6 py-12">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           <div className="col-span-2 md:col-span-1">
-            <Link href="/" className="block">
+            <Link href="/" className="-m-1.5 p-1.5">
+              <span className="sr-only">Sweet Home Punta Cana</span>
               <Image
+                className="h-14 w-auto"
                 src="/sweet-home-logo-2.png"
-                alt="Sweet Home Punta Cana Logo"
-                width={1080}
-                height={288}
-                className="object-contain h-24 w-auto"
-                priority
+                alt="Sweet Home Punta Cana"
+                width={280}
+                height={84}
               />
             </Link>
 
