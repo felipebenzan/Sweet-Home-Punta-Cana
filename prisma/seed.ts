@@ -159,9 +159,10 @@ async function main() {
 
     // 1. Room Reservations
     const californiaKing = await prisma.room.findUnique({ where: { slug: 'california-king' } });
+    const kingRoom = await prisma.room.findUnique({ where: { slug: 'king-room' } });
     const queenRoom = await prisma.room.findUnique({ where: { slug: 'queen-garden' } });
 
-    if (californiaKing && queenRoom) {
+    if (californiaKing && kingRoom && queenRoom) {
         const reservations = [
             {
                 roomId: californiaKing.id,
@@ -172,6 +173,17 @@ async function main() {
                 checkOutDate: getDate(10),
                 numberOfGuests: 2,
                 totalPrice: 425.00, // 5 nights * $85
+                status: 'Confirmed',
+            },
+            {
+                roomId: kingRoom.id,
+                guestName: 'Michael Scott',
+                guestEmail: 'michael@example.com',
+                guestPhone: '+15559999',
+                checkInDate: getDate(12),
+                checkOutDate: getDate(14),
+                numberOfGuests: 2,
+                totalPrice: 160.00, // 2 nights * $80
                 status: 'Confirmed',
             },
             {

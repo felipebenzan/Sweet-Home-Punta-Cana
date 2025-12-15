@@ -8,7 +8,7 @@
         "bedding": "California King",
         "capacity": 2,
         "price": 85,
-        "image": "/1-Caribbean.png",
+        "image": "/1-Reef.png",
         "amenities": [
             "Air conditioning",
             "Free Wi-Fi",
@@ -22,9 +22,37 @@
             "Towels & toiletries"
         ],
         "gallery": [
+            "/1-Reef.png",
+            "/2-Reef.png",
+            "/3-Reef.png"
+        ],
+        "inventoryUnits": 2
+    },
+    {
+        "id": "king-room",
+        "slug": "king-room",
+        "name": "King Room",
+        "tagline": "Elegant comfort with king-size luxury",
+        "description": "The King Room offers a premium experience with a spacious King bed and elegant decor. Perfect for travelers who appreciate extra space and comfort. Enjoy modern amenities including high-speed Wi-Fi, air conditioning, and a smart TV.\n\nRelax in your private space after a day of island adventures. The room includes a private bathroom and all essentials for a perfect stay.",
+        "bedding": "King",
+        "capacity": 2,
+        "price": 80,
+        "image": "/1-Caribbean.png",
+        "amenities": [
+            "Air conditioning",
+            "Free Wi-Fi",
+            "Smart TV with Netflix",
+            "Private bathroom",
+            "Mini fridge",
+            "Wardrobe",
+            "Daily cleaning",
+            "Hot water",
+            "Towels & toiletries"
+        ],
+        "gallery": [
             "/1-Caribbean.png",
-            "/2- Caribbean.png",
-            "/3- Caribbean.png"
+            "/2-Caribbean.png",
+            "/3-Caribbean.png"
         ],
         "inventoryUnits": 2
     },
@@ -52,7 +80,8 @@
         ],
         "gallery": [
             "/1-Tropical.png",
-            "/2- Tropical.png"
+            "/2-Tropical.png",
+            "/2-Tropical.png"
         ],
         "inventoryUnits": 2
     },
