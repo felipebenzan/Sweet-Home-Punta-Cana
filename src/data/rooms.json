@@ -1,10 +1,10 @@
 [
     {
-        "id": "deluxe-king",
-        "slug": "deluxe-king",
-        "name": "Deluxe King Room",
+        "id": "california-king",
+        "slug": "california-king",
+        "name": "California King Room",
         "tagline": "Spacious comfort with king-size luxury",
-        "description": "Welcome to the Deluxe King Room, a sanctuary of comfort and style designed for the modern traveler. This room is perfect for couples seeking a serene base to explore the vibrant life of Punta Cana. The space is thoughtfully appointed with a plush California King bed, ensuring a restful night's sleep after a day of sun and sand.\n\nEvery detail has been considered for your convenience, from the sleek, private bathroom with hot water to the high-speed Wi-Fi and Netflix-equipped Smart TV for your entertainment. Step out onto your private balcony to enjoy the tropical breeze.",
+        "description": "Welcome to the California King Room, a sanctuary of comfort and style designed for the modern traveler. This room is perfect for couples seeking a serene base to explore the vibrant life of Punta Cana. The space is thoughtfully appointed with a plush California King bed, ensuring a restful night's sleep after a day of sun and sand.\n\nEvery detail has been considered for your convenience, from the sleek, private bathroom with hot water to the high-speed Wi-Fi and Netflix-equipped Smart TV for your entertainment. Step out onto your private balcony to enjoy the tropical breeze.",
         "bedding": "California King",
         "capacity": 2,
         "price": 85,
@@ -57,14 +57,14 @@
         "inventoryUnits": 2
     },
     {
-        "id": "standard-double",
-        "slug": "standard-double",
-        "name": "Standard Double",
-        "tagline": "Comfortable and affordable",
-        "description": "Our Standard Double room provides excellent value without compromising on comfort. Perfect for budget-conscious travelers who still want a clean, comfortable place to rest after exploring Punta Cana's attractions.\n\nThe room features a full-size bed, private bathroom, and all essential amenities. You'll have access to our shared kitchen, garden patio, and all common areas.",
+        "id": "ground-floor-small",
+        "slug": "ground-floor-small",
+        "name": "Ground Floor Small Room",
+        "tagline": "Cozy ground floor unit",
+        "description": "A compact and comfortable room located on the ground floor, featuring unique glamping-style decor. Perfect for budget-conscious travelers who still want a clean, comfortable place to rest after exploring Punta Cana's attractions.\n\nThe room features a full-size bed, private bathroom, and all essential amenities. You'll have access to our shared kitchen, garden patio, and all common areas.",
         "bedding": "Full",
         "capacity": 2,
-        "price": 65,
+        "price": 60,
         "image": "/1-Glamping.png",
         "amenities": [
             "Air conditioning",

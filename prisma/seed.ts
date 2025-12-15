@@ -14,6 +14,38 @@ const prisma = new PrismaClient();
 async function main() {
     console.log('Start seeding ...');
 
+    // Cleanup: Remove "standard-double" room if it exists (Renamed to ground-floor-small)
+    const legacyRoom = await prisma.room.findUnique({ where: { slug: 'standard-double' } });
+    if (legacyRoom) {
+        console.log(`Found legacy 'standard-double' room to delete: ${legacyRoom.id}`);
+        // Delete related reservations first
+        const deletedReservations = await prisma.reservation.deleteMany({
+            where: { roomId: legacyRoom.id }
+        });
+        console.log(`Deleted ${deletedReservations.count} reservations for legacy room.`);
+
+        // Delete the room
+        await prisma.room.delete({
+            where: { id: legacyRoom.id }
+        });
+        console.log('Deleted legacy standard-double room.');
+    }
+
+    // Cleanup: Remove "deluxe-king" room if it exists (Renamed to california-king)
+    const legacyKing = await prisma.room.findUnique({ where: { slug: 'deluxe-king' } });
+    if (legacyKing) {
+        console.log(`Found legacy 'deluxe-king' room to delete: ${legacyKing.id}`);
+        const deletedReservations = await prisma.reservation.deleteMany({
+            where: { roomId: legacyKing.id }
+        });
+        console.log(`Deleted ${deletedReservations.count} reservations for legacy king room.`);
+
+        await prisma.room.delete({
+            where: { id: legacyKing.id }
+        });
+        console.log('Deleted legacy deluxe-king room.');
+    }
+
     // Seed Rooms
     for (const room of roomsData) {
         const existingRoom = await prisma.room.findUnique({
@@ -126,13 +158,13 @@ async function main() {
     const getDate = (day: number) => new Date(currentYear, currentMonth, day);
 
     // 1. Room Reservations
-    const deluxeRoom = await prisma.room.findUnique({ where: { slug: 'deluxe-king' } });
+    const californiaKing = await prisma.room.findUnique({ where: { slug: 'california-king' } });
     const queenRoom = await prisma.room.findUnique({ where: { slug: 'queen-garden' } });
 
-    if (deluxeRoom && queenRoom) {
+    if (californiaKing && queenRoom) {
         const reservations = [
             {
-                roomId: deluxeRoom.id,
+                roomId: californiaKing.id,
                 guestName: 'John Doe',
                 guestEmail: 'john@example.com',
                 guestPhone: '+15550101',
@@ -154,7 +186,7 @@ async function main() {
                 status: 'Confirmed',
             },
             {
-                roomId: deluxeRoom.id,
+                roomId: californiaKing.id,
                 guestName: 'Alice Johnson',
                 guestEmail: 'alice@example.com',
                 guestPhone: '+15550103',
