@@ -73,8 +73,9 @@ export async function GET(request: NextRequest) {
             const end = new Date(departure);
             const nights = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
 
-            // STRICT: b24.price is TOTAL price for stay. room.price is NIGHTLY.
-            const finalPrice = (b24 && b24.price > 0) ? b24.price : (room.price * Math.max(1, nights));
+            // STRICT: Always use LOCAL price for the website, ignoring Beds24 price.
+            // We calculate Total Price here to maintain consistency with the frontend.
+            const finalPrice = room.price * Math.max(1, nights);
 
             let parsedAmenities: string[] = [];
             try {
