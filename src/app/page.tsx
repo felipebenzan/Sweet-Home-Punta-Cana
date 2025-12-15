@@ -32,7 +32,7 @@ export default function TheHousePage() {
             Welcome Home, Sweet Home Punta Cana
           </h1>
           <p className="mt-4 text-lg md:text-2xl font-light">
-            Paradise feels like home 🌴
+            A crafted local experience
           </p>
         </div>
       </section>
