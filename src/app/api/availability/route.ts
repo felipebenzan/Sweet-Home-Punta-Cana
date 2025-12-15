@@ -68,7 +68,13 @@ export async function GET(request: NextRequest) {
                 : false;
 
             // Fallback to local room price if API price is 0 or missing
-            const finalPrice = (b24 && b24.price > 0) ? b24.price : room.price;
+            // Calculate nights for fallback price (local DB has nightly price)
+            const start = new Date(arrival);
+            const end = new Date(departure);
+            const nights = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+
+            // STRICT: b24.price is TOTAL price for stay. room.price is NIGHTLY.
+            const finalPrice = (b24 && b24.price > 0) ? b24.price : (room.price * Math.max(1, nights));
 
             let parsedAmenities: string[] = [];
             try {

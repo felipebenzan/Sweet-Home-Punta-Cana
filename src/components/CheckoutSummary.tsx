@@ -70,7 +70,7 @@ export default function CheckoutSummary({
                     {rooms.map((room) => (
                         <div key={room.id} className="flex justify-between text-sm">
                             <span className="text-neutral-600">{room.name}</span>
-                            <span className="font-medium">${(room.price * nights).toFixed(2)}</span>
+                            <span className="font-medium">${(room.price).toFixed(2)}</span>
                         </div>
                     ))}
                 </div>

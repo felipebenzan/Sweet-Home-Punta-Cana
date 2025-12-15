@@ -139,7 +139,7 @@ function SearchResults() {
       guests: Number(guests),
       nights,
       totalPrice: selectedRooms.reduce(
-        (acc, room) => acc + room.price * nights,
+        (acc, room) => acc + room.price,
         0
       ),
     };
@@ -281,7 +281,7 @@ function SearchResults() {
               <p className="text-sm text-muted-foreground">
                 Total: $
                 {selectedRooms
-                  .reduce((acc, room) => acc + room.price * nights, 0)
+                  .reduce((acc, room) => acc + room.price, 0)
                   .toFixed(2)}
               </p>
             </div>
