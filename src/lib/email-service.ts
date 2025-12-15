@@ -50,7 +50,9 @@ export async function sendBookingConfirmation(data: BookingEmailData) {
                 name: bookingDetails.roomName || 'Luxury Room',
                 bedding: "King",
                 price: (totalPrice / (nights || 1)) || 0,
-                image: bookingDetails.room?.image || "https://images.unsplash.com/photo-1540541338287-41700207dee6?q=80&w=2070&auto=format&fit=crop",
+                image: (bookingDetails.room?.image && bookingDetails.room.image.startsWith('http'))
+                    ? bookingDetails.room.image
+                    : `https://sweet-home-punta-cana.vercel.app${bookingDetails.room?.image || '/1-Caribbean.png'}`,
                 capacity: bookingDetails.room?.capacity || 2,
                 slug: bookingDetails.room?.slug || "luxury-room"
             }],
@@ -331,7 +333,7 @@ export async function sendBookingConfirmation(data: BookingEmailData) {
 
                 return `
              <div style="background-color: #F9F7F2; padding: 0; font-family: 'Helvetica', 'Arial', sans-serif;">
-                <div style="position: relative; height: 250px; background-image: url('https://images.unsplash.com/photo-1540541338287-41700207dee6?q=80&w=2070&auto=format&fit=crop'); background-size: cover; background-position: center;">
+                 <div style="position: relative; height: 250px; background-image: url('${(bookingDetails.room?.image && bookingDetails.room.image.startsWith('http')) ? bookingDetails.room.image : `https://sweet-home-punta-cana.vercel.app${bookingDetails.room?.image || '/1-Caribbean.png'}`}'); background-size: cover; background-position: center;">
                    <div style="position: absolute; inset: 0; background: rgba(0,0,0,0.4);"></div>
                    <div style="position: relative; z-index: 10; padding: 40px 20px; text-align: center; color: white;">
                       <div style="background: white; border-radius: 50%; padding: 10px; display: inline-block; margin-bottom: 15px;">
