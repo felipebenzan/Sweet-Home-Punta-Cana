@@ -18,23 +18,29 @@ export function PayPalButtonsWrapper({
     onPaymentError,
     onPaymentCancel
 }: PayPalButtonsWrapperProps) {
-    const [{ isPending, isRejected }] = usePayPalScriptReducer();
+    const [{ isPending, scriptLoadError }] = usePayPalScriptReducer();
 
     if (isPending) {
         return <div className="flex justify-center items-center py-4"><Loader2 className="h-8 w-8 animate-spin text-shpc-yellow" /></div>;
     }
 
-    if (isRejected) {
+    if (scriptLoadError) {
         return (
-            <div className="p-4 bg-red-50 border border-red-200 rounded text-red-600 text-sm font-mono break-all">
-                <p><strong>PayPal Connection Failed</strong></p>
-                <p>The payment system could not be loaded. This usually means the API credentials are invalid or the account is restricted.</p>
-                <button onClick={() => window.location.reload()} className="underline mt-2">Retry</button>
+            <div className="p-4 border border-red-200 bg-red-50 rounded-lg text-red-600 text-sm">
+                <p className="font-bold">PayPal Connection Failed</p>
+                <p className="mt-1">The system rejected the connection.</p>
+                <p className="mt-2 text-xs font-mono bg-white p-2 border rounded">
+                    Error: {scriptLoadError.message || JSON.stringify(scriptLoadError)}
+                </p>
+                <button
+                    onClick={() => window.location.reload()}
+                    className="mt-2 text-xs underline hover:no-underline"
+                >
+                    Retry
+                </button>
             </div>
         );
-    }
-
-    const createOrder = (_data: any, actions: any) => {
+    } const createOrder = (_data: any, actions: any) => {
         return actions.order.create({
             purchase_units: [
                 {
