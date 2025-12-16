@@ -53,7 +53,7 @@ export default function MiniMarketDeliveryPage() {
       {/* Hero Section */}
       <section className="relative h-[50vh] w-full flex items-center justify-center text-center text-white bg-black">
         <Image
-          src="https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/mini%20market%20colmado%20delivery%20sweet%20home%20punta%20cana.png?alt=media&token=01e1d92c-8c23-4264-9646-3181a8c87fc0"
+          src="/colmado minimarker.png"
           alt="A paper bag full of fresh groceries"
           fill
           priority
