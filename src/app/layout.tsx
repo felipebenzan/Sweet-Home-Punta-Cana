@@ -30,15 +30,6 @@ export const metadata: Metadata = {
       },
     ],
   },
-  icons: {
-    icon: '/shpc-logo-circle.png?v=2',
-    shortcut: '/shpc-logo-circle.png?v=2',
-    apple: '/shpc-logo-circle.png?v=2',
-    other: {
-      rel: 'apple-touch-icon-precomposed',
-      url: '/shpc-logo-circle.png?v=2',
-    },
-  },
 };
 
 export default function RootLayout({
