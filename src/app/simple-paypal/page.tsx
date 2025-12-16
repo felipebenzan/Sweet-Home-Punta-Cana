@@ -1,22 +1,8 @@
-'use client';
-import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
+import SimplePayPalClient from "./client-page";
 
-export default function SimpleTestPage() {
-    const CLIENT_ID = "ATj0R0crY6MxnyYdsbpSAnUh5_8Ih5r6A0zUDRA1rSuLedlDGEwg_P7JuXI5QNY4jKpXZdc_Guk0vL9e";
+export default function SimplePayPalPage() {
+    // RUNTIME INJECTION
+    const clientId = process.env.PAYPAL_LIVE_ID_RUNTIME || process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "";
 
-    return (
-        <div className="p-10 text-center">
-            <h1 className="text-2xl font-bold mb-4">Isolated PayPal Test</h1>
-            <p className="mb-4">Client ID: {CLIENT_ID}</p>
-
-            <div className="border p-4 max-w-md mx-auto">
-                <PayPalScriptProvider options={{ clientId: CLIENT_ID }}>
-                    <PayPalButtons
-                        style={{ layout: "vertical" }}
-                        onError={(err) => alert("ERROR: " + JSON.stringify(err))}
-                    />
-                </PayPalScriptProvider>
-            </div>
-        </div>
-    );
+    return <SimplePayPalClient clientId={clientId} />;
 }
