@@ -27,21 +27,26 @@ const baseUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
   : "http://localhost:3000";
 
+
 export default function ReservationConfirmationEmail({
   bookingDetails,
 }: ReservationConfirmationEmailProps) {
 
   const { rooms, dates, guests, totalPrice, guestInfo, confirmationId, airportPickup } = bookingDetails;
-  const room = rooms[0];
+  // If rooms is empty or undefined, fallback for safety (though unlikely if api is correct)
+  const safeRooms = (rooms && rooms.length > 0) ? rooms : [{
+    name: 'Standard Room', id: 'RM1', capacity: 2, price: totalPrice, image: 'https://sweet-home-punta-cana.vercel.app/home-hero.png', slug: 'standard'
+  }];
+
   const shortId = confirmationId ? confirmationId.substring(0, 7).toUpperCase() : 'CONFIRM';
   const previewText = `Pack your bags ${guestInfo?.firstName || 'Guest'}, your booking is confirmed!`;
 
   const fromDate = parseISO(dates.from);
   const toDate = parseISO(dates.to);
-  const nights = differenceInDays(toDate, fromDate);
-  const roomSubtotal = room.price * nights;
+  const nights = differenceInDays(toDate, fromDate) || 1;
 
-  const qrValue = `${shortId}-${room.slug}`;
+  // For QR code, if multiple rooms, just use the confirmationId plus GROUP
+  const qrValue = `${shortId}-${safeRooms.length > 1 ? 'GROUP' : safeRooms[0].slug}`;
 
   return (
     <Html>
@@ -154,12 +159,12 @@ export default function ReservationConfirmationEmail({
             {/* Your Stay & Room */}
             <Section style={card}>
               <Section style={cardHeader}>
-                <Text style={cardTitle}>📅 Your Stay & Room</Text>
+                <Text style={cardTitle}>📅 Your Stay & Room{safeRooms.length > 1 ? 's' : ''}</Text>
               </Section>
               <Section style={cardContent}>
-                {/* Row 1: Dates & Guests */}
-                <Row style={{ marginBottom: '16px' }}>
-                  <Column className="mobile-stack" style={{ paddingRight: '16px', paddingBottom: '12px', width: '50%', verticalAlign: 'top' }}>
+                {/* Row 1: Dates & Guests (Common) */}
+                <Row style={{ marginBottom: '24px', borderBottom: '1px dashed #E5E7EB', paddingBottom: '16px' }}>
+                  <Column className="mobile-stack" style={{ paddingRight: '16px', paddingBottom: '12px', width: '33%', verticalAlign: 'top' }}>
                     <Text style={label}>🗓 Dates</Text>
                     <Text style={valueMedium}>
                       {dates?.from && dates?.to
@@ -167,46 +172,58 @@ export default function ReservationConfirmationEmail({
                         : 'Dates Pending'}
                     </Text>
                   </Column>
-                  <Column className="mobile-stack" style={{ paddingBottom: '12px', width: '50%', verticalAlign: 'top' }}>
-                    <Text style={label}>👥 Guests</Text>
-                    <Text style={valueMedium}>{guests} {guests === 1 ? 'Guest' : 'Guests'}</Text>
-                  </Column>
-                </Row>
-
-                {/* Row 2: Room Type */}
-                <Row style={{ marginBottom: '16px' }}>
-                  <Column>
-                    <Text style={label}>🏠 Room Type</Text>
-                    <Text style={valueMedium}>{room.name}</Text>
-                  </Column>
-                </Row>
-
-                {/* Row 3: Check-in & Check-out */}
-                <Row style={{ marginBottom: '24px' }}>
-                  <Column className="mobile-stack" style={{ paddingRight: '16px', width: '50%' }}>
-                    <Text style={label}>🕒 Check-in Time</Text>
+                  <Column className="mobile-stack" style={{ paddingRight: '16px', paddingBottom: '12px', width: '33%', verticalAlign: 'top' }}>
+                    <Text style={label}>🕒 Check-in</Text>
                     <Text style={valueMedium}>3:00 PM</Text>
                   </Column>
-                  <Column className="mobile-stack" style={{ width: '50%' }}>
-                    <Text style={label}>🕚 Check-out Time</Text>
+                  <Column className="mobile-stack" style={{ paddingBottom: '12px', width: '33%', verticalAlign: 'top' }}>
+                    <Text style={label}>🕚 Check-out</Text>
                     <Text style={valueMedium}>11:00 AM</Text>
                   </Column>
                 </Row>
 
-                {/* Room Preview */}
-                <Text style={label}>Room Preview</Text>
-                <Img
-                  src={room.image}
-                  width="100%"
-                  height="auto"
-                  style={{
-                    width: '100%',
-                    borderRadius: '8px',
-                    objectFit: 'cover',
-                    aspectRatio: '16/9'
-                  }}
-                  alt={room.name}
-                />
+                {/* Rooms Loop */}
+                {safeRooms.map((roomItem, index) => {
+                  const isLast = index === safeRooms.length - 1;
+                  const itemRate = roomItem.price / nights;
+
+                  return (
+                    <div key={index} style={{ marginBottom: isLast ? '0' : '24px', paddingBottom: isLast ? '0' : '24px', borderBottom: isLast ? 'none' : '1px solid #F3F4F6' }}>
+                      <Row>
+                        {/* Image */}
+                        <Column style={{ width: '100px', verticalAlign: 'top', paddingRight: '16px' }}>
+                          <Img
+                            src={roomItem.image}
+                            width="100"
+                            height="100"
+                            style={{ borderRadius: '8px', objectFit: 'cover', height: '80px', width: '100px', backgroundColor: '#eee' }}
+                            alt={roomItem.name}
+                          />
+                        </Column>
+                        {/* Details */}
+                        <Column style={{ verticalAlign: 'top' }}>
+                          <Text style={{ ...valueMedium, fontWeight: 'bold', fontSize: '16px', marginBottom: '4px' }}>
+                            {roomItem.name}
+                          </Text>
+                          <Text style={{ ...smallText, marginBottom: '8px' }}>
+                            Ref: {roomItem.id?.substring(0, 5).toUpperCase() || 'RES'} <br />
+                            Occupancy: {roomItem.capacity || 2} Guests
+                          </Text>
+                          <Row>
+                            <Column>
+                              <Text style={{ ...smallText, color: '#9CA3AF' }}>${itemRate.toFixed(2)} x {nights} nights</Text>
+                            </Column>
+                            <Column align="right">
+                              <Text style={{ ...valueMedium, fontWeight: 'bold' }}>${roomItem.price.toFixed(2)}</Text>
+                            </Column>
+                          </Row>
+                        </Column>
+                      </Row>
+                    </div>
+                  );
+                })}
+
+
               </Section>
             </Section>
 
