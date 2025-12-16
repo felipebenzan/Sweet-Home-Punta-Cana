@@ -15,29 +15,72 @@ async function getBookings() {
             orderBy: { createdAt: 'desc' }
         });
 
-        // Map Prisma reservations to the UI structure expected by the component
-        return reservations.map((r) => ({
-            confirmationId: r.id,
-            createdAt: r.createdAt.toISOString(),
-            // Guest Details
-            guestName: r.guestName,
-            guestEmail: r.guestEmail,
-            customer: {
-                name: r.guestName,
-                email: r.guestEmail,
-                phone: r.guestPhone || ''
-            },
-            // Pricing & Dates
-            totalPrice: r.totalPrice,
-            dates: {
-                checkIn: r.checkInDate.toISOString().split('T')[0],
-                checkOut: r.checkOutDate.toISOString().split('T')[0]
-            },
-            guests: r.numberOfGuests,
-            // Wrap single room in array for UI consistency
-            rooms: r.room ? [{ name: r.room.name }] : [],
-            type: 'room'
-        }));
+        // Grouping Logic
+        const groupedMap = new Map();
+
+        for (const r of reservations) {
+            // Create a unique key for grouping: Email + CheckIn + CheckOut
+            // We also check time proximity, but for simplicity in map key, we start with this.
+            // Actually, to handle time proximity efficiently, we can just iterate.
+            // Since it's sorted by creation desc, we can iterate and merge.
+        }
+
+        const groupedBookings = [];
+        let currentGroup: any[] = [];
+
+        for (const r of reservations) {
+            if (currentGroup.length === 0) {
+                currentGroup.push(r);
+                continue;
+            }
+
+            const prev = currentGroup[0];
+            const timeDiff = Math.abs(r.createdAt.getTime() - prev.createdAt.getTime());
+            const sameUser = r.guestEmail === prev.guestEmail;
+            const sameDates = r.checkInDate.getTime() === prev.checkInDate.getTime();
+
+            // Sibling criteria: Same user, same dates, created within 60s
+            if (sameUser && sameDates && timeDiff < 60000) {
+                currentGroup.push(r);
+            } else {
+                groupedBookings.push(currentGroup);
+                currentGroup = [r];
+            }
+        }
+        if (currentGroup.length > 0) groupedBookings.push(currentGroup);
+
+        // Map Groups to UI
+        return groupedBookings.map((group) => {
+            const primary = group[0];
+            const totalPrice = group.reduce((sum: number, r: any) => sum + r.totalPrice, 0);
+            const totalGuests = group.reduce((sum: number, r: any) => sum + r.numberOfGuests, 0);
+            const allRooms = group.map((r: any) => ({ name: r.room?.name || 'Unknown Room' }));
+
+            return {
+                confirmationId: primary.id,
+                createdAt: primary.createdAt.toISOString(),
+                // Guest Details
+                guestName: primary.guestName,
+                guestEmail: primary.guestEmail,
+                customer: {
+                    name: primary.guestName,
+                    email: primary.guestEmail,
+                    phone: primary.guestPhone || ''
+                },
+                // Pricing & Dates
+                totalPrice: totalPrice,
+                dates: {
+                    checkIn: primary.checkInDate.toISOString().split('T')[0],
+                    checkOut: primary.checkOutDate.toISOString().split('T')[0]
+                },
+                guests: totalGuests,
+                // List of all rooms
+                rooms: allRooms,
+                type: 'room',
+                isGroup: group.length > 1,
+                groupSize: group.length
+            };
+        });
     } catch (error) {
         console.error("Failed to fetch bookings:", error);
         return [];
@@ -147,13 +190,25 @@ export default async function RoomBookingsPage() {
                                             <p className="font-medium text-sm">{booking.guests}</p>
                                         </div>
                                         <div>
-                                            <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Room</p>
-                                            <p className="font-medium text-sm truncate" title={booking.rooms?.[0]?.name}>
-                                                {booking.rooms?.[0]?.name || 'Unassigned'}
+                                            <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">
+                                                {booking.isGroup ? `Rooms (${booking.groupSize})` : 'Room'}
                                             </p>
+                                            <div className="flex flex-col gap-0.5">
+                                                {booking.rooms.map((r: any, i: number) => (
+                                                    <p key={i} className="font-medium text-sm truncate" title={r.name}>
+                                                        {r.name}
+                                                    </p>
+                                                ))}
+                                                {booking.rooms.length === 0 && <p className="font-medium text-sm truncate">Unassigned</p>}
+                                            </div>
                                         </div>
                                     </div>
                                 </Link>
+                                {booking.isGroup && (
+                                    <div className="mt-2 text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded inline-block font-medium">
+                                        Group Booking • {booking.groupSize} Rooms
+                                    </div>
+                                )}
                                 {booking.paypalTransactionId && (
                                     <div className="mt-3 text-xs text-muted-foreground flex gap-1 items-center px-1">
                                         <span className="w-2 h-2 rounded-full bg-blue-400"></span>
