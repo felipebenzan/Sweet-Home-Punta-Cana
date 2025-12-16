@@ -9,6 +9,7 @@ interface EmbeddedMapProps {
   origin?: string;
   mode?: 'driving' | 'walking' | 'bicycling' | 'transit';
   zoom?: number;
+  apiKey: string;
 }
 
 // Function to extract direction parameters from the URL
@@ -75,9 +76,9 @@ const getPlaceQueryFromUrl = (url: string): string | null => {
   }
 }
 
-export default function EmbeddedMap({ mapUrl, origin: propOrigin, mode: propMode = 'driving', zoom = 15 }: EmbeddedMapProps) {
-  // Fallback to hardcoded key to ensure maps work immediately if env var is delayed
-  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || 'AIzaSyCKYYBKsEQ-qvhlm0GnkU86yMuBSqIljZg';
+export default function EmbeddedMap({ mapUrl, origin: propOrigin, mode: propMode = 'driving', zoom = 15, apiKey }: EmbeddedMapProps) {
+  // Fallback to empty string if prop is missing (should be handled by parent)
+  // The apiKey prop is now directly used and validated.
 
   if (!apiKey) {
     console.error("Google Maps API key is missing.");
