@@ -477,7 +477,6 @@ function CheckoutPageComponent() {
         <p>Timestamp: {new Date().toISOString()}</p>
       </div>
     </div>
-  </div >
   );
 }
 
