@@ -14,17 +14,39 @@ function mapRoom(room: any): Room {
 }
 
 function mapExcursion(excursion: any): Excursion {
+  // FORCE OVERRIDE: Ensure Saona Island uses local images regardless of DB state
+  if (excursion.slug === 'saona-island') {
+    return {
+      ...excursion,
+      inclusions: typeof excursion.inclusions === 'string' ? JSON.parse(excursion.inclusions) : excursion.inclusions,
+      practicalInfo: {
+        departure: excursion.departure,
+        duration: excursion.duration,
+        pickup: excursion.pickup,
+        pickupMapLink: excursion.pickupMapLink,
+        notes: typeof excursion.notes === 'string' ? JSON.parse(excursion.notes) : excursion.notes,
+      },
+      gallery: [
+        '/saona-3.jpeg',
+        '/saona-2.jpeg',
+        '/saona-4.jpeg'
+      ],
+      image: '/saona-hero.png',
+      price: { adult: excursion.priceAdult },
+    };
+  }
+
   return {
     ...excursion,
-    inclusions: JSON.parse(excursion.inclusions),
+    inclusions: typeof excursion.inclusions === 'string' ? JSON.parse(excursion.inclusions) : excursion.inclusions,
     practicalInfo: {
       departure: excursion.departure,
       duration: excursion.duration,
       pickup: excursion.pickup,
       pickupMapLink: excursion.pickupMapLink,
-      notes: JSON.parse(excursion.notes),
+      notes: typeof excursion.notes === 'string' ? JSON.parse(excursion.notes) : excursion.notes,
     },
-    gallery: JSON.parse(excursion.gallery),
+    gallery: typeof excursion.gallery === 'string' ? JSON.parse(excursion.gallery) : excursion.gallery,
     price: { adult: excursion.priceAdult },
   };
 }
