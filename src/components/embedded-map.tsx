@@ -80,7 +80,10 @@ export default function EmbeddedMap({ mapUrl, origin: propOrigin, mode: propMode
   // Fallback to empty string if prop is missing (should be handled by parent)
   // The apiKey prop is now directly used and validated.
 
-  if (!apiKey) {
+  // EMERGENCY: Fallback to hardcoded key if Runtime/Env var injection fails
+  const validKey = apiKey || 'AIzaSyCKYYBKsEQ-qvhlm0GnkU86yMuBSqIljZg';
+
+  if (!validKey) {
     console.error("Google Maps API key is missing.");
     return <div className="text-red-500 text-xs">Map cannot be displayed: Missing API Key.</div>;
   }
@@ -102,13 +105,13 @@ export default function EmbeddedMap({ mapUrl, origin: propOrigin, mode: propMode
     const origin = directions.origin;
     destination = directions.destination;
     const mode = directions.mode || propMode;
-    embedUrl = `https://www.google.com/maps/embed/v1/directions?key=${apiKey}&origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}&mode=${mode}&zoom=${zoom}`;
+    embedUrl = `https://www.google.com/maps/embed/v1/directions?key=${validKey}&origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}&mode=${mode}&zoom=${zoom}`;
   } else {
     destination = getPlaceQueryFromUrl(mapUrl) || "Sweet Home Punta Cana";
     if (propOrigin) {
-      embedUrl = `https://www.google.com/maps/embed/v1/directions?key=${apiKey}&origin=${encodeURIComponent(propOrigin)}&destination=${encodeURIComponent(destination)}&mode=${propMode}&zoom=${zoom}`;
+      embedUrl = `https://www.google.com/maps/embed/v1/directions?key=${validKey}&origin=${encodeURIComponent(propOrigin)}&destination=${encodeURIComponent(destination)}&mode=${propMode}&zoom=${zoom}`;
     } else {
-      embedUrl = `https://www.google.com/maps/embed/v1/place?key=${apiKey}&q=${encodeURIComponent(destination)}&zoom=${zoom}`;
+      embedUrl = `https://www.google.com/maps/embed/v1/place?key=${validKey}&q=${encodeURIComponent(destination)}&zoom=${zoom}`;
     }
   }
 
