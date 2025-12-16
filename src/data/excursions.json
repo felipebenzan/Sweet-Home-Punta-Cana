@@ -5,7 +5,7 @@
     "title": "Saona Island Paradise",
     "tagline": "Caribbean's most beautiful island",
     "description": "Escape to Saona Island, a pristine Caribbean paradise with crystal-clear turquoise waters and powdery white sand beaches. This full-day excursion includes a catamaran ride, beach time, snorkeling, and a delicious Dominican lunch buffet. Swim in the natural pool, relax under palm trees, and experience the untouched beauty of this protected national park.",
-    "image": "https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=1200&h=800&fit=crop",
+    "image": "/Saona hERO.png",
     "icon": "Sailboat",
     "priceAdult": 89,
     "inclusions": [
@@ -24,9 +24,9 @@
     "pickupMapLink": null,
     "notes": "[\"Bring swimwear, towel, sunscreen, and camera\",\"Wear comfortable shoes\",\"Not recommended for pregnant women or people with back problems\",\"Minimum 2 people required\"]",
     "gallery": [
-      "https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=1200&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=1200&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&h=800&fit=crop"
+      "/SAONA 3.jpeg",
+      "/SAONA 2.jpeg",
+      "/SAONA 4.jpeg"
     ],
     "practicalInfo": {
       "departure": "7:30 AM",
