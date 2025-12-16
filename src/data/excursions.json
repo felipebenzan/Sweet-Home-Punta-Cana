@@ -50,7 +50,7 @@
     "title": "Buggy Adventure Tour",
     "tagline": "Off-road thrills through Dominican countryside",
     "description": "Get your adrenaline pumping on this exciting buggy adventure through the Dominican countryside! Drive through muddy trails, visit a traditional Dominican home, swim in a cenote, and explore Macao Beach. This half-day tour combines adventure, culture, and natural beauty for an unforgettable experience.",
-    "image": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&h=800&fit=crop",
+    "image": "/buggies-hero.png",
     "icon": "Bike",
     "price": {
       "adult": 75
@@ -79,9 +79,10 @@
       ]
     },
     "gallery": [
-      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1533587851505-d119e13fa0d7?w=1200&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=800&fit=crop"
+      "/buggies-hero.png",
+      "/buggies-1.jpeg",
+      "/buggies-2.jpeg",
+      "/buggies-3.jpeg"
     ]
   },
   {

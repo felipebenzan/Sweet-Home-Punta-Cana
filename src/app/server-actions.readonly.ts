@@ -36,6 +36,29 @@ function mapExcursion(excursion: any): Excursion {
     };
   }
 
+  // FORCE OVERRIDE: Buggy Adventure
+  if (excursion.slug === 'buggy-adventure') {
+    return {
+      ...excursion,
+      inclusions: typeof excursion.inclusions === 'string' ? JSON.parse(excursion.inclusions) : excursion.inclusions,
+      practicalInfo: {
+        departure: excursion.departure,
+        duration: excursion.duration,
+        pickup: excursion.pickup,
+        pickupMapLink: excursion.pickupMapLink,
+        notes: typeof excursion.notes === 'string' ? JSON.parse(excursion.notes) : excursion.notes,
+      },
+      gallery: [
+        '/buggies-hero.png',
+        '/buggies-1.jpeg',
+        '/buggies-2.jpeg',
+        '/buggies-3.jpeg'
+      ],
+      image: '/buggies-hero.png',
+      price: { adult: excursion.priceAdult },
+    };
+  }
+
   return {
     ...excursion,
     inclusions: typeof excursion.inclusions === 'string' ? JSON.parse(excursion.inclusions) : excursion.inclusions,
