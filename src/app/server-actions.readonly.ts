@@ -82,6 +82,29 @@ function mapExcursion(excursion: any): Excursion {
     };
   }
 
+  // FORCE OVERRIDE: Catalina Island
+  if (excursion.slug === 'snorkeling-catalina' || excursion.title.includes('Catalina')) {
+    return {
+      ...excursion,
+      inclusions: typeof excursion.inclusions === 'string' ? JSON.parse(excursion.inclusions) : excursion.inclusions,
+      practicalInfo: {
+        departure: excursion.departure,
+        duration: excursion.duration,
+        pickup: excursion.pickup,
+        pickupMapLink: excursion.pickupMapLink,
+        notes: typeof excursion.notes === 'string' ? JSON.parse(excursion.notes) : excursion.notes,
+      },
+      gallery: [
+        '/catalina-hero.png',
+        '/catalina-1.png',
+        '/catalina-2.png',
+        '/catalina-3.png'
+      ],
+      image: '/catalina-hero.png',
+      price: { adult: excursion.priceAdult || 95 },
+    };
+  }
+
   return {
     ...excursion,
     inclusions: typeof excursion.inclusions === 'string' ? JSON.parse(excursion.inclusions) : excursion.inclusions,

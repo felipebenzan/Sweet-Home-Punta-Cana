@@ -91,7 +91,7 @@
     "title": "Catalina Island Snorkeling",
     "tagline": "Underwater paradise awaits",
     "description": "Discover the vibrant underwater world of Catalina Island, one of the best snorkeling spots in the Dominican Republic. This tour takes you to pristine coral reefs teeming with colorful tropical fish, sea turtles, and rays. Enjoy a beach BBQ lunch and relax on the beautiful island beach.",
-    "image": "https://images.unsplash.com/photo-1544551763-92d2b789a1ca?w=1200&h=800&fit=crop",
+    "image": "/catalina-hero.png",
     "icon": "Waves",
     "price": {
       "adult": 95
@@ -120,9 +120,10 @@
       ]
     },
     "gallery": [
-      "https://images.unsplash.com/photo-1544551763-92d2b789a1ca?w=1200&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=1200&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1583212292454-1fe6229603b7?w=1200&h=800&fit=crop"
+      "/catalina-hero.png",
+      "/catalina-1.png",
+      "/catalina-2.png",
+      "/catalina-3.png"
     ]
   },
   {
