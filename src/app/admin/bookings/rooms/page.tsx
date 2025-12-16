@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, Home, Calendar as CalendarIcon } from 'lucide-react';
+import { ArrowLeft, Home, Calendar as CalendarIcon, ExternalLink } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { DeleteBookingButton } from '../delete-booking-button';
 
@@ -115,6 +115,11 @@ export default async function RoomBookingsPage() {
                                     <div className="text-right">
                                         <p className="text-2xl font-bold text-shpc-ink">${booking.totalPrice?.toFixed(2)}</p>
                                         <div className="flex items-center justify-end gap-2 mt-2">
+                                            <Link href={`/confirmation?bid=${booking.confirmationId}`} target="_blank">
+                                                <Button size="icon" variant="ghost" className="h-8 w-8 text-muted-foreground hover:text-blue-600" title="View Public Confirmation">
+                                                    <ExternalLink className="h-4 w-4" />
+                                                </Button>
+                                            </Link>
                                             <p className="text-xs text-muted-foreground font-mono bg-gray-100 px-1.5 py-0.5 rounded">
                                                 {booking.confirmationId.substring(0, 8)}...
                                             </p>
