@@ -30,6 +30,11 @@ export const metadata: Metadata = {
       },
     ],
   },
+  icons: {
+    icon: '/shpc-logo-circle.png',
+    shortcut: '/shpc-logo-circle.png',
+    apple: '/shpc-logo-circle.png',
+  },
 };
 
 export default function RootLayout({
@@ -39,9 +44,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="scroll-smooth">
-      <head>
-        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-      </head>
       <body className={cn('antialiased font-sans flex flex-col min-h-screen', inter.variable, playfairDisplay.variable, dancingScript.variable)}>
         {/* EMERGENCY: Hardcoded Live ID from User Text Copy-Paste */}
         <ClientLayout paypalClientId="AdcvZIs6aDhOuAfazd6S-6BQJYWY_o0_RqXiVfVeIuirgbUj1lrC-Vc6kDBDD0H5lqpgGlTrGhf6kyFN">
