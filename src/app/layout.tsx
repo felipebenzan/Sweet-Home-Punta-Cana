@@ -10,6 +10,8 @@ const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const playfairDisplay = Playfair_Display({ subsets: ['latin'], variable: '--font-playfair-display' });
 const dancingScript = Dancing_Script({ subsets: ['latin'], variable: '--font-dancing-script', weight: '700' });
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'Sweet Home Punta Cana | Adults-Only Guest House Near Bávaro Beach',
   description: 'Discover an affordable, adults-only guest house in Punta Cana, just minutes from Bávaro Beach. Enjoy private rooms, A/C, Wi-Fi, and personalized services like airport transfers and excursions. The perfect alternative to expensive resorts and noisy hostels.',

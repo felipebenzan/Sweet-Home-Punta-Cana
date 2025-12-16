@@ -6,6 +6,8 @@ export const metadata: Metadata = {
     description: 'Complete your booking securely.',
 };
 
+export const dynamic = 'force-dynamic';
+
 export default function ExcursionCheckoutPage() {
     // RUNTIME INJECTION
     const googleMapsApiKey = process.env.GOOGLE_MAPS_KEY_RUNTIME || process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "";
