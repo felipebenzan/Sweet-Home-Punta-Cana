@@ -123,13 +123,103 @@ export async function getRoomBySlug(slug: string): Promise<Room | null> {
 export async function getExcursions(): Promise<Excursion[]> {
   console.log("✅ Fetching excursions from SQLite");
   const excursions = await prisma.excursion.findMany();
-  return excursions.map(mapExcursion);
+  const mapped = excursions.map(mapExcursion);
+
+  // INJECT: Santo Domingo if missing (Virtual Excursion)
+  const hasSantoDomingo = mapped.some(e => e.slug === 'santo-domingo');
+  if (!hasSantoDomingo) {
+    mapped.push({
+      id: 'santo-domingo',
+      slug: 'santo-domingo',
+      title: 'Santo Domingo City Tour',
+      tagline: 'Explore the oldest city in the Americas',
+      description: 'Immerse yourself in history with a visit to Santo Domingo, the first city established in the Americas. Walk through the Colonial Zone, a UNESCO World Heritage site, visit the first cathedral, the Alcázar de Colón, and the National Pantheon. This full-day cultural experience includes round-trip transportation, a delicious Dominican lunch, and a professional guide to share the rich history of the island.',
+      image: '/santo-domingo-hero.png',
+      icon: 'Landmark',
+      price: { adult: 95 },
+      inclusions: [
+        'Round-trip transportation',
+        'Professional guide',
+        'Lunch in the Colonial Zone',
+        'Entrance fees to monuments',
+        'Visit to First Cathedral',
+        'Alcázar de Colón',
+        'Calle Las Damas',
+        'Free time for shopping'
+      ],
+      practicalInfo: {
+        departure: '7:00 AM',
+        duration: 'Full day (approx. 10 hours)',
+        pickup: 'Hotel lobby',
+        pickupMapLink: '',
+        notes: [
+          'Dress code: shoulders and knees covered for Cathedral',
+          'Comfortable walking shoes recommended',
+          'Bring camera and sunglasses',
+          'Money for souvenirs',
+          'Long bus ride (approx. 2.5 hours each way)'
+        ]
+      },
+      gallery: [
+        '/santo-domingo-hero.png',
+        '/santo-domingo-1.jpeg',
+        '/santo-domingo-2.jpeg',
+        '/santo-domingo-3.jpeg'
+      ]
+    } as Excursion);
+  }
+
+  return mapped;
 }
 
 export async function getExcursionBySlug(
   slug: string
 ): Promise<Excursion | null> {
   console.log(`✅ Fetching excursion by slug: ${slug}`);
+
+  // VIRTUAL EXCURSION: Santo Domingo
+  if (slug === 'santo-domingo') {
+    return {
+      id: 'santo-domingo',
+      slug: 'santo-domingo',
+      title: 'Santo Domingo City Tour',
+      tagline: 'Explore the oldest city in the Americas',
+      description: 'Immerse yourself in history with a visit to Santo Domingo, the first city established in the Americas. Walk through the Colonial Zone, a UNESCO World Heritage site, visit the first cathedral, the Alcázar de Colón, and the National Pantheon. This full-day cultural experience includes round-trip transportation, a delicious Dominican lunch, and a professional guide to share the rich history of the island.',
+      image: '/santo-domingo-hero.png',
+      icon: 'Landmark',
+      price: { adult: 95 }, // Explicitly set price structure
+      inclusions: [
+        'Round-trip transportation',
+        'Professional guide',
+        'Lunch in the Colonial Zone',
+        'Entrance fees to monuments',
+        'Visit to First Cathedral',
+        'Alcázar de Colón',
+        'Calle Las Damas',
+        'Free time for shopping'
+      ],
+      practicalInfo: {
+        departure: '7:00 AM',
+        duration: 'Full day (approx. 10 hours)',
+        pickup: 'Hotel lobby',
+        pickupMapLink: '',
+        notes: [
+          'Dress code: shoulders and knees covered for Cathedral',
+          'Comfortable walking shoes recommended',
+          'Bring camera and sunglasses',
+          'Money for souvenirs',
+          'Long bus ride (approx. 2.5 hours each way)'
+        ]
+      },
+      gallery: [
+        '/santo-domingo-hero.png',
+        '/santo-domingo-1.jpeg',
+        '/santo-domingo-2.jpeg',
+        '/santo-domingo-3.jpeg'
+      ]
+    } as unknown as Excursion; // Cast to avoid strict type checks on missing optional fields if any
+  }
+
   const excursion = await prisma.excursion.findUnique({ where: { slug } });
   return excursion ? mapExcursion(excursion) : null;
 }
