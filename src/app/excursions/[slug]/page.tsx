@@ -52,10 +52,14 @@ export default async function ExcursionPage({
     (e) => e.id !== excursionData.id
   );
 
+  // RUNTIME INJECTION
+  const googleMapsApiKey = process.env.GOOGLE_MAPS_KEY_RUNTIME || process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "";
+
   return (
     <ExcursionClientPage
       excursion={excursionData}
       otherExcursions={otherExcursions}
+      googleMapsApiKey={googleMapsApiKey}
     />
   );
 }

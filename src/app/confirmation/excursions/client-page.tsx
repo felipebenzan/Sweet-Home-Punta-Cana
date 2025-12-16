@@ -65,7 +65,7 @@ function ConfirmationContent() {
 
     async function fetchBooking() {
       try {
-        const bookingData = await getServiceBookingById(bid);
+        const bookingData = await getServiceBookingById(bid!);
         setBooking(bookingData);
         if (bookingData?.excursionId) {
           const excursionData = await getExcursionById(bookingData.excursionId);

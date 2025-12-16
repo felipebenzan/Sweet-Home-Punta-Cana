@@ -151,7 +151,7 @@ function BundleOfferCard({
 }
 
 
-export default function ExcursionClientPage({ excursion, otherExcursions }: { excursion: Excursion, otherExcursions: Excursion[] }) {
+export default function ExcursionClientPage({ excursion, otherExcursions, googleMapsApiKey }: { excursion: Excursion, otherExcursions: Excursion[], googleMapsApiKey: string }) {
   // State for the main excursion
   const [mainExcursionState, setMainExcursionState] = React.useState<Omit<BundledItem, keyof Excursion>>({
     bookingDate: undefined,
@@ -263,7 +263,7 @@ export default function ExcursionClientPage({ excursion, otherExcursions }: { ex
                   {excursion.practicalInfo.pickupMapLink && (
                     <>
                       <div className="aspect-video w-full rounded-lg overflow-hidden mb-3">
-                        <EmbeddedMap mapUrl={excursion.practicalInfo.pickupMapLink} origin="Sweet Home Punta Cana" mode="walking" zoom={15} />
+                        <EmbeddedMap mapUrl={excursion.practicalInfo.pickupMapLink} origin="Sweet Home Punta Cana" mode="walking" zoom={15} apiKey={googleMapsApiKey} />
                       </div>
                       <a href={excursion.practicalInfo.pickupMapLink} target="_blank" rel="noopener noreferrer" className="text-sm text-shpc-yellow hover:text-shpc-yellow/80 font-inter font-medium flex items-center gap-2">
                         Open in Google Maps <ExternalLink className="h-4 w-4" />
