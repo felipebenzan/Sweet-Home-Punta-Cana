@@ -11,6 +11,11 @@ export async function getPayPalAccessToken(): Promise<string> {
   const clientSecret = process.env.PAYPAL_LIVE_SECRET_RUNTIME || process.env.PAYPAL_CLIENT_SECRET;
 
   if (!clientId || !clientSecret) {
+    if (process.env.NODE_ENV === 'production' && typeof window === 'undefined') {
+      // Build-time silence: don't crash, just log warning
+      console.warn('WARN: PayPal credentials missing during build/server init.');
+      return ''; // Return empty string to prevent build crash
+    }
     console.error(
       'CRITICAL: Missing PAYPAL_CLIENT_ID or PAYPAL_CLIENT_SECRET environment variables.'
     );

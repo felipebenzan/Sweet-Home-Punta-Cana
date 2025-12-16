@@ -17,12 +17,12 @@ const prismaClientSingleton = () => {
     // If we are in a build environment (no URL), use a dummy connection string
     // to prevent the build from crashing. 
     if (!url) {
-        console.warn("WARN: No Database URL found (checked POSTGRES_PRISMA_URL, POSTGRES_URL, DATABASE_URL).");
-        console.warn("Using dummy connection for build/static generation.");
+        console.warn("WARN: No Database URL found. Using dummy connection for build verification.");
+        // Use a dummy connection string that satisfies the valid format but won't connect
         return new PrismaClient({
             datasources: {
                 db: {
-                    url: 'postgresql://build:build@localhost:5432/build',
+                    url: 'postgresql://dummy:dummy@localhost:5432/dummy',
                 },
             },
         });
