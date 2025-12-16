@@ -41,7 +41,7 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
       </head>
       <body className={cn('antialiased font-sans flex flex-col min-h-screen', inter.variable, playfairDisplay.variable, dancingScript.variable)}>
-        <ClientLayout>
+        <ClientLayout paypalClientId={process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || process.env.PAYPAL_CLIENT_ID || ""}>
           {children}
         </ClientLayout>
         <Toaster />

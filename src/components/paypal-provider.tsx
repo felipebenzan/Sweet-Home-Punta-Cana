@@ -3,9 +3,9 @@
 import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 import { ReactNode } from "react";
 
-export function PayPalProvider({ children }: { children: ReactNode }) {
+export function PayPalProvider({ children, clientId }: { children: ReactNode; clientId: string }) {
     const initialOptions = {
-        clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID!,
+        clientId: clientId,
         currency: "USD",
         intent: "capture",
     };

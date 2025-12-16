@@ -8,8 +8,10 @@ import { PayPalProvider } from '@/components/paypal-provider';
 
 export default function ClientLayout({
   children,
+  paypalClientId,
 }: {
   children: React.ReactNode;
+  paypalClientId: string;
 }) {
   const pathname = usePathname();
 
@@ -31,7 +33,7 @@ export default function ClientLayout({
   // Checkout pages might want a simplified header or no header
   if (isBookingFlowPage && !isSearchPage) {
     return (
-      <PayPalProvider>
+      <PayPalProvider clientId={paypalClientId}>
         <main className="flex-grow flex flex-col min-h-screen bg-shpc-sand">
           {children}
         </main>
@@ -40,7 +42,7 @@ export default function ClientLayout({
   }
 
   return (
-    <PayPalProvider>
+    <PayPalProvider clientId={paypalClientId}>
       <div className="flex flex-col min-h-screen">
         <HeaderManager>
           <div
