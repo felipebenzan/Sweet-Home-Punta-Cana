@@ -7,8 +7,9 @@
  */
 export async function getPayPalAccessToken(): Promise<string> {
   // EMERGENCY BYPASS: Vercel env vars are stuck. Using direct keys.
-  const HARDCODED_CLIENT_ID = "AdcvZIs6aDhOuAfazd6S-6BQJYWY_o0_RqXiVfVeluirgbUj1lrC-Vc6kDBDDOH5IqpgGlTrGhf6kyFN";
-  const HARDCODED_SECRET = "EFFp0mIuVk5A4rakqPXvFpqK24GgmsqHEyx8E7Au8OmYQe384RWPQ0jqnUGLNum-t9R4Slk2JfnnnZPp";
+  // EMERGENCY BYPASS: Vercel env vars are stuck. Using direct keys.
+  const HARDCODED_CLIENT_ID = "ATj0R0crY6MxnyYdsbpSAnUh5_8Ih5r6A0zUDRA1rSuLedlDGEwg_P7JuXI5QNY4jKpXZdc_Guk0vL9e";
+  const HARDCODED_SECRET = "EEYBwxbakfP9C3bS8pqWAf-T1ltJiviQOSJ8j8uS12lX7mvzm0Dt8ZLiAMcRw9DtlB52dsSdxch0pvJZ";
 
   const clientId = HARDCODED_CLIENT_ID;
   const clientSecret = HARDCODED_SECRET;

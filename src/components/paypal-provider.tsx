@@ -4,8 +4,7 @@ import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 import { ReactNode } from "react";
 
 export function PayPalProvider({ children, clientId }: { children: ReactNode; clientId?: string }) {
-    // EMERGENCY HARDCODE: Ensure Client ID is always present regardless of props or env
-    const FINAL_CLIENT_ID = "AdcvZIs6aDhOuAfazd6S-6BQJYWY_o0_RqXiVfVeluirgbUj1lrC-Vc6kDBDDOH5IqpgGlTrGhf6kyFN".trim();
+    const FINAL_CLIENT_ID = "ATj0R0crY6MxnyYdsbpSAnUh5_8Ih5r6A0zUDRA1rSuLedlDGEwg_P7JuXI5QNY4jKpXZdc_Guk0vL9e".trim();
 
     // Minimal configuration to avoid 400 errors from SDK
     const initialOptions = {
