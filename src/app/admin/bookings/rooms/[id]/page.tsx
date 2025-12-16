@@ -48,6 +48,23 @@ export default async function RoomBookingDetailPage({ params }: { params: Promis
         );
     }
 
+    // Find siblings (heuristic: same email, same check-in, created within 5 seconds)
+    const windowStart = new Date(booking.createdAt.getTime() - 5000);
+    const windowEnd = new Date(booking.createdAt.getTime() + 5000);
+
+    const siblings = await prisma.reservation.findMany({
+        where: {
+            id: { not: booking.id }, // Exclude current
+            guestEmail: booking.guestEmail,
+            checkInDate: booking.checkInDate,
+            createdAt: { gte: windowStart, lte: windowEnd }
+        },
+        include: { room: true }
+    });
+
+    const allRooms = [booking, ...siblings];
+    const totalGroupPrice = allRooms.reduce((sum, r) => sum + r.totalPrice, 0);
+
     const nights = Math.ceil((booking.checkOutDate.getTime() - booking.checkInDate.getTime()) / (1000 * 60 * 60 * 24));
     const shortId = booking.id.substring(0, 8).toUpperCase();
 
@@ -131,11 +148,11 @@ export default async function RoomBookingDetailPage({ params }: { params: Promis
                 <Card className="shadow-soft rounded-3xl overflow-hidden border-none bg-white">
                     <CardHeader className="p-6 pb-2">
                         <CardTitle className="text-xl font-playfair flex items-center gap-2">
-                            📅 Your Stay & Room
+                            📅 Your Stay & Room{siblings.length > 0 ? 's' : ''}
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="p-6 pt-2">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4 pb-6 border-b border-gray-100">
                             <div className="space-y-1">
                                 <p className="text-sm text-muted-foreground flex items-center gap-2"><CalendarIcon className="w-4 h-4 text-shpc-yellow" /> Dates</p>
                                 <p className="font-medium text-lg">
@@ -145,11 +162,10 @@ export default async function RoomBookingDetailPage({ params }: { params: Promis
                             </div>
                             <div className="space-y-1">
                                 <p className="text-sm text-muted-foreground flex items-center gap-2"><UsersIcon className="w-4 h-4 text-shpc-yellow" /> Guests</p>
-                                <p className="font-medium text-lg">{booking.numberOfGuests} {booking.numberOfGuests === 1 ? "Guest" : "Guests"}</p>
-                            </div>
-                            <div className="space-y-1 md:col-span-2">
-                                <p className="text-sm text-muted-foreground flex items-center gap-2"><Home className="w-4 h-4 text-shpc-yellow" /> Room Type</p>
-                                <p className="font-medium text-lg">{booking.room.name}</p>
+                                <p className="font-medium text-lg">
+                                    {/* Aggregate guests if multiple rooms */}
+                                    {allRooms.reduce((acc: number, r: any) => acc + r.numberOfGuests, 0)} Total Guests
+                                </p>
                             </div>
                             <div className="space-y-1">
                                 <p className="text-sm text-muted-foreground flex items-center gap-2"><Clock className="w-4 h-4 text-shpc-yellow" /> Check-in Time</p>
@@ -160,19 +176,34 @@ export default async function RoomBookingDetailPage({ params }: { params: Promis
                                 <p className="font-medium text-lg">11:00 AM</p>
                             </div>
                         </div>
-                        {booking.room && booking.room.image && (
-                            <div className="mt-6">
-                                <p className="text-sm text-muted-foreground mb-2 font-medium">Room Preview</p>
-                                <div className="relative h-48 w-full sm:w-64 rounded-xl overflow-hidden shadow-sm">
-                                    <Image
-                                        src={booking.room.image}
-                                        alt={booking.room.name}
-                                        fill
-                                        className="object-cover"
-                                    />
+
+                        {/* Rooms List */}
+                        <div className="mt-6 space-y-6">
+                            {allRooms.map((res: any, idx: number) => (
+                                <div key={res.id} className="flex gap-4 items-start p-4 bg-shpc-sand/30 rounded-xl border border-shpc-sand">
+                                    <div className="relative h-24 w-24 sm:w-32 rounded-lg overflow-hidden shadow-sm shrink-0 bg-gray-200">
+                                        {res.room?.image && (
+                                            <Image
+                                                src={res.room.image}
+                                                alt={res.room.name}
+                                                fill
+                                                className="object-cover"
+                                            />
+                                        )}
+                                    </div>
+                                    <div className="flex-grow">
+                                        <h4 className="font-bold text-lg text-shpc-ink">{res.room?.name || 'Unknown Room'}</h4>
+                                        <p className="text-sm text-muted-foreground mb-2">
+                                            Ref: {res.id.substring(0, 8)}
+                                        </p>
+                                        <div className="flex gap-4 text-sm">
+                                            <span className="flex items-center gap-1"><UsersIcon className="w-3 h-3" /> {res.numberOfGuests} Guests</span>
+                                            <span className="font-medium text-shpc-ink">${res.totalPrice?.toFixed(2)}</span>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        )}
+                            ))}
+                        </div>
                     </CardContent>
                 </Card>
 
@@ -187,10 +218,11 @@ export default async function RoomBookingDetailPage({ params }: { params: Promis
                         <div className="space-y-2">
                             <div className="flex justify-between items-center text-lg font-bold text-shpc-ink">
                                 <span>Total Paid (USD)</span>
-                                <span>${booking.totalPrice.toFixed(2)}</span>
+                                <span>${totalGroupPrice.toFixed(2)}</span>
                             </div>
                             <div className="flex justify-between items-center text-muted-foreground text-sm">
                                 <span>Processed via Website</span>
+                                {allRooms.length > 1 && <span className="text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded">Group Booking ({allRooms.length} rooms)</span>}
                             </div>
                         </div>
 
