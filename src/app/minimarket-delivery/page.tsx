@@ -141,7 +141,7 @@ export default function MiniMarketDeliveryPage() {
         <section>
           <div className="relative rounded-2xl shadow-soft overflow-hidden bg-shpc-ink text-white">
             <Image
-              src="https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/restaurant%20delivery%20sweet%20home%20punta%20cana%20uber%20eats%20pedidos%20ya.png?alt=media&token=67923149-64f4-428d-9eb3-6f8de0190a6b"
+              src="/food delivery.png"
               alt="A delicious meal from a food delivery service"
               fill
               className="object-cover opacity-40"

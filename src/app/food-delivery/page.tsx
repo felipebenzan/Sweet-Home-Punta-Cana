@@ -36,7 +36,7 @@ export default function FoodDeliveryPage() {
       {/* Hero Section */}
       <section className="relative h-[50vh] w-full flex items-center justify-center text-center text-white bg-black">
         <Image
-          src="https://firebasestorage.googleapis.com/v0/b/punta-cana-stays.firebasestorage.app/o/restaurant%20delivery%20sweet%20home%20punta%20cana%20uber%20eats%20pedidos%20ya.png?alt=media&token=67923149-64f4-428d-9eb3-6f8de0190a6b"
+          src="/food delivery.png"
           alt="Food delivery options in Punta Cana"
           fill
           priority
