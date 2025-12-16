@@ -59,6 +59,29 @@ function mapExcursion(excursion: any): Excursion {
     };
   }
 
+  // FORCE OVERRIDE: Santo Domingo
+  if (excursion.slug === 'santo-domingo' || excursion.title.includes('Santo Domingo')) {
+    return {
+      ...excursion,
+      inclusions: typeof excursion.inclusions === 'string' ? JSON.parse(excursion.inclusions) : excursion.inclusions,
+      practicalInfo: {
+        departure: excursion.departure,
+        duration: excursion.duration,
+        pickup: excursion.pickup,
+        pickupMapLink: excursion.pickupMapLink,
+        notes: typeof excursion.notes === 'string' ? JSON.parse(excursion.notes) : excursion.notes,
+      },
+      gallery: [
+        '/santo-domingo-hero.png',
+        '/santo-domingo-1.jpeg',
+        '/santo-domingo-2.jpeg',
+        '/santo-domingo-3.jpeg'
+      ],
+      image: '/santo-domingo-hero.png',
+      price: { adult: 95 },
+    };
+  }
+
   return {
     ...excursion,
     inclusions: typeof excursion.inclusions === 'string' ? JSON.parse(excursion.inclusions) : excursion.inclusions,
