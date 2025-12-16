@@ -120,7 +120,25 @@ async function main() {
                 }
             })
         } else {
-            console.log(`Excursion already exists: ${excursion.title}`);
+            console.log(`Updating existing excursion: ${excursion.title}`);
+            await prisma.excursion.update({
+                where: { slug: excursion.slug },
+                data: {
+                    title: excursion.title,
+                    tagline: excursion.tagline,
+                    description: excursion.description,
+                    image: excursion.image,
+                    icon: excursion.icon || null,
+                    priceAdult: excursion.price.adult,
+                    inclusions: JSON.stringify(excursion.inclusions),
+                    departure: excursion.practicalInfo.departure,
+                    duration: excursion.practicalInfo.duration,
+                    pickup: excursion.practicalInfo.pickup,
+                    pickupMapLink: excursion.practicalInfo.pickupMapLink || null,
+                    notes: JSON.stringify(excursion.practicalInfo.notes),
+                    gallery: JSON.stringify(excursion.gallery),
+                }
+            });
         }
     }
 
