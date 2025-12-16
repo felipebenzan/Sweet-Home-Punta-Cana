@@ -182,14 +182,22 @@ export default function LaundryServicePage() {
 
     return (
         <div className="min-h-screen bg-[#FAFAFA]">
-            {/* Header */}
-            <section className="bg-white border-b border-neutral-200">
-                <div className="max-w-7xl mx-auto px-6 py-16">
-                    <h1 className="font-playfair text-5xl md:text-6xl font-bold text-shpc-ink text-center mb-4">
-                        Laundry Service | Sweet Home Punta Cana
+            {/* Hero Section */}
+            <section className="relative h-[60vh] min-h-[500px] w-full flex items-center justify-center overflow-hidden">
+                <Image
+                    src="/laundry-hero.png"
+                    alt="Laundry Service"
+                    fill
+                    className="object-cover"
+                    priority
+                />
+                <div className="absolute inset-0 bg-black/40" />
+                <div className="relative z-10 text-center text-white px-6">
+                    <h1 className="font-playfair text-5xl md:text-6xl font-bold mb-4 drop-shadow-md">
+                        Laundry Service
                     </h1>
-                    <p className="font-inter text-lg text-neutral-600 text-center max-w-2xl mx-auto">
-                        Enjoy our professional wash & fold service
+                    <p className="font-inter text-lg md:text-xl text-white/90 max-w-2xl mx-auto drop-shadow-sm">
+                        Professional wash & fold service delivered to your room
                     </p>
                 </div>
             </section>
