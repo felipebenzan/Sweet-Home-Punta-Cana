@@ -376,47 +376,83 @@ export async function sendBookingConfirmation(data: BookingEmailData) {
                                   <div style="font-size: 16px; font-weight: bold; color: #333;">${guestEmail}</div>
                                </td>
                             </tr>
-                            <tr>
-                               <td colspan="2" style="text-align: center; padding-top: 10px;">
-                                  <div style="border: 1px solid #eee; padding: 10px; display: inline-block; border-radius: 8px;">
-                                     <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${confirmationId}-${roomName}" alt="QR Code" width="100" height="100" />
-                                  </div>
-                               </td>
-                            </tr>
-                         </table>
-                      </div>
-                   </div>
-                   <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.05); margin-bottom: 20px;">
-                      <div style="padding: 20px; border-bottom: 1px solid #f0f0f0;">
-                         <h2 style="font-family: 'Times New Roman', serif; font-size: 20px; color: #1A1E26; margin: 0;">📅 Your Stay</h2>
-                      </div>
-                      <div style="padding: 20px;">
-                         <table width="100%" cellpadding="0" cellspacing="0">
-                            <tr>
-                               <td width="50%" style="padding: 10px; border-right: 1px solid #f0f0f0; border-bottom: 1px solid #f0f0f0;">
-                                  <div style="font-size: 11px; text-transform: uppercase; color: #999; margin-bottom: 4px;">Check-In</div>
-                                  <div style="font-size: 15px; font-weight: bold; color: #333;">${checkIn}</div>
-                                  <div style="font-size: 12px; color: #666;">3:00 PM</div>
-                               </td>
-                               <td width="50%" style="padding: 10px; padding-left: 20px; border-bottom: 1px solid #f0f0f0;">
-                                  <div style="font-size: 11px; text-transform: uppercase; color: #999; margin-bottom: 4px;">Check-Out</div>
-                                  <div style="font-size: 15px; font-weight: bold; color: #333;">${checkOut}</div>
-                                  <div style="font-size: 12px; color: #666;">11:00 AM</div>
-                               </td>
-                            </tr>
-                            <tr>
-                               <td width="50%" style="padding: 10px; border-right: 1px solid #f0f0f0;">
-                                  <div style="font-size: 11px; text-transform: uppercase; color: #999; margin-bottom: 4px;">Room Type</div>
-                                  <div style="font-size: 15px; color: #333;">${roomName}</div>
-                               </td>
-                               <td width="50%" style="padding: 10px; padding-left: 20px;">
-                                  <div style="font-size: 11px; text-transform: uppercase; color: #999; margin-bottom: 4px;">Guests</div>
-                                  <div style="font-size: 15px; color: #333;">${guests} Guest${guests > 1 ? 's' : ''}</div>
-                               </td>
-                            </tr>
-                         </table>
-                      </div>
-                   </div>
+                             <tr>
+                                <td colspan="2" style="text-align: center; padding-top: 10px;">
+                                   <div style="border: 1px solid #eee; padding: 10px; display: inline-block; border-radius: 8px;">
+                                      <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${confirmationId}-GROUP" alt="QR Code" width="100" height="100" />
+                                   </div>
+                                </td>
+                             </tr>
+                          </table>
+                       </div>
+                    </div>
+                    <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.05); margin-bottom: 20px;">
+                       <div style="padding: 20px; border-bottom: 1px solid #f0f0f0;">
+                          <h2 style="font-family: 'Times New Roman', serif; font-size: 20px; color: #1A1E26; margin: 0;">📅 Your Stay</h2>
+                       </div>
+                       <div style="padding: 20px;">
+                         
+                         <!-- Common Dates -->
+                          <div style="margin-bottom: 20px; border-bottom: 1px dashed #eee; padding-bottom: 15px;">
+                             <div style="display: flex; justify-content: space-between;">
+                                <div>
+                                    <div style="font-size: 11px; text-transform: uppercase; color: #999; margin-bottom: 4px;">Check-In</div>
+                                    <div style="font-size: 15px; font-weight: bold; color: #333;">${checkIn}</div>
+                                    <div style="font-size: 12px; color: #666;">3:00 PM</div>
+                                </div>
+                                <div>
+                                    <div style="font-size: 11px; text-transform: uppercase; color: #999; margin-bottom: 4px;">Check-Out</div>
+                                    <div style="font-size: 15px; font-weight: bold; color: #333;">${checkOut}</div>
+                                    <div style="font-size: 12px; color: #666;">11:00 AM</div>
+                                </div>
+                             </div>
+                          </div>
+
+                          <!-- Room List Loop -->
+                          ${(() => {
+                        // Use bookingDetails directly if bookingData isn't available in this scope, 
+                        // but we need to ensure 'rooms' exists. 
+                        // In step 272 we added 'rooms' to bookingData. 
+                        // Let's safe guard.
+                        const rooms = (bookingDetails.rooms && Array.isArray(bookingDetails.rooms)) ? bookingDetails.rooms : [{
+                            name: bookingDetails.roomName || 'Luxury Room',
+                            id: bookingDetails.id,
+                            capacity: bookingDetails.numberOfGuests,
+                            price: bookingDetails.totalPrice,
+                            image: bookingDetails.room?.image || 'https://sweet-home-punta-cana.vercel.app/1-Caribbean.png'
+                        }];
+
+                        const start = new Date(bookingDetails.checkInDate);
+                        const end = new Date(bookingDetails.checkOutDate);
+                        const nights = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) || 1;
+
+                        return rooms.map((room: any, index: number) => {
+                            const roomNights = nights;
+                            const roomPrice = room.price || (room.totalPrice) || (totalPrice / rooms.length);
+                            const nightlyRate = roomPrice / roomNights;
+                            const isLast = index === rooms.length - 1;
+
+                            return `
+                                 <div style="display: flex; gap: 15px; margin-bottom: ${isLast ? '0' : '20px'}; padding-bottom: ${isLast ? '0' : '20px'}; border-bottom: ${isLast ? 'none' : '1px solid #f0f0f0'};">
+                                     <!-- Image -->
+                                     <div style="width: 80px; height: 80px; border-radius: 8px; overflow: hidden; flex-shrink: 0; background-color: #eee;">
+                                         <img src="${(room.image && room.image.startsWith('http')) ? room.image : `https://sweet-home-punta-cana.vercel.app${room.image || '/1-Caribbean.png'}`}" alt="${room.name}" style="width: 100%; height: 100%; object-fit: cover;" />
+                                     </div>
+                                     <div style="flex-grow: 1;">
+                                         <div style="font-size: 16px; font-weight: bold; color: #333; margin-bottom: 4px;">${room.name}</div>
+                                         <div style="font-size: 12px; color: #666; margin-bottom: 8px;">Ref: ${room.id?.substring(0, 5).toUpperCase() || 'RES'} · ${room.capacity || bookingDetails.numberOfGuests || 2} Guests</div>
+                                         <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+                                             <div style="font-size: 12px; color: #999;">$${nightlyRate.toFixed(2)} x ${roomNights} nights</div>
+                                             <div style="font-size: 14px; font-weight: bold; color: #1A1E26;">$${roomPrice.toFixed(2)}</div>
+                                         </div>
+                                     </div>
+                                 </div>
+                                 `;
+                        }).join('');
+                    })()}
+
+                       </div>
+                    </div>
                    <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
                       <div style="padding: 20px; border-bottom: 1px solid #f0f0f0;">
                          <h2 style="font-family: 'Times New Roman', serif; font-size: 20px; color: #1A1E26; margin: 0;">💰 Payment Summary</h2>

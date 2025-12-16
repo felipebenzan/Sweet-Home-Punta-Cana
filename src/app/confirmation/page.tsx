@@ -35,7 +35,7 @@ import {
 import * as htmlToImage from "html-to-image";
 import GuestServicesCarousel from "@/components/guest-services-carousel";
 import { Suspense } from "react";
-import { getReservationById, getServiceBookingById } from "@/server-actions";
+import { getReservationById, getServiceBookingById, getBookingGroup } from "@/server-actions";
 import type { Reservation, ServiceBooking } from "@/lib/types";
 import {
   Dialog,
@@ -52,6 +52,7 @@ function ConfirmationContent() {
   const bid = searchParams.get("bid");
 
   const [booking, setBooking] = React.useState<Reservation | ServiceBooking | null>(null);
+  const [otherRooms, setOtherRooms] = React.useState<Reservation[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
 
   React.useEffect(() => {
@@ -66,6 +67,14 @@ function ConfirmationContent() {
         const reservation = await getReservationById(bid!);
         if (reservation) {
           setBooking(reservation);
+
+          // Fetch siblings for multi-room layout
+          const siblings = await getBookingGroup(bid!);
+          // Filter out the main one if desired, or keep all. 
+          // Let's keep distinct 'otherRooms' that exclude the main 'booking' if needed, 
+          // but for the UI list, it's easier to just have a 'allRooms' list.
+          // Set bookings list including the main one
+          setOtherRooms(siblings);
         } else {
           // If not found, try fetching as service booking
           const serviceBooking = await getServiceBookingById(bid!);
@@ -313,48 +322,83 @@ function ConfirmationContent() {
             <Card className="shadow-soft rounded-3xl overflow-hidden border-none bg-white">
               <CardHeader className="p-6 pb-2">
                 <CardTitle className="text-xl font-playfair flex items-center gap-2">
-                  📅 Your Stay & Room
+                  📅 Your Stay & Room{otherRooms.length > 1 ? 's' : ''}
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-6 pt-2">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4 mb-8">
                   <div className="space-y-1">
                     <p className="text-sm text-muted-foreground flex items-center gap-2"><CalendarIcon className="w-4 h-4 text-shpc-yellow" /> Dates</p>
                     <p className="font-medium text-lg">{format(fromDate, "MMM dd")} – {format(toDate, "MMM dd, yyyy")}</p>
                   </div>
                   <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground flex items-center gap-2"><UsersIcon className="w-4 h-4 text-shpc-yellow" /> Guests</p>
-                    <p className="font-medium text-lg">{booking.numberOfGuests} {booking.numberOfGuests === 1 ? "Guest" : "Guests"}</p>
-                  </div>
-                  <div className="space-y-1 md:col-span-2">
-                    <p className="text-sm text-muted-foreground flex items-center gap-2"><Home className="w-4 h-4 text-shpc-yellow" /> Room Type</p>
-                    <p className="font-medium text-lg">{booking.roomName}</p>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground flex items-center gap-2"><Clock className="w-4 h-4 text-shpc-yellow" /> Check-in Time</p>
-                    <p className="font-medium text-lg">3:00 PM</p>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground flex items-center gap-2"><Clock className="w-4 h-4 text-shpc-yellow" /> Check-out Time</p>
-                    <p className="font-medium text-lg">11:00 AM</p>
+                    <p className="text-sm text-muted-foreground flex items-center gap-2"><Clock className="w-4 h-4 text-shpc-yellow" /> Check-in / Out</p>
+                    <p className="font-medium text-lg">3:00 PM / 11:00 AM</p>
                   </div>
                 </div>
-                {booking.room?.image && (
-                  <div className="mt-8">
-                    <div className="relative h-64 w-full rounded-2xl overflow-hidden shadow-md group">
-                      <Image
-                        src={booking.room.image}
-                        alt={booking.roomName}
-                        fill
-                        className="object-cover transition-transform duration-700 group-hover:scale-105"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-                      <div className="absolute bottom-4 left-4 text-white font-playfair text-xl font-bold drop-shadow-md">
-                        {booking.roomName}
+
+                {/* Multi-Room List */}
+                <div className="space-y-6">
+                  {(otherRooms.length > 0 ? otherRooms : [booking]).map((res, index) => {
+                    const nights = Math.ceil((new Date(res.checkOutDate).getTime() - new Date(res.checkInDate).getTime()) / (1000 * 60 * 60 * 24)) || 1;
+                    const nightlyRate = res.totalPrice / nights;
+
+                    return (
+                      <div key={res.id} className={`flex flex-col md:flex-row gap-6 p-4 rounded-2xl ${index % 2 === 0 ? 'bg-neutral-50' : 'bg-white border border-neutral-100'}`}>
+                        {/* Room Image */}
+                        <div className="relative w-full md:w-48 h-32 rounded-xl overflow-hidden shrink-0 shadow-sm">
+                          {res.room?.image ? (
+                            <Image
+                              src={res.room.image}
+                              alt={res.roomName}
+                              fill
+                              className="object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-neutral-200 flex items-center justify-center text-muted-foreground">No Image</div>
+                          )}
+                        </div>
+
+                        {/* Details */}
+                        <div className="flex-grow flex flex-col justify-between">
+                          <div>
+                            <div className="flex justify-between items-start mb-1">
+                              <h4 className="font-playfair text-xl font-bold text-shpc-ink">{res.roomName}</h4>
+                              <span className="text-xs font-mono text-muted-foreground bg-white px-2 py-1 rounded border">Ref: {res.id.substring(0, 5)}</span>
+                            </div>
+                            <div className="text-sm text-muted-foreground flex gap-4 mb-2">
+                              <span className="flex items-center gap-1"><UsersIcon className="w-3 h-3" /> {res.numberOfGuests} Guests</span>
+                              <span className="flex items-center gap-1"><Home className="w-3 h-3" /> {res.room?.bedding || 'Bedroom'}</span>
+                            </div>
+                          </div>
+
+                          {/* Price Breakdown */}
+                          <div className="flex justify-between items-end border-t border-dashed pt-2 mt-auto">
+                            <span className="text-sm text-muted-foreground">
+                              ${nightlyRate.toFixed(2)} x {nights} night{nights > 1 ? 's' : ''}
+                            </span>
+                            <span className="font-bold text-lg text-shpc-ink">
+                              ${res.totalPrice.toFixed(2)}
+                            </span>
+                          </div>
+                        </div>
                       </div>
+                    );
+                  })}
+                </div>
+
+                {/* Grand Total Show */}
+                {otherRooms.length > 1 && (
+                  <div className="flex justify-end mt-6 pt-4 border-t border-double border-neutral-200">
+                    <div className="text-right">
+                      <p className="text-sm text-muted-foreground">Total for {otherRooms.length} Rooms</p>
+                      <p className="text-2xl font-playfair font-bold text-shpc-ink">
+                        ${(otherRooms.reduce((acc, r) => acc + r.totalPrice, 0)).toFixed(2)}
+                      </p>
                     </div>
                   </div>
                 )}
+
               </CardContent>
             </Card>
           ) : booking.serviceType === 'excursion' ? (
@@ -557,18 +601,28 @@ function ConfirmationContent() {
             </CardHeader>
             <CardContent className="p-6 pt-2 space-y-4">
               <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <span className="text-muted-foreground">Subtotal</span>
-                  <span className="font-medium">${totalPrice.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between items-center text-lg font-bold text-shpc-ink">
-                  <span>Total Paid (USD)</span>
-                  <span>${totalPrice.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between items-center text-muted-foreground text-sm">
-                  <span>Balance Due at Check-in</span>
-                  <span>$0.00</span>
-                </div>
+                {(() => {
+                  const finalTotal = isReservation(booking)
+                    ? (otherRooms.length > 0 ? otherRooms.reduce((acc, r) => acc + r.totalPrice, 0) : booking.totalPrice)
+                    : (booking.total || 0);
+
+                  return (
+                    <>
+                      <div className="flex justify-between items-center">
+                        <span className="text-muted-foreground">Subtotal</span>
+                        <span className="font-medium">${finalTotal.toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between items-center text-lg font-bold text-shpc-ink">
+                        <span>Total Paid (USD)</span>
+                        <span>${finalTotal.toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between items-center text-muted-foreground text-sm">
+                        <span>Balance Due at Check-in</span>
+                        <span>$0.00</span>
+                      </div>
+                    </>
+                  );
+                })()}
               </div>
 
               <Separator />

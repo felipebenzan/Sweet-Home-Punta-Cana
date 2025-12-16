@@ -275,6 +275,7 @@ export async function createServiceBooking(data: any): Promise<ServiceBooking> {
 
 /* -------------------- 🔹 RESERVATIONS by ROOM -------------------- */
 
+
 export async function getReservationsByRoomId(
     roomId: string
 ): Promise<Reservation[]> {
@@ -292,5 +293,44 @@ export async function getReservationsByRoomId(
         updatedAt: r.updatedAt.toISOString(),
         roomName: "Unknown", // Or fetch if needed
         status: r.status as 'Confirmed' | 'Pending' | 'Cancelled'
+    }));
+}
+
+export async function getBookingGroup(id: string): Promise<Reservation[]> {
+    console.log(`✅ Fetching booking group for id: ${id}`);
+    const primary = await prisma.reservation.findUnique({
+        where: { id },
+        include: { room: true }
+    });
+
+    if (!primary) return [];
+
+    // Find siblings: same email, same checkIn, created within 5 seconds window
+    // Ideally we would have a groupId, but heuristic works for now
+    const windowStart = new Date(primary.createdAt.getTime() - 5000);
+    const windowEnd = new Date(primary.createdAt.getTime() + 5000);
+
+    const siblings = await prisma.reservation.findMany({
+        where: {
+            guestEmail: primary.guestEmail,
+            checkInDate: primary.checkInDate,
+            createdAt: {
+                gte: windowStart,
+                lte: windowEnd
+            }
+        },
+        include: { room: true }
+    });
+
+    return siblings.map((r: any) => ({
+        ...r,
+        checkInDate: r.checkInDate.toISOString(),
+        checkOutDate: r.checkOutDate.toISOString(),
+        createdAt: r.createdAt.toISOString(),
+        updatedAt: r.updatedAt.toISOString(),
+        roomName: r.room.name,
+        room: mapRoom(r.room),
+        status: r.status as 'Confirmed' | 'Pending' | 'Cancelled',
+        guestPhone: r.guestPhone || undefined,
     }));
 }
