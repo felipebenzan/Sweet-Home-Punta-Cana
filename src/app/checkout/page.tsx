@@ -286,7 +286,6 @@ function CheckoutPageComponent() {
                 {bookingDetails.guests > 2 ? (
                   <div className="p-4 bg-blue-50 text-blue-800 rounded-2xl border border-blue-200">
                     <p className="font-semibold">Have 3 or more guests?</p>
-                    <p className="text-sm mt-1">Our standard transfer accommodates up to 2 passengers. For larger groups, please contact us directly to arrange a suitable vehicle.</p>
                     <Button asChild className="mt-3 bg-shpc-yellow hover:bg-shpc-yellow/90 text-white">
                       <a href="https://wa.me/18095105465" target="_blank" rel="noopener noreferrer">
                         <Phone className="mr-2 h-4 w-4" />
@@ -471,11 +470,7 @@ function CheckoutPageComponent() {
           </div>
         </div>
       </div>
-      <div className="mt-8 p-4 bg-gray-100 rounded text-xs text-gray-500 font-mono break-all">
-        <p><strong>DEBUG INFO (Take a screenshot):</strong></p>
-        <p>PayPal Client ID loaded: {process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "UNDEFINED/TEST"}</p>
-        <p>Timestamp: {new Date().toISOString()}</p>
-      </div>
+
     </div>
   );
 }
