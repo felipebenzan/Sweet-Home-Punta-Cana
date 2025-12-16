@@ -29,9 +29,9 @@ export default function PayPalCheck() {
                 <div className="bg-yellow-100 p-4 rounded text-sm">
                     <p><strong>Diagnosis:</strong></p>
                     <ul className="list-disc ml-5 mt-2 space-y-1">
-                        <li>If Client ID says "test" or "undefined" -> Build did not pick up Env Vars.</li>
-                        <li>If Client ID starts with "A" or similar -> Compare with Live Dashboard.</li>
-                        <li>If this page is 404 -> Deployment failed completely.</li>
+                        <li>If Client ID says "test" or "undefined" &rarr; Build did not pick up Env Vars.</li>
+                        <li>If Client ID starts with "A" or similar &rarr; Compare with Live Dashboard.</li>
+                        <li>If this page is 404 &rarr; Deployment failed completely.</li>
                     </ul>
                 </div>
             </div>
