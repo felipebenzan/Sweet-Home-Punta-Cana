@@ -7,11 +7,11 @@ export async function GET() {
     try {
         const slug = 'saona-island';
         const newData = {
-            image: '/Saona hERO.png',
+            image: '/saona-hero.png',
             gallery: JSON.stringify([
-                '/SAONA 3.jpeg',
-                '/SAONA 2.jpeg',
-                '/SAONA 4.jpeg'
+                '/saona-3.jpeg',
+                '/saona-2.jpeg',
+                '/saona-4.jpeg'
             ])
         };
 
