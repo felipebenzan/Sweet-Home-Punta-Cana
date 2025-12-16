@@ -14,6 +14,17 @@ export default async function AdminLayout({
 }) {
   const session = await verifySession();
 
+  if (!session) {
+    return (
+      <div className="relative min-h-screen bg-neutral-50">
+        <Header />
+        <div className="pt-16">
+          {children}
+        </div>
+      </div>
+    );
+  }
+
   const userRole = session?.role as string || 'COLLABORATOR';
   const userPermissions = (session?.permissions as string[]) || [];
 
