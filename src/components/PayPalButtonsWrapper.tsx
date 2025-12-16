@@ -51,13 +51,18 @@ export function PayPalButtonsWrapper({
     }
 
     return (
-        <PayPalButtons
-            key={amount} // Add key to ensure re-render on amount change
-            style={{ layout: "vertical" }}
-            createOrder={createOrder} // Called when the button is clicked
-            onApprove={onApprove}     // Called when the user approves the payment in the popup
-            onError={onPaymentError}  // Called if an error occurs during the transaction
-            onCancel={onPaymentCancel} // Called if the user cancels the payment
-        />
+        <div style={{ minHeight: "150px", width: "100%", zIndex: 1, position: "relative" }}>
+            <PayPalButtons
+                key={amount} // Add key to ensure re-render on amount change
+                style={{ layout: "vertical", shape: "rect", label: "pay" }}
+                createOrder={createOrder} // Called when the button is clicked
+                onApprove={onApprove}     // Called when the user approves the payment in the popup
+                onError={(err) => {
+                    console.error("PayPal Button Error:", err);
+                    onPaymentError(err);
+                }}  // Called if an error occurs during the transaction
+                onCancel={onPaymentCancel} // Called if the user cancels the payment
+            />
+        </div>
     );
 }

@@ -477,7 +477,7 @@ export default function LaundryServicePage() {
                                         Complete Your Secure Payment
                                     </h3>
                                     <PayPalButtonsWrapper
-                                        amount={total.toString()}
+                                        amount={total.toFixed(2)}
                                         currency={CURRENCY}
                                         onPaymentSuccess={onPaymentSuccess}
                                         onPaymentError={onPaymentError}
