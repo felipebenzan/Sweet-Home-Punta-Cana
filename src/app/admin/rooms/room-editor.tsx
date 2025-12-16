@@ -200,9 +200,19 @@ export default function RoomEditor({ slug, initialData }: RoomEditorProps) {
     setRoom((prev) => {
       if (!prev) return null;
       const currentAmenities = prev.amenities || [];
-      const newAmenities = checked
-        ? [...currentAmenities, amenity]
-        : currentAmenities.filter((a) => a !== amenity);
+      let newAmenities;
+
+      if (checked) {
+        // Add if not present (case-insensitive check to be safe, though UI uses standard list)
+        if (!currentAmenities.some(a => a.toLowerCase() === amenity.toLowerCase())) {
+          newAmenities = [...currentAmenities, amenity];
+        } else {
+          newAmenities = currentAmenities;
+        }
+      } else {
+        // Remove strictly AND case-insensitively to clean up any legacy bad data on the fly
+        newAmenities = currentAmenities.filter((a) => a.toLowerCase() !== amenity.toLowerCase());
+      }
       return { ...prev, amenities: newAmenities };
     });
   };
