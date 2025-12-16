@@ -43,8 +43,8 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
       </head>
       <body className={cn('antialiased font-sans flex flex-col min-h-screen', inter.variable, playfairDisplay.variable, dancingScript.variable)}>
-        {/* EMERGENCY: Hardcoded Live ID from User Screenshot (Ends in 6kyFN) */}
-        <ClientLayout paypalClientId="AdcvZls6aDhOuAfazd6S-6BQJYWY_o0_RqXiVfVeluirgbUj1lrC-Vc6kDBDD0H5IqpgGlTrGhf6kyFN">
+        {/* EMERGENCY: Hardcoded Live ID from User Text Copy-Paste */}
+        <ClientLayout paypalClientId="AdcvZIs6aDhOuAfazd6S-6BQJYWY_o0_RqXiVfVeIuirgbUj1lrC-Vc6kDBDD0H5lqpgGlTrGhf6kyFN">
           {children}
         </ClientLayout>
         <Toaster />

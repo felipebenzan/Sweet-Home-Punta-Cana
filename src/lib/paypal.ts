@@ -7,8 +7,8 @@
  */
 export async function getPayPalAccessToken(): Promise<string> {
   // RUNTIME INJECTION: Prefer hardcoded strings to ensure stability
-  const clientId = "AdcvZls6aDhOuAfazd6S-6BQJYWY_o0_RqXiVfVeluirgbUj1lrC-Vc6kDBDD0H5IqpgGlTrGhf6kyFN";
-  const clientSecret = "EFFp0mluVk5A4rakqPXvFpqK24GgmsqHEyx8E7Au8OmYQe384RWPQ0jqnUGLNUM-t9R4Slk2JfnnnZPp";
+  const clientId = "AdcvZIs6aDhOuAfazd6S-6BQJYWY_o0_RqXiVfVeIuirgbUj1lrC-Vc6kDBDD0H5lqpgGlTrGhf6kyFN";
+  const clientSecret = "EFFp0mIuVk5A4rakqPXvFpqK24GgmsqHEyx8E7Au8OmYQe384RWPQ0jqnUGLNUm-t9R4SIk2JfnnnZPp";
 
   if (!clientId || !clientSecret) {
     if (process.env.NODE_ENV === 'production' && typeof window === 'undefined') {
