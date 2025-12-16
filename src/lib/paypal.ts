@@ -6,13 +6,9 @@
  * Usa PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET y PAYPAL_API_BASE.
  */
 export async function getPayPalAccessToken(): Promise<string> {
-  // EMERGENCY BYPASS: Vercel env vars are stuck. Using direct keys.
-  // EMERGENCY BYPASS: Vercel env vars are stuck. Using direct keys.
-  const HARDCODED_CLIENT_ID = "ATj0R0crY6MxnyYdsbpSAnUh5_8Ih5r6A0zUDRA1rSuLedlDGEwg_P7JuXI5QNY4jKpXZdc_Guk0vL9e";
-  const HARDCODED_SECRET = "EEYBwxbakfP9C3bS8pqWAf-T1ltJiviQOSJ8j8uS12lX7mvzm0Dt8ZLiAMcRw9DtlB52dsSdxch0pvJZ";
-
-  const clientId = HARDCODED_CLIENT_ID;
-  const clientSecret = HARDCODED_SECRET;
+  // RUNTIME INJECTION: Read directly from server environment
+  const clientId = process.env.PAYPAL_LIVE_ID_RUNTIME || process.env.PAYPAL_CLIENT_ID;
+  const clientSecret = process.env.PAYPAL_LIVE_SECRET_RUNTIME || process.env.PAYPAL_CLIENT_SECRET;
 
   if (!clientId || !clientSecret) {
     console.error(

@@ -4,7 +4,8 @@ import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 import { ReactNode } from "react";
 
 export function PayPalProvider({ children, clientId }: { children: ReactNode; clientId?: string }) {
-    const FINAL_CLIENT_ID = "ATj0R0crY6MxnyYdsbpSAnUh5_8Ih5r6A0zUDRA1rSuLedlDGEwg_P7JuXI5QNY4jKpXZdc_Guk0vL9e".trim();
+    // Runtime Injection: Use the prop passed from Server Layout, or fallback to simple test key if needed locally
+    const FINAL_CLIENT_ID = clientId || "";
 
     // Minimal configuration to avoid 400 errors from SDK
     const initialOptions = {

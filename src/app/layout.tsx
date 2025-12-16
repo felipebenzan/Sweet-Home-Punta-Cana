@@ -41,7 +41,8 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
       </head>
       <body className={cn('antialiased font-sans flex flex-col min-h-screen', inter.variable, playfairDisplay.variable, dancingScript.variable)}>
-        <ClientLayout paypalClientId="AdcvZIs6aDhOuAfazd6S-6BQJYWY_o0_RqXiVfVeluirgbUj1lrC-Vc6kDBDDOH5IqpgGlTrGhf6kyFN">
+        {/* RUNTIME INJECTION: Read from server process.env and pass to client */}
+        <ClientLayout paypalClientId={process.env.PAYPAL_LIVE_ID_RUNTIME || process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || ""}>
           {children}
         </ClientLayout>
         <Toaster />
