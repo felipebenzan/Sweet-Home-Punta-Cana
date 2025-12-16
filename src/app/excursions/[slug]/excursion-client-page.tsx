@@ -395,7 +395,10 @@ export default function ExcursionClientPage({ excursion, otherExcursions, google
         {/* Booking Widget - Compact Sticky Sidebar */}
         <div className="hidden lg:block lg:col-span-1">
           <div className="sticky top-24">
-            <div className="bg-white rounded-lg shadow-lg mb-12">
+            <div className={cn(
+              "bg-white rounded-lg shadow-lg mb-12",
+              bundledAsArray.length > 0 && "max-h-[85vh] overflow-y-auto custom-scrollbar"
+            )}>
               {/* Header */}
               <div className="px-10 py-8 border-b border-neutral-200">
                 <h3 className="font-playfair text-xl font-semibold text-shpc-ink uppercase tracking-wide">
@@ -403,7 +406,7 @@ export default function ExcursionClientPage({ excursion, otherExcursions, google
                 </h3>
               </div>
 
-              {/* Booking Form Content - No Internal Scroll */}
+              {/* Booking Form Content - Internal Scroll if bundled */}
               <BookingForm
                 mainExcursion={{ ...excursion, ...mainExcursionState }}
                 onMainExcursionChange={setMainExcursionState}
