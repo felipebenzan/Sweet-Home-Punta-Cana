@@ -6,9 +6,9 @@
  * Usa PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET y PAYPAL_API_BASE.
  */
 export async function getPayPalAccessToken(): Promise<string> {
-  // RUNTIME INJECTION: Read directly from server environment
-  const clientId = process.env.PAYPAL_LIVE_ID_RUNTIME || process.env.PAYPAL_CLIENT_ID;
-  const clientSecret = process.env.PAYPAL_LIVE_SECRET_RUNTIME || process.env.PAYPAL_CLIENT_SECRET;
+  // RUNTIME INJECTION: Prefer hardcoded strings to ensure stability
+  const clientId = "AdcvZls6aDhOuAfazd6S-6BQJYWY_o0_RqXiVfVeluirgbUj1lrC-Vc6kDBDD0H5IqpgGlTrGhf6kyFN";
+  const clientSecret = "EFFp0mluVk5A4rakqPXvFpqK24GgmsqHEyx8E7Au8OmYQe384RWPQ0jqnUGLNUM-t9R4Slk2JfnnnZPp";
 
   if (!clientId || !clientSecret) {
     if (process.env.NODE_ENV === 'production' && typeof window === 'undefined') {
