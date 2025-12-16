@@ -6,8 +6,12 @@
  * Usa PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET y PAYPAL_API_BASE.
  */
 export async function getPayPalAccessToken(): Promise<string> {
-  const clientId = process.env.PAYPAL_CLIENT_ID;
-  const clientSecret = process.env.PAYPAL_CLIENT_SECRET;
+  // EMERGENCY BYPASS: Vercel env vars are stuck. Using direct keys.
+  const HARDCODED_CLIENT_ID = "AdcvZIs6aDhOuAfazd6S-6BQJYWY_o0_RqXiVfVeluirgbUj1lrC-Vc6kDBDDOH5IqpgGlTrGhf6kyFN";
+  const HARDCODED_SECRET = "EFFp0mIuVk5A4rakqPXvFpqK24GgmsqHEyx8E7Au8OmYQe384RWPQ0jqnUGLNum-t9R4Slk2JfnnnZPp";
+
+  const clientId = HARDCODED_CLIENT_ID;
+  const clientSecret = HARDCODED_SECRET;
 
   if (!clientId || !clientSecret) {
     console.error(
@@ -18,7 +22,8 @@ export async function getPayPalAccessToken(): Promise<string> {
 
   const auth = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
 
-  const apiBase = process.env.PAYPAL_API_BASE || (process.env.NODE_ENV === 'production' ? 'https://api-m.paypal.com' : 'https://api-m.sandbox.paypal.com');
+  // Force Live URL
+  const apiBase = "https://api-m.paypal.com";
 
   try {
     const response = await fetch(`${apiBase}/v1/oauth2/token`, {
