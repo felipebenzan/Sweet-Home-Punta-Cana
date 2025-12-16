@@ -50,6 +50,10 @@ export default function ClientLayout({
             className="fixed top-0 left-0 right-0 z-[1000] bg-white transition-transform duration-300 ease-in-out will-change-transform"
           >
             <Header />
+            {/* DEBUG: Temporary visibility to confirm env var arrival */}
+            <div className="bg-black text-white text-xs p-1 text-center font-mono">
+              PayPal ID Status: {paypalClientId ? `Loaded (${paypalClientId.substring(0, 4)}...${paypalClientId.slice(-4)})` : 'MISSING/EMPTY'}
+            </div>
           </div>
           <main className="flex-grow flex flex-col min-h-screen pt-[var(--header-height)] bg-shpc-sand relative z-0">
             {children}
