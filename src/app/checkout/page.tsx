@@ -471,7 +471,13 @@ function CheckoutPageComponent() {
           </div>
         </div>
       </div>
+      <div className="mt-8 p-4 bg-gray-100 rounded text-xs text-gray-500 font-mono break-all">
+        <p><strong>DEBUG INFO (Take a screenshot):</strong></p>
+        <p>PayPal Client ID loaded: {process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "UNDEFINED/TEST"}</p>
+        <p>Timestamp: {new Date().toISOString()}</p>
+      </div>
     </div>
+  </div >
   );
 }
 
