@@ -36,7 +36,7 @@ export default function FoodDeliveryPage() {
       {/* Hero Section */}
       <section className="relative h-[50vh] w-full flex items-center justify-center text-center text-white bg-black">
         <Image
-          src="/food delivery.png"
+          src="/food delivery hero.png"
           alt="Food delivery options in Punta Cana"
           fill
           priority

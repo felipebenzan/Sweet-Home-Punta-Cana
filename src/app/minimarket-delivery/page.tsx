@@ -141,7 +141,7 @@ export default function MiniMarketDeliveryPage() {
         <section>
           <div className="relative rounded-2xl shadow-soft overflow-hidden bg-shpc-ink text-white">
             <Image
-              src="/food delivery.png"
+              src="/food delivery hero.png"
               alt="A delicious meal from a food delivery service"
               fill
               className="object-cover opacity-40"
