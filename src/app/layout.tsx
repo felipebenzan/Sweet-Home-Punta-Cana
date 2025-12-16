@@ -30,6 +30,15 @@ export const metadata: Metadata = {
       },
     ],
   },
+  icons: {
+    icon: '/official-favicon.png?v=3',
+    shortcut: '/official-favicon.png?v=3',
+    apple: '/official-favicon.png?v=3',
+    other: {
+      rel: 'apple-touch-icon-precomposed',
+      url: '/official-favicon.png?v=3',
+    },
+  },
 };
 
 export default function RootLayout({
