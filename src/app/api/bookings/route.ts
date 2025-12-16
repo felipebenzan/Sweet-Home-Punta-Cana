@@ -52,57 +52,76 @@ export async function POST(request: NextRequest) {
             // If booking.rooms has multiple, we might need to handle that.
             // For now, we take the first room ID if available, or just use the payload structure.
 
-            // The payload from checkout/page.tsx has:
-            // rooms: { id: string, ... }[]
-            // dates: { checkIn, checkOut }
-            // guestName, guestEmail, etc.
+            // Create Reservations (Multi-Room Support)
+            // Iterate over all rooms in the payload and create a separate reservation for each.
+            const roomsToBook = (booking.rooms && booking.rooms.length > 0) ? booking.rooms : (booking.room ? [booking.room] : []);
 
-            const roomId = booking.rooms && booking.rooms.length > 0 ? booking.rooms[0].id : 'unknown';
+            if (roomsToBook.length === 0) {
+                throw new Error("No rooms specified in booking payload.");
+            }
 
-            savedBooking = await prisma.reservation.create({
-                data: {
-                    roomId: roomId,
-                    guestName: booking.guestName,
-                    guestEmail: booking.guestEmail,
-                    guestPhone: booking.customer.phone,
-                    checkInDate: new Date(booking.dates.checkIn),
-                    checkOutDate: new Date(booking.dates.checkOut),
-                    numberOfGuests: booking.guests,
-                    totalPrice: booking.pricing.totalUSD,
-                    status: 'Confirmed'
-                },
-                include: { room: true }
-            });
-            confirmationId = savedBooking.id;
+            const createdReservations = [];
 
-            // 🟢 INTEGRATE BEDS24: Send booking to Beds24 if room has ID
-            if (savedBooking.room && savedBooking.room.beds24_room_id) {
-                console.log(`[Beds24] Syncing reservation ${confirmationId} to Beds24 (Room: ${savedBooking.room.beds24_room_id})...`);
+            for (const roomItem of roomsToBook) {
+                // Parse capacity "2 Adults" -> 2
+                const capacityInt = parseInt(roomItem.capacity) || 2;
 
-                try {
-                    const b24Result = await Beds24.setBooking({
-                        roomId: String(savedBooking.room.beds24_room_id),
-                        arrival: booking.dates.checkIn.split('T')[0], // Ensure YYYY-MM-DD
-                        departure: booking.dates.checkOut.split('T')[0], // Ensure YYYY-MM-DD
-                        status: 1, // 1 = Confirmed, 2 = New, 0 = Cancelled
-                        numAdult: booking.guests,
+                const savedBooking = await prisma.reservation.create({
+                    data: {
+                        roomId: roomItem.id, // Use ID from specific room item
                         guestName: booking.guestName,
                         guestEmail: booking.guestEmail,
                         guestPhone: booking.customer.phone,
-                        price: booking.pricing.totalUSD,
-                        comments: `Booking source: SweetHomePC Website | ID: ${confirmationId}`
-                    });
+                        checkInDate: new Date(booking.dates.checkIn),
+                        checkOutDate: new Date(booking.dates.checkOut),
+                        numberOfGuests: capacityInt, // Use room capacity as default guest count for that room
+                        totalPrice: roomItem.price, // Use room specific price (Total Price)
+                        status: 'Confirmed'
+                    },
+                    include: { room: true }
+                });
 
-                    if (!b24Result.success) {
-                        console.error(`[Beds24] Sync Failed for ${confirmationId}:`, b24Result.debug.error);
-                        // Optional: Store error in DB or notify admin?
+                createdReservations.push(savedBooking);
+
+                // Use the ID of the first reservation as the primary "Group Confirmation ID" for reference
+                if (!confirmationId) confirmationId = savedBooking.id;
+
+                // 🟢 INTEGRATE BEDS24: Send booking to Beds24
+                if (savedBooking.room && savedBooking.room.beds24_room_id) {
+                    console.log(`[Beds24] Syncing reservation ${savedBooking.id} to Beds24 (Room: ${savedBooking.room.beds24_room_id})...`);
+
+                    try {
+                        const b24Result = await Beds24.setBooking({
+                            roomId: String(savedBooking.room.beds24_room_id),
+                            arrival: booking.dates.checkIn.split('T')[0], // Ensure YYYY-MM-DD
+                            departure: booking.dates.checkOut.split('T')[0], // Ensure YYYY-MM-DD
+                            status: 1, // 1 = Confirmed
+                            numAdult: capacityInt, // Book for max capacity of room
+                            guestName: booking.guestName,
+                            guestFirstName: booking.customer?.name?.split(' ')[0] || 'Guest', // Improve name parsing if possible
+                            guestEmail: booking.guestEmail,
+                            guestPhone: booking.customer.phone,
+                            price: roomItem.price,
+                            comments: `Booking source: SweetHomePC Website | ID: ${savedBooking.id} | Group Ref: ${confirmationId}`
+                        });
+
+                        if (!b24Result.success) {
+                            console.error(`[Beds24] Sync Failed for ${savedBooking.id}:`, b24Result.debug.error);
+                        } else {
+                            console.log(`[Beds24] Sync Success for ${savedBooking.id}. BookID: ${b24Result.debug.rawResponse?.bookId}`);
+                        }
+                    } catch (b24err) {
+                        console.error(`[Beds24] Sync Exception for ${savedBooking.id}:`, b24err);
                     }
-                } catch (b24err) {
-                    console.error(`[Beds24] Sync Exception for ${confirmationId}:`, b24err);
+                } else {
+                    console.warn(`[Beds24] Skipped sync for ${savedBooking.id}: Room has no Beds24 ID.`);
                 }
-            } else {
-                console.warn(`[Beds24] Skipped sync for ${confirmationId}: Room has no Beds24 ID.`);
             }
+
+            // Fallback for savedBooking reference in later code (use the last one or first one)
+            // savedBooking variable matches the loop scope? No, it was declared outside.
+            // We update the outer savedBooking to the first one just for reference/Transfer logic if needed.
+            savedBooking = createdReservations[0];
 
             // If there is a transfer included, we should create a ServiceBooking for it too?
             // The current payload has `transfer` object.
@@ -195,11 +214,13 @@ export async function POST(request: NextRequest) {
                 bookingDetails: {
                     ...booking,
                     phone,
-                    roomName: booking.room?.name || booking.rooms?.[0]?.name,
+                    // Pass ALL rooms
+                    rooms: booking.rooms || [booking.room],
                     checkInDate: booking.dates?.checkIn,
                     checkOutDate: booking.dates?.checkOut,
                     numberOfGuests: booking.guests,
-                    room: booking.room || booking.rooms?.[0]
+                    // Main room ref for header image if needed, or email service handles index 0
+                    room: booking.rooms?.[0] || booking.room
                 },
                 confirmationId,
                 totalPrice: booking.totalPrice || booking.pricing?.totalUSD || 0,

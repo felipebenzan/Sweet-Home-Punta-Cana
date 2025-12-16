@@ -45,17 +45,29 @@ export async function sendBookingConfirmation(data: BookingEmailData) {
 
         const bookingData: BookingDetails = {
             confirmationId: confirmationId,
-            rooms: [{
-                id: "room-1",
-                name: bookingDetails.roomName || 'Luxury Room',
-                bedding: "King",
-                price: (totalPrice / (nights || 1)) || 0,
-                image: (bookingDetails.room?.image && bookingDetails.room.image.startsWith('http'))
-                    ? bookingDetails.room.image
-                    : `https://sweet-home-punta-cana.vercel.app${bookingDetails.room?.image || '/1-Caribbean.png'}`,
-                capacity: bookingDetails.room?.capacity || 2,
-                slug: bookingDetails.room?.slug || "luxury-room"
-            }],
+            rooms: (bookingDetails.rooms && Array.isArray(bookingDetails.rooms))
+                ? bookingDetails.rooms.map((r: any) => ({
+                    id: r.id || "room-1",
+                    name: r.name || 'Luxury Room',
+                    bedding: r.bedding || "King",
+                    price: r.price || 0,
+                    image: (r.image && r.image.startsWith('http'))
+                        ? r.image
+                        : `https://sweet-home-punta-cana.vercel.app${r.image || '/1-Caribbean.png'}`,
+                    capacity: r.capacity || 2,
+                    slug: r.slug || "luxury-room"
+                }))
+                : [{
+                    id: "room-1", // Fallback for legacy calls
+                    name: bookingDetails.roomName || 'Luxury Room',
+                    bedding: "King",
+                    price: (totalPrice / (nights || 1)) || 0,
+                    image: (bookingDetails.room?.image && bookingDetails.room.image.startsWith('http'))
+                        ? bookingDetails.room.image
+                        : `https://sweet-home-punta-cana.vercel.app${bookingDetails.room?.image || '/1-Caribbean.png'}`,
+                    capacity: bookingDetails.room?.capacity || 2,
+                    slug: bookingDetails.room?.slug || "luxury-room"
+                }],
             dates: {
                 from: bookingDetails.checkInDate || new Date().toISOString(),
                 to: bookingDetails.checkOutDate || new Date().toISOString()
