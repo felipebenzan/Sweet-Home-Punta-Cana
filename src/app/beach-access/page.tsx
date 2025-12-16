@@ -17,12 +17,11 @@ export default function BeachAccessPage() {
       {/* Hero Section */}
       <section className="relative h-screen w-full flex items-center justify-center text-center text-white bg-black">
         <Image
-          src="https://picsum.photos/seed/beach1/1800/1200"
+          src="/bavaro-beach-access-hero.jpeg"
           alt="Expansive view of Bávaro Beach with turquoise waters"
           fill
           priority
           className="object-cover opacity-50"
-          data-ai-hint="bavaro beach turquoise"
         />
         <div className="relative z-10 p-6 max-w-4xl mx-auto">
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-playfair font-bold">
@@ -48,30 +47,27 @@ export default function BeachAccessPage() {
         <section className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
           <div className="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-md">
             <Image
-              src="https://picsum.photos/seed/beach2/600/800"
+              src="/jellyfish-bavaro-beach.png"
               alt="A secluded path leading to the beach with palm trees"
               fill
               className="object-cover"
-              data-ai-hint="beach path palms"
             />
           </div>
           <div className="space-y-8">
             <div className="relative aspect-video rounded-2xl overflow-hidden shadow-md">
               <Image
-                src="https://picsum.photos/seed/beach3/800/450"
+                src="/bibijagua-beach.jpeg"
                 alt="Close-up of gentle waves washing over white sand"
                 fill
                 className="object-cover"
-                data-ai-hint="waves sand"
               />
             </div>
             <div className="relative aspect-video rounded-2xl overflow-hidden shadow-md">
               <Image
-                src="https://picsum.photos/seed/beach4/800/450"
+                src="/bavaro-beach-3.png"
                 alt="Sunbeds under a palm leaf umbrella on the beach"
                 fill
                 className="object-cover"
-                data-ai-hint="sunbeds beach"
               />
             </div>
           </div>
