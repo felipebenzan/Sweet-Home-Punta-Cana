@@ -560,7 +560,7 @@ function BookingForm({
             isMobile && "border border-neutral-300 rounded h-12 px-2"
           )}>
             {!isMobile && <span className="text-xs text-neutral-600">${mainExcursion.price.adult}/person</span>}
-            <div className={cn("flex items-center gap-2 w-full justify-between", isMobile && "px-0")}>
+            <div className={cn("flex items-center gap-4", isMobile && "px-0")}>
               <Button
                 variant="outline"
                 size="icon"
