@@ -78,7 +78,7 @@ function mapExcursion(excursion: any): Excursion {
         '/santo-domingo-3.jpeg'
       ],
       image: '/santo-domingo-hero.png',
-      price: { adult: 95 },
+      price: { adult: excursion.priceAdult },
     };
   }
 
