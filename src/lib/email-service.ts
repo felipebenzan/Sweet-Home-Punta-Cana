@@ -295,7 +295,9 @@ export async function sendBookingConfirmation(data: BookingEmailData) {
                                             <div style="font-size: 14px; font-weight: bold; color: #1A1E26;">${direction === 'arrive' ? 'Arrival' : (direction === 'depart' ? 'Departure' : 'Round Trip')}</div>
                                          </div>
                                          <div style="background-color: rgba(212, 175, 55, 0.1); border-left: 2px solid #D4AF37; padding: 10px; margin-top: 20px;">
-                                            <p style="margin: 0; font-size: 11px; color: #1A1E26; line-height: 1.4;"><strong>Note:</strong> Your driver will be waiting with a sign bearing your name.</p>
+                                            <p style="margin: 0; font-size: 11px; color: #1A1E26; line-height: 1.4;"><strong>Note:</strong> ${direction === 'depart'
+                        ? "For your peace of mind, please be on time. The maximum wait time is 30 minutes. After that, the service is cancelled and non-refundable."
+                        : "Your driver will be waiting with a sign bearing your name."}</p>
                                         </div>
                                       </td>
 

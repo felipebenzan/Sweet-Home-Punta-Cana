@@ -250,7 +250,9 @@ function TransferConfirmationContent() {
                                 <div className="pt-4">
                                     <div className="bg-shpc-yellow/10 border-l-2 border-shpc-yellow p-3 rounded-r">
                                         <p className="text-xs text-shpc-ink font-inter">
-                                            <strong>Note:</strong> Your driver will be waiting with a sign bearing your name.
+                                            <strong>Note:</strong> {details.direction === 'depart'
+                                                ? "For your peace of mind, please be on time. The maximum wait time is 30 minutes. After that, the service is cancelled and non-refundable."
+                                                : "Your driver will be waiting with a sign bearing your name."}
                                         </p>
                                     </div>
                                 </div>

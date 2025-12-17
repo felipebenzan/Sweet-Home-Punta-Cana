@@ -716,7 +716,10 @@ function AirportTransferPageComponent() {
                   <div>
                     <p className="font-bold text-blue-900 text-sm">🌟 Peace of Mind Promise</p>
                     <p className="text-blue-800/80 text-sm mt-1 leading-relaxed">
-                      Your driver will be waiting for you at the airport exit holding a sign with your name. We proactively track your flight for any delays, ensuring your pick-up is on time, every time.
+                      {direction === 'depart'
+                        ? "For your peace of mind, please be on time. The maximum wait time is 30 minutes. After that, the service is cancelled and non-refundable."
+                        : "Your driver will be waiting for you at the airport exit holding a sign with your name. We proactively track your flight for any delays, ensuring your pick-up is on time, every time."
+                      }
                     </p>
                   </div>
                 </div>
