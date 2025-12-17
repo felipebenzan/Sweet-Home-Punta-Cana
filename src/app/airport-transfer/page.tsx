@@ -326,6 +326,7 @@ function AirportTransferPageComponent() {
                       className={`
                         py-5 px-6 border transition-all duration-300
                         font-inter text-sm font-medium
+                        flex items-center justify-center text-center
                         ${direction === dir
                           ? 'border-shpc-yellow bg-shpc-yellow text-shpc-ink shadow-md'
                           : 'border-neutral-300 bg-white text-neutral-700 hover:border-shpc-yellow/50'
