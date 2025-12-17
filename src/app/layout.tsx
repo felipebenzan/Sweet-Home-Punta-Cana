@@ -1,4 +1,5 @@
 
+import Script from 'next/script'; // Added for Google Analytics
 import type { Metadata } from 'next';
 import { Inter, Playfair_Display, Dancing_Script } from 'next/font/google';
 import './globals.css';
@@ -54,6 +55,19 @@ export default function RootLayout({
           {children}
         </ClientLayout>
         <Toaster />
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-LXB0EHV9DQ"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'G-LXB0EHV9DQ');
+          `}
+        </Script>
       </body>
     </html>
   );
