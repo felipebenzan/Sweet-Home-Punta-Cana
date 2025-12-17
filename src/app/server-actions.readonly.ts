@@ -187,7 +187,7 @@ export async function getExcursionBySlug(
       description: 'Immerse yourself in history with a visit to Santo Domingo, the first city established in the Americas. Walk through the Colonial Zone, a UNESCO World Heritage site, visit the first cathedral, the Alcázar de Colón, and the National Pantheon. This full-day cultural experience includes round-trip transportation, a delicious Dominican lunch, and a professional guide to share the rich history of the island.',
       image: '/santo-domingo-hero.png',
       icon: 'Landmark',
-      price: { adult: 95 }, // Explicitly set price structure
+      price: { adult: 65 }, // Explicitly set price structure
       inclusions: [
         'Round-trip transportation',
         'Professional guide',
