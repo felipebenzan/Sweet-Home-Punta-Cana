@@ -177,51 +177,68 @@ export async function getExcursionBySlug(
 ): Promise<Excursion | null> {
   console.log(`✅ Fetching excursion by slug: ${slug}`);
 
-  // VIRTUAL EXCURSION: Santo Domingo
+  // VIRTUAL EXCURSION HYBRID: Santo Domingo
+  // Try to fetch from DB first to respect Admin Panel pricing/text
+  const dbExcursion = await prisma.excursion.findUnique({ where: { slug } });
+
   if (slug === 'santo-domingo') {
-    return {
-      id: 'santo-domingo',
-      slug: 'santo-domingo',
-      title: 'Santo Domingo City Tour',
-      tagline: 'Explore the oldest city in the Americas',
-      description: 'Immerse yourself in history with a visit to Santo Domingo, the first city established in the Americas. Walk through the Colonial Zone, a UNESCO World Heritage site, visit the first cathedral, the Alcázar de Colón, and the National Pantheon. This full-day cultural experience includes round-trip transportation, a delicious Dominican lunch, and a professional guide to share the rich history of the island.',
-      image: '/santo-domingo-hero.png',
-      icon: 'Landmark',
-      price: { adult: 65 }, // Explicitly set price structure
-      inclusions: [
-        'Round-trip transportation',
-        'Professional guide',
-        'Lunch in the Colonial Zone',
-        'Entrance fees to monuments',
-        'Visit to First Cathedral',
-        'Alcázar de Colón',
-        'Calle Las Damas',
-        'Free time for shopping'
-      ],
-      practicalInfo: {
-        departure: '7:00 AM',
-        duration: 'Full day (approx. 10 hours)',
-        pickup: 'Hotel lobby',
-        pickupMapLink: '',
-        notes: [
-          'Dress code: shoulders and knees covered for Cathedral',
-          'Comfortable walking shoes recommended',
-          'Bring camera and sunglasses',
-          'Money for souvenirs',
-          'Long bus ride (approx. 2.5 hours each way)'
+    if (dbExcursion) {
+      // If found in DB, use DB data but FORCE local images
+      const mapped = mapExcursion(dbExcursion);
+      return {
+        ...mapped,
+        image: '/santo-domingo-hero.png',
+        gallery: [
+          '/santo-domingo-hero.png',
+          '/santo-domingo-1.jpeg',
+          '/santo-domingo-2.jpeg',
+          '/santo-domingo-3.jpeg'
         ]
-      },
-      gallery: [
-        '/santo-domingo-hero.png',
-        '/santo-domingo-1.jpeg',
-        '/santo-domingo-2.jpeg',
-        '/santo-domingo-3.jpeg'
-      ]
-    } as unknown as Excursion; // Cast to avoid strict type checks on missing optional fields if any
+      };
+    } else {
+      // Fallback: If deleted from DB, show virtual backup
+      return {
+        id: 'santo-domingo',
+        slug: 'santo-domingo',
+        title: 'Santo Domingo City Tour',
+        tagline: 'Explore the oldest city in the Americas',
+        description: 'Immerse yourself in history with a visit to Santo Domingo, the first city established in the Americas. Walk through the Colonial Zone, a UNESCO World Heritage site, visit the first cathedral, the Alcázar de Colón, and the National Pantheon. This full-day cultural experience includes round-trip transportation, a delicious Dominican lunch, and a professional guide to share the rich history of the island.',
+        image: '/santo-domingo-hero.png',
+        icon: 'Landmark',
+        price: { adult: 65 }, // Fallback price
+        inclusions: [
+          'Round-trip transportation',
+          'Professional guide',
+          'Lunch in the Colonial Zone',
+          'Entrance fees to monuments',
+          'Visit to First Cathedral',
+          'Alcázar de Colón',
+          'Calle Las Damas',
+          'Free time for shopping'
+        ],
+        practicalInfo: {
+          departure: '7:00 AM',
+          duration: 'Full day (approx. 10 hours)',
+          pickup: 'Hotel lobby',
+          pickupMapLink: '',
+          notes: [
+            'Dress code: shoulders and knees covered for Cathedral',
+            'Comfortable walking shoes recommended',
+            'Bring camera and sunglasses',
+            'Money for souvenirs',
+          ],
+        },
+        gallery: [
+          '/santo-domingo-hero.png',
+          '/santo-domingo-1.jpeg',
+          '/santo-domingo-2.jpeg',
+          '/santo-domingo-3.jpeg'
+        ]
+      } as unknown as Excursion;
+    }
   }
 
-  const excursion = await prisma.excursion.findUnique({ where: { slug } });
-  return excursion ? mapExcursion(excursion) : null;
+  return dbExcursion ? mapExcursion(dbExcursion) : null;
 }
 
 export async function getExcursionById(id: string): Promise<Excursion | null> {
