@@ -627,12 +627,23 @@ function AirportTransferPageComponent() {
                         )}
                       </div>
 
+
                       <div className="space-y-1">
                         <p className="text-xs text-neutral-500 font-inter uppercase tracking-wide">Date:</p>
                         <p className="font-inter font-semibold text-shpc-ink">
                           {showArrival ? (arrivalDate ? format(arrivalDate, "MMM do yyyy") : "") : (departureDate ? format(departureDate, "MMM do yyyy") : "")}
                         </p>
                       </div>
+
+                      {showDeparture && departureTime && (
+                        <div className="space-y-1">
+                          <p className="text-xs text-neutral-500 font-inter uppercase tracking-wide">Pickup Time:</p>
+                          <p className="font-inter font-semibold text-shpc-ink">
+                            {departureTime}
+                          </p>
+                        </div>
+                      )}
+
 
                       <div className="space-y-3">
                         <div className="space-y-1">

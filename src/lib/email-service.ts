@@ -189,7 +189,7 @@ export async function sendBookingConfirmation(data: BookingEmailData) {
                 const toCode = direction === 'arrive' ? "SHPC" : "PUJ";
                 const flightNumber = direction === 'arrive' ? (details.arrivalFlight || details.flightNumber) : (details.departureFlight || details.flightNumber);
                 const date = direction === 'arrive' ? (details.arrivalDate || details.date) : (details.departureDate || details.date);
-                const time = direction === 'depart' ? details.departureTime : null;
+                const time = details.departureTime || null;
                 const formattedDate = date ? formatDate(date) + (new Date(date).getFullYear() === new Date().getFullYear() ? '' : ` ${new Date(date).getFullYear()}`) : 'N/A';
 
 

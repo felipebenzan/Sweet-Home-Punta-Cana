@@ -104,7 +104,7 @@ function TransferConfirmationContent() {
 
     const flightNumber = details.direction === 'arrive' ? details.arrivalFlight : details.departureFlight;
     const date = details.direction === 'arrive' ? details.arrivalDate : details.departureDate;
-    const time = details.direction === 'depart' ? details.departureTime : null; // Only show time for departure
+    const time = details.departureTime || null;
 
     return (
         <div className="bg-shpc-sand min-h-screen py-12 sm:py-20 px-4 sm:px-6 lg:px-8">
