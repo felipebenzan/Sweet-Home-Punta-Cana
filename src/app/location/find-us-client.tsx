@@ -15,9 +15,9 @@ const ADDRESS_TEXT = "Sweet Home Punta Cana, Bavaro, Punta Cana 23000, Dominican
 const WHATSAPP_NUMBER = "+1-809-510-5465";
 
 const tabs = [
-  { id: "car", label: "By Car or Taxi", icon: Car },
+  { id: "taxi", label: "Taxi / Uber / Private", icon: Car },
   { id: "public", label: "Public Transport", icon: Bus },
-  { id: "uber", label: "Uber from PUJ", icon: Plane },
+  { id: "rental", label: "Rental Car", icon: Car },
 ];
 
 interface FindUsClientProps {
@@ -25,7 +25,7 @@ interface FindUsClientProps {
 }
 
 export default function FindUsClient({ googleMapsApiKey }: FindUsClientProps) {
-  const [mode, setMode] = useState("car");
+  const [mode, setMode] = useState("taxi");
   const copyToClipboard = async (text: string) => {
     try {
       await navigator.clipboard.writeText(text);
@@ -104,18 +104,18 @@ export default function FindUsClient({ googleMapsApiKey }: FindUsClientProps) {
         {/* Arrival Tabs Section */}
         <section>
           <h2 className="text-center font-playfair text-4xl md:text-5xl mb-8">Choose Your Journey</h2>
-          <div className="flex justify-center border-b border-shpc-edge mb-6">
+          <div className="flex justify-center flex-wrap gap-2 border-b border-shpc-edge mb-6">
             {tabs.map(tab => (
-              <button key={tab.id} onClick={() => setMode(tab.id)} className={cn("flex items-center gap-2 px-6 py-3 font-semibold transition-colors", mode === tab.id ? 'text-shpc-ink border-b-2 border-shpc-ink' : 'text-muted-foreground hover:text-shpc-ink')}>
+              <button key={tab.id} onClick={() => setMode(tab.id)} className={cn("flex items-center gap-2 px-6 py-3 font-semibold transition-colors rounded-t-lg", mode === tab.id ? 'bg-white text-shpc-ink border border-b-0 border-shpc-edge shadow-sm' : 'text-muted-foreground hover:bg-white/50 hover:text-shpc-ink')}>
                 <tab.icon className="h-5 w-5" />
                 <span>{tab.label}</span>
               </button>
             ))}
           </div>
           <div className="bg-white p-8 rounded-2xl shadow-soft">
-            {mode === "car" && <CarDirections />}
+            {mode === "taxi" && <TaxiDirections />}
             {mode === "public" && <PublicDirections />}
-            {mode === "uber" && <UberDirections />}
+            {mode === "rental" && <RentalCarDirections />}
           </div>
         </section>
 
@@ -163,34 +163,51 @@ export default function FindUsClient({ googleMapsApiKey }: FindUsClientProps) {
 }
 
 
-const Step = ({ number, title, children }: { number: string, title: string, children: React.ReactNode }) => (
+const Step = ({ number, title, children }: { number: string, title?: string, children: React.ReactNode }) => (
   <div className="flex items-start gap-6">
-    <span className="font-playfair text-5xl text-shpc-yellow/50 leading-none">{number}</span>
+    <span className="font-playfair text-5xl text-shpc-yellow/50 leading-none shrink-0">{number}</span>
     <div>
-      <h4 className="font-bold text-lg">{title}</h4>
-      <div className="text-muted-foreground space-y-2 mt-1">{children}</div>
+      {title && <h4 className="font-bold text-lg mb-1">{title}</h4>}
+      <div className="text-neutral-700 space-y-2 leading-relaxed">{children}</div>
     </div>
   </div>
 );
 
-function CarDirections() {
+function TaxiDirections() {
   return (
-    <div className="space-y-6">
-      <Step number="01" title="At the Airport">
-        <p>After picking up your luggage, you’ll see two types of drivers:</p>
-        <ul className="list-disc list-inside space-y-1">
-          <li><strong>Pink shirts</strong> → Official airport taxis.</li>
-          <li><strong>White shirts</strong> → Private transfer services.</li>
+    <div className="space-y-8">
+      <div className="bg-neutral-50 p-4 rounded-lg text-sm text-neutral-600 mb-6 flex flex-col md:flex-row gap-4 justify-between">
+        <span><strong>Estimated Duration:</strong> 25 minutes drive</span>
+        <span><strong>Estimated Cost:</strong> USD$35 - USD$45 per private transfer</span>
+      </div>
+
+      <Step number="01">
+        <p>After picking up your luggage go to the Exit Area where you will find two types of drivers:</p>
+        <ul className="list-disc list-inside mt-2 space-y-1 ml-4">
+          <li><strong>Drivers with Pink Shirts:</strong> official Airport Taxi Drivers from the Punta Cana Transport Union</li>
+          <li><strong>Drivers with White Shirts:</strong> Drivers from different Transportation Agencies</li>
+          <li><strong>Driver with a sign with your name:</strong> if you had already booked your transfer</li>
         </ul>
       </Step>
-      <Step number="02" title="Tell Your Driver">
-        <p>You are going to <strong>Sweet Home Punta Cana at Villas Bávaro (Villa Q15A)</strong>.</p>
+
+      <Step number="02">
+        <p>Tell your driver to bring you to <strong>Sweet Home Punta Cana Guest House - Villa Q15A</strong>.</p>
       </Step>
-      <Step number="03" title="Navigation">
-        <p>The location appears easily in Waze or Google Maps.</p>
+
+      <Step number="03">
+        <p>Either provide our exact address to your driver or ask them to find us in Google Maps.</p>
       </Step>
-      <Step number="04" title="At the Gate">
-        <p>Inform the security guard you are a guest at <strong>Sweet Home Punta Cana, Villa Q15A</strong>. They may ask for an ID, which will be returned to you after check-in.</p>
+
+      <Step number="04">
+        <p>Once at our main gate, inform security staff you are staying at <strong>Sweet Home Punta Cana</strong> - they may ask for an ID, which will be returned to you after check-in.</p>
+      </Step>
+
+      <Step number="05">
+        <p><strong>UBER drivers</strong> are not allowed to pick up passengers at the airport - they can only pick passengers up outside the airport.</p>
+      </Step>
+
+      <Step number="06">
+        <p>If you are interested in booking your arrival transfer with us, <Link href="/airport-transfer" className="text-shpc-yellow font-bold hover:underline">click here!</Link></p>
       </Step>
     </div>
   );
@@ -198,22 +215,54 @@ function CarDirections() {
 
 function PublicDirections() {
   return (
-    <div className="space-y-6">
-      <Step number="01" title="Catch a Taxi">From PUJ, take a short taxi ride to the nearest bus stop on <strong>Boulevard Turístico del Este</strong>.</Step>
-      <Step number="02" title="Board the 'Guagua'">Board a local bus (guagua) heading toward <strong>Bávaro / Los Corales</strong>. Ask to be dropped at <strong>Texaco Bávaro</strong>.</Step>
-      <Step number="03" title="Final Stretch">From Texaco, it’s a short moto-taxi or walk to us. Message us on WhatsApp if you need guidance.</Step>
-      <p className="pl-16 text-sm text-muted-foreground italic">Travel Tip: Keep small cash handy for fares and allow for flexible timing.</p>
+    <div className="space-y-8">
+      <div className="bg-neutral-50 p-4 rounded-lg text-sm text-neutral-600 mb-6 flex flex-col md:flex-row gap-4 justify-between">
+        <span><strong>Estimated Duration:</strong> 1.5h ride</span>
+        <span><strong>Estimated Cost:</strong> USD$5 per person</span>
+      </div>
+
+      <Step number="01">
+        <p>Once past the Airport Exit Area, either walk or take a taxi to the bus station outside the Punta Cana Airport.</p>
+      </Step>
+
+      <Step number="02">
+        <p>Once at the Public Bus Station, board a ''guagua'' or bus in direction to <strong>Verón</strong>.</p>
+      </Step>
+
+      <Step number="03">
+        <p>Once you get off the bus at Verón, take another ride in direction to <strong>Barceló</strong> and ask to be dropped off at <strong>Villas Bávaro</strong> (between Super Lama and Cocotal).</p>
+      </Step>
+
+      <Step number="04">
+        <p>Once at our main gate, inform security staff you are staying at <strong>Sweet Home Punta Cana</strong> - they may ask for an ID, which will be returned to you after check-in.</p>
+      </Step>
+
+      <Step number="05">
+        <p>Once past the main gate, walk and make a left at Dominican Republic Street and then a right at Paseo Cuba; Sweet Home will be the third property on your right side.</p>
+      </Step>
     </div>
   );
 }
 
-function UberDirections() {
+function RentalCarDirections() {
   return (
-    <div className="space-y-6">
-      <Step number="01" title="Request Your Ride">Once you exit arrivals, request an Uber to <strong>Sweet Home Punta Cana</strong>.</Step>
-      <Step number="02" title="Update if Needed">If the driver cannot enter, update the destination to <strong>Texaco Bávaro</strong> or <strong>LAMA Supermarket</strong>.</Step>
-      <Step number="03" title="Stay Connected">Share your trip status with us on WhatsApp for real-time assistance.</Step>
-      <p className="pl-16 text-sm text-muted-foreground italic">Travel Tip: Connect to airport Wi-Fi before exiting to ensure a smooth Uber request.</p>
+    <div className="space-y-8">
+      <div className="bg-neutral-50 p-4 rounded-lg text-sm text-neutral-600 mb-6 flex flex-col md:flex-row gap-4 justify-between">
+        <span><strong>Estimated Duration:</strong> 25 minutes drive</span>
+        <span><strong>Estimated Cost:</strong> +USD$45 a day</span>
+      </div>
+
+      <Step number="01">
+        <p>Once you have picked up your luggage, go to the Rental Car Office past the Airport Exit Area.</p>
+      </Step>
+
+      <Step number="02">
+        <p>Finish registration process and wait for your vehicle to depart to your destination.</p>
+      </Step>
+
+      <Step number="03">
+        <p>If you are interested in booking your Rental Car through us, <a href="https://wa.me/18095105465" target="_blank" rel="nooopener noreferrer" className="text-shpc-yellow font-bold hover:underline">click here!</a></p>
+      </Step>
     </div>
   );
 }
