@@ -183,12 +183,12 @@ export async function sendBookingConfirmation(data: BookingEmailData) {
                 const direction = details.direction || 'arrive';
 
                 // Logic directly from confirmation page
-                const from = direction === 'arrive' ? "Punta Cana Intl. Airport" : "Sweet Home Punta Cana";
-                const fromCode = direction === 'arrive' ? "PUJ" : "SHPC";
-                const to = direction === 'arrive' ? "Sweet Home Punta Cana" : "Punta Cana Intl. Airport";
-                const toCode = direction === 'arrive' ? "SHPC" : "PUJ";
-                const flightNumber = direction === 'arrive' ? (details.arrivalFlight || details.flightNumber) : (details.departureFlight || details.flightNumber);
-                const date = direction === 'arrive' ? (details.arrivalDate || details.date) : (details.departureDate || details.date);
+                const from = (direction === 'arrive' || direction === 'round') ? "Punta Cana Intl. Airport" : "Sweet Home Punta Cana";
+                const fromCode = (direction === 'arrive' || direction === 'round') ? "PUJ" : "SHPC";
+                const to = (direction === 'arrive' || direction === 'round') ? "Sweet Home Punta Cana" : "Punta Cana Intl. Airport";
+                const toCode = (direction === 'arrive' || direction === 'round') ? "SHPC" : "PUJ";
+                const flightNumber = (direction === 'arrive' || direction === 'round') ? (details.arrivalFlight || details.flightNumber) : (details.departureFlight || details.flightNumber);
+                const date = (direction === 'arrive' || direction === 'round') ? (details.arrivalDate || details.date) : (details.departureDate || details.date);
                 const time = details.departureTime || null;
                 const formattedDate = date ? formatDate(date) + (new Date(date).getFullYear() === new Date().getFullYear() ? '' : ` ${new Date(date).getFullYear()}`) : 'N/A';
 

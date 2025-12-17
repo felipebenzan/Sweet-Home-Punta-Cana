@@ -645,16 +645,18 @@ function AirportTransferPageComponent() {
                       )}
 
 
-                      <div className="space-y-3">
-                        <div className="space-y-1">
-                          <p className="text-xs text-neutral-500 font-inter uppercase tracking-wide">From</p>
-                          <p className="font-inter text-shpc-ink">Punta Cana Intl. Airport (PUJ)</p>
-                        </div>
+                      <div className="space-y-1">
+                        <p className="text-xs text-neutral-500 font-inter uppercase tracking-wide">From</p>
+                        <p className="font-inter text-shpc-ink">
+                          {(direction === 'arrive' || direction === 'round') ? "Punta Cana Intl. Airport (PUJ)" : "Sweet Home Punta Cana"}
+                        </p>
+                      </div>
 
-                        <div className="space-y-1">
-                          <p className="text-xs text-neutral-500 font-inter uppercase tracking-wide">To</p>
-                          <p className="font-inter font-semibold text-shpc-ink">Sweet Home Punta Cana</p>
-                        </div>
+                      <div className="space-y-1">
+                        <p className="text-xs text-neutral-500 font-inter uppercase tracking-wide">To</p>
+                        <p className="font-inter font-semibold text-shpc-ink">
+                          {(direction === 'arrive' || direction === 'round') ? "Sweet Home Punta Cana" : "Punta Cana Intl. Airport (PUJ)"}
+                        </p>
                       </div>
 
 

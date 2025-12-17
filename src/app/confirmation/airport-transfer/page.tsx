@@ -97,10 +97,10 @@ function TransferConfirmationContent() {
     const isDeparture = details.direction === 'depart' || (details.direction === 'round' && details.departureDate);
 
     // Determine display values
-    const from = details.direction === 'arrive' ? "Punta Cana Intl. Airport" : "Sweet Home Punta Cana";
-    const fromCode = details.direction === 'arrive' ? "PUJ" : "SHPC";
-    const to = details.direction === 'arrive' ? "Sweet Home Punta Cana" : "Punta Cana Intl. Airport";
-    const toCode = details.direction === 'arrive' ? "SHPC" : "PUJ";
+    const from = (details.direction === 'arrive' || details.direction === 'round') ? "Punta Cana Intl. Airport" : "Sweet Home Punta Cana";
+    const fromCode = (details.direction === 'arrive' || details.direction === 'round') ? "PUJ" : "SHPC";
+    const to = (details.direction === 'arrive' || details.direction === 'round') ? "Sweet Home Punta Cana" : "Punta Cana Intl. Airport";
+    const toCode = (details.direction === 'arrive' || details.direction === 'round') ? "SHPC" : "PUJ";
 
     const flightNumber = details.direction === 'arrive' ? details.arrivalFlight : details.departureFlight;
     const date = details.direction === 'arrive' ? details.arrivalDate : details.departureDate;
