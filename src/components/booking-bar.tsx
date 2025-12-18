@@ -194,7 +194,7 @@ export default function BookingBar({
                             )}
                             onClick={handleSearch}
                         >
-                            <span className={cn(!isVertical && "hidden md:inline")}>Check Availability</span>
+                            <span className={cn(!isVertical && "hidden md:inline")}>Book Now!</span>
                             <span className={cn(!isVertical && "md:hidden", isVertical && "hidden")}>Search</span>
                         </Button>
                     </div>

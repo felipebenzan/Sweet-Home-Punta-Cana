@@ -148,7 +148,7 @@ export default function BookingWidget({ room }: BookingWidgetProps) {
       ) : (
         <Button size="lg" className="w-full h-12 text-base font-semibold bg-shpc-yellow text-shpc-ink hover:bg-shpc-yellow/90" onClick={handleCheckAvailability} disabled={!date?.from || !date?.to || isLoading}>
           {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-          Check Availability
+          Book Now!
         </Button>
       )}
 
