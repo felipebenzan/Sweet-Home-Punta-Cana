@@ -6,6 +6,7 @@ import './globals.css';
 import { cn } from '@/lib/utils';
 import { Toaster } from '@/components/ui/toaster';
 import ClientLayout from '@/components/client-layout';
+import { FloatingCartButton } from '@/components/floating-cart-button';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const playfairDisplay = Playfair_Display({ subsets: ['latin'], variable: '--font-playfair-display' });
@@ -54,6 +55,7 @@ export default function RootLayout({
         <ClientLayout paypalClientId="AdcvZIs6aDhOuAfazd6S-6BQJYWY_o0_RqXiVfVeIuirgbUj1lrC-Vc6kDBDD0H5lqpgGlTrGhf6kyFN">
           {children}
         </ClientLayout>
+        <FloatingCartButton />
         <Toaster />
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-LXB0EHV9DQ"
