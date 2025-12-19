@@ -28,6 +28,7 @@ export async function POST(request: NextRequest) {
             }
         }
 
+
         if (booking.type === 'laundry') {
             const date = booking.date || new Date().toISOString().split('T')[0];
             const availability = await checkDailyLimit('laundry', date);
@@ -45,6 +46,66 @@ export async function POST(request: NextRequest) {
 
         let savedBooking;
         let confirmationId;
+
+        // NEW: Handle Multi-Item Cart Checkout
+        if (booking.type === 'cart_checkout') {
+            const items = booking.items || [];
+            if (items.length === 0) throw new Error("No items in cart to book.");
+
+            const createdBookings = [];
+            for (const item of items) {
+                const bookingRecord = await prisma.serviceBooking.create({
+                    data: {
+                        type: 'excursion', // Stored as generic 'excursion' or specific type
+                        serviceType: 'excursion',
+                        excursionId: item.excursionId,
+                        guestName: booking.customer.name,
+                        email: booking.customer.email,
+                        phone: booking.customer.phone,
+                        date: new Date(item.date),
+                        total: item.totalPrice,
+                        pax: `${item.adults} Adults` + (item.children ? `, ${item.children} Children` : ''),
+                        status: 'Confirmed',
+                        details: JSON.stringify({
+                            title: item.title,
+                            image: item.image,
+                            pricePerAdult: item.pricePerAdult, // if available in payload
+                            adults: item.adults,
+                            children: item.children
+                        })
+                    }
+                });
+                createdBookings.push(bookingRecord);
+                if (!confirmationId) confirmationId = bookingRecord.id; // Use first ID as group ref
+            }
+
+            // For now, confirm with the ID of the first item, or a generated Group ID if we had a Booking table.
+            // savedBooking = createdBookings[0]; 
+
+            // Send email for the ENTIRE cart
+            try {
+                await sendBookingConfirmation({
+                    guestName: booking.customer.name,
+                    guestEmail: booking.customer.email,
+                    bookingType: 'cart_checkout', // Email service must handle this or fallback
+                    bookingDetails: {
+                        items: items,
+                        customer: booking.customer,
+                        pricing: booking.pricing
+                    },
+                    confirmationId,
+                    totalPrice: booking.pricing.totalUSD
+                });
+            } catch (emailError) {
+                console.error('Failed to send cart confirmation email:', emailError);
+            }
+
+            return NextResponse.json({
+                success: true,
+                confirmationId,
+                booking: createdBookings[0], // Return first as representative
+            });
+        }
 
         if (booking.type === 'room') {
             // Create Reservation

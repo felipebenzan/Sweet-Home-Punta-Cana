@@ -22,21 +22,10 @@ import {
   MapPin,
   ArrowRight,
   Info,
-  Sailboat,
-  Download,
-  Sun,
-  Watch,
-  Glasses,
-  Tally1,
-  Wind,
-  Camera,
-  DollarSign,
-  Footprints,
-  Droplets,
-  QrCode,
   Ticket,
   Loader2,
   ArrowLeft,
+  Download,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -56,6 +45,7 @@ function ConfirmationContent() {
   const [booking, setBooking] = React.useState<ServiceBooking | null>(null);
   const [excursion, setExcursion] = React.useState<Excursion | null>(null);
   const [isLoading, setIsLoading] = React.useState(true);
+  const [cartItems, setCartItems] = React.useState<any[]>([]);
 
   React.useEffect(() => {
     if (!bid) {
@@ -67,7 +57,20 @@ function ConfirmationContent() {
       try {
         const bookingData = await getServiceBookingById(bid!);
         setBooking(bookingData);
-        if (bookingData?.excursionId) {
+
+        let details: any = {};
+        if (typeof bookingData?.details === 'string') {
+          try {
+            details = JSON.parse(bookingData.details);
+          } catch (e) { console.error("Error parsing details", e); }
+        } else if (bookingData?.details) {
+          details = bookingData.details;
+        }
+
+        if (details.items && Array.isArray(details.items)) {
+          setCartItems(details.items);
+        } else if (bookingData?.excursionId) {
+          // Fallback to single excursion fetch if no items array
           const excursionData = await getExcursionById(bookingData.excursionId);
           setExcursion(excursionData);
         }
@@ -104,7 +107,7 @@ function ConfirmationContent() {
     );
   }
 
-  if (!booking || !excursion) {
+  if (!booking) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-shpc-sand text-center p-4">
         <h2 className="text-2xl font-bold mb-2">Booking not found</h2>
@@ -119,7 +122,6 @@ function ConfirmationContent() {
   }
 
   const shortId = booking.id.substring(0, 8).toUpperCase();
-  const pax = booking.pax || "1 Adult";
 
   return (
     <div className="bg-shpc-sand min-h-screen py-12 sm:py-24 px-4 sm:px-6 lg:px-8">
@@ -130,7 +132,7 @@ function ConfirmationContent() {
         >
           <div className="text-center mb-8">
             <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
-            <h1 className="text-3xl font-bold">Adventure Locked In!</h1>
+            <h1 className="text-3xl font-bold">Adventures Locked In!</h1>
             <p className="text-muted-foreground mt-2">
               Pack your sunscreen, {booking.guestName}! A confirmation has been
               sent to {booking.email}.
@@ -140,23 +142,58 @@ function ConfirmationContent() {
               Booking ID: {shortId}
             </p>
           </div>
+
           <div className="space-y-6">
             <Card className="p-6 rounded-2xl shadow-soft">
               <h3 className="font-semibold text-lg mb-4 text-center">
-                Your Booked Excursion
+                Your Booked Excursions
               </h3>
-              <p className="font-semibold text-lg">{excursion.title}</p>
-              <div className="text-sm text-muted-foreground mt-1 space-y-1">
-                <p className="flex items-center gap-1.5">
-                  <Calendar className="h-4 w-4" />{" "}
-                  {booking.date
-                    ? format(parseISO(booking.date), "EEEE, MMM dd")
-                    : "Date to be confirmed"}
-                </p>
-                <p className="flex items-center gap-1.5">
-                  <UsersIcon className="h-4 w-4" /> {pax}
-                </p>
-              </div>
+
+              {cartItems.length > 0 ? (
+                <div className="space-y-6">
+                  {cartItems.map((item, index) => (
+                    <div key={index} className="flex gap-4 border-b border-dashed border-gray-200 pb-4 last:border-0 last:pb-0">
+                      <div className="relative w-20 h-20 shrink-0 rounded-lg overflow-hidden bg-gray-100">
+                        {item.image && <Image src={item.image} alt={item.title} fill className="object-cover" />}
+                      </div>
+                      <div className="flex-1 space-y-1">
+                        <p className="font-semibold text-lg leading-tight">{item.title}</p>
+                        <div className="text-sm text-muted-foreground space-y-1">
+                          <p className="flex items-center gap-1.5">
+                            <Calendar className="h-4 w-4" />{" "}
+                            {item.date ? format(parseISO(item.date), "EEEE, MMM dd") : "Date TBD"}
+                          </p>
+                          <p className="flex items-center gap-1.5">
+                            <UsersIcon className="h-4 w-4" /> {item.adults} Adults {item.children ? `, ${item.children} Children` : ''}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : excursion ? (
+                // Fallback for single legacy booking
+                <div className="flex gap-4">
+                  <div className="relative w-20 h-20 shrink-0 rounded-lg overflow-hidden bg-gray-100">
+                    <Image src={excursion.image} alt={excursion.title} fill className="object-cover" />
+                  </div>
+                  <div className="flex-1 space-y-1">
+                    <p className="font-semibold text-lg leading-tight">{excursion.title}</p>
+                    <div className="text-sm text-muted-foreground space-y-1">
+                      <p className="flex items-center gap-1.5">
+                        <Calendar className="h-4 w-4" />{" "}
+                        {booking.date ? format(parseISO(booking.date), "EEEE, MMM dd") : "Date TBD"}
+                      </p>
+                      <p className="flex items-center gap-1.5">
+                        <UsersIcon className="h-4 w-4" /> {booking.pax || "1 Adult"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-center text-muted-foreground">Details unavailable</p>
+              )}
+
             </Card>
 
             <Separator />

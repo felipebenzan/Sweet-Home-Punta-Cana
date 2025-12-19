@@ -2,6 +2,7 @@
 
 import type { Excursion } from '@/lib/types';
 import Image from 'next/image';
+import Link from 'next/link';
 import {
   Check,
   MapPin,
@@ -29,73 +30,41 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import EmbeddedMap from '@/components/embedded-map';
 import { ExcursionBookingWidget } from '@/components/excursions/excursion-booking-widget';
 
-function BundleOfferCard({
-  excursion,
-  onToggleBundle,
-  isBundled,
-}: {
-  excursion: Excursion;
-  onToggleBundle: (excursion: Excursion) => void;
-  isBundled: boolean;
-}) {
+function CrossSellCard({ excursion }: { excursion: Excursion }) {
   return (
-    <Card className="overflow-hidden shadow-soft rounded-2xl w-full flex flex-col data-[bundled=true]:ring-2 data-[bundled=true]:ring-primary" data-bundled={isBundled}>
-      <div className="relative aspect-[4/3] w-full">
-        <Image src={excursion.image} alt={excursion.title} fill className="object-cover" data-ai-hint="vacation excursion" />
-        {isBundled && <div className="absolute inset-0 bg-shpc-yellow/20 flex items-center justify-center"><Check className="h-12 w-12 text-white bg-shpc-yellow/80 rounded-full p-2" /></div>}
-      </div>
-      <CardContent className="p-4 flex-grow">
-        <h3 className="font-bold text-lg">{excursion.title}</h3>
-        <p className="text-sm text-muted-foreground mt-1">{excursion.tagline}</p>
-      </CardContent>
-      <div className="p-4 bg-shpc-sand/50 mt-auto">
-        <div className="flex items-center justify-between w-full">
+    <Card className="overflow-hidden shadow-soft rounded-2xl w-full flex flex-col h-full group">
+      <Link href={`/excursions/${excursion.slug}`} className="block relative aspect-[4/3] w-full overflow-hidden">
+        <Image
+          src={excursion.image}
+          alt={excursion.title}
+          fill
+          className="object-cover transition-transform duration-300 group-hover:scale-105"
+          data-ai-hint="vacation excursion"
+        />
+      </Link>
+      <CardContent className="p-4 flex-grow flex flex-col">
+        <h3 className="font-bold text-lg leading-tight mb-1 group-hover:text-shpc-yellow transition-colors">
+          <Link href={`/excursions/${excursion.slug}`}>
+            {excursion.title}
+          </Link>
+        </h3>
+        <p className="text-sm text-muted-foreground line-clamp-2 mb-4">{excursion.tagline}</p>
+
+        <div className="mt-auto flex items-center justify-between">
           <div>
-            <span className="text-sm text-muted-foreground">From </span>
-            <span className="font-bold text-xl">${excursion.price.adult.toFixed(2)}</span>
+            <span className="text-xs text-muted-foreground block">From </span>
+            <span className="font-bold text-lg">${excursion.price.adult.toFixed(2)}</span>
           </div>
-          <Button onClick={() => onToggleBundle(excursion)} variant={isBundled ? 'secondary' : 'default'} size="sm" className="data-[state=bundled]:bg-shpc-yellow/80 data-[state=bundled]:text-shpc-ink">
-            {isBundled ? 'Remove' : 'Add to bundle'}
+          <Button asChild size="sm" variant="outline" className="text-xs">
+            <Link href={`/excursions/${excursion.slug}`}>View <ArrowRight className="ml-1 h-3 w-3" /></Link>
           </Button>
         </div>
-      </div>
-      <Accordion type="single" collapsible className="w-full bg-shpc-sand/50">
-        <AccordionItem value="item-1" className="border-t">
-          <AccordionTrigger className="px-4 py-2 text-sm font-medium hover:no-underline">
-            More info
-          </AccordionTrigger>
-          <AccordionContent className="px-4 pb-4 space-y-4 text-xs">
-            <p className="text-muted-foreground">{excursion.description.substring(0, 150)}...</p>
-            <div className="space-y-2">
-              <h4 className="font-semibold flex items-center gap-2"><List className="h-4 w-4" />Includes</h4>
-              <ul className="list-disc list-inside text-muted-foreground">
-                {excursion.inclusions.slice(0, 3).map(item => <li key={item}>{item}</li>)}
-                {excursion.inclusions.length > 3 && <li>And more...</li>}
-              </ul>
-            </div>
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion>
+      </CardContent>
     </Card>
   );
 }
 
-
 export default function ExcursionClientPage({ excursion, otherExcursions, googleMapsApiKey }: { excursion: Excursion, otherExcursions: Excursion[], googleMapsApiKey: string }) {
-  // State for bundled items (simplified for now as focus is on main widget)
-  const [bundledItems, setBundledItems] = React.useState<Record<string, Excursion>>({});
-
-  const handleToggleBundle = (toggledExcursion: Excursion) => {
-    setBundledItems(prev => {
-      const newBundled = { ...prev };
-      if (newBundled[toggledExcursion.id]) {
-        delete newBundled[toggledExcursion.id];
-      } else {
-        newBundled[toggledExcursion.id] = toggledExcursion;
-      }
-      return newBundled;
-    });
-  };
 
   return (
     <div className="bg-shpc-sand">
@@ -208,10 +177,9 @@ export default function ExcursionClientPage({ excursion, otherExcursions, google
             </div>
           </section>
 
-          {/* Bundle & Save Section */}
+          {/* Cross Sell Section (Formerly Bundle & Save) */}
           <section>
-            <h2 className="font-playfair text-4xl font-bold text-shpc-ink mb-3">Bundle & Save!</h2>
-            <p className="font-inter text-lg text-neutral-600 mb-8">Add another tour and get <span className="font-semibold text-shpc-yellow">10% off</span> your entire booking.</p>
+            <h2 className="font-playfair text-3xl font-bold text-shpc-ink mb-6">You Might Also Like</h2>
             <Carousel
               opts={{
                 align: 'start',
@@ -219,15 +187,11 @@ export default function ExcursionClientPage({ excursion, otherExcursions, google
               }}
               className="w-full"
             >
-              <CarouselContent className="-ml-6">
+              <CarouselContent className="-ml-4">
                 {otherExcursions.map(other => (
-                  <CarouselItem key={other.id} className="pl-6 basis-full md:basis-1/2">
+                  <CarouselItem key={other.id} className="pl-4 basis-full sm:basis-1/2">
                     <div className="h-full">
-                      <BundleOfferCard
-                        excursion={other}
-                        onToggleBundle={handleToggleBundle}
-                        isBundled={!!bundledItems[other.id]}
-                      />
+                      <CrossSellCard excursion={other} />
                     </div>
                   </CarouselItem>
                 ))}
