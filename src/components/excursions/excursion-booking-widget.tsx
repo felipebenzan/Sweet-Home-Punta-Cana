@@ -252,8 +252,11 @@ export function ExcursionBookingWidget({
                     </Button>
                     <Button
                         variant="ghost"
-                        className="w-full text-muted-foreground hover:text-shpc-ink md:hidden"
-                        onClick={() => setIsMobileDrawerOpen(false)}
+                        className="w-full text-muted-foreground hover:text-shpc-ink"
+                        onClick={() => {
+                            setIsMobileDrawerOpen(false);
+                            setIsAdded(false); // Reset to form view
+                        }}
                     >
                         Continue Shopping
                     </Button>
