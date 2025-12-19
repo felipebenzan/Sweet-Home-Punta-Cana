@@ -340,94 +340,91 @@ export async function sendBookingConfirmation(data: BookingEmailData) {
             </div>`;
             }
 
-            <div style="background-color: #f4f4f4; padding: 20px; font-family: 'Helvetica', 'Arial', sans-serif;" >
-                ${
-                    (() => {
-                        if (normalizedBookingType === 'cart_checkout') {
-                            const items = bookingDetails.items || [];
-                            const bookingId = confirmationId.substring(0, 8).toUpperCase();
+            if (normalizedBookingType === 'cart_checkout') {
+                const items = bookingDetails.items || [];
+                const bookingId = confirmationId.substring(0, 8).toUpperCase();
 
-                            const renderCartItems = () => {
-                                return items.map((item: any) => `
-                             <div style="border-bottom: 1px dashed #e5e7eb; padding-bottom: 24px; margin-bottom: 24px;">
-                                 <div style="display: flex; gap: 16px; margin-bottom: 16px;">
-                                     ${item.image ? `<img src="${item.image}" alt="${item.title}" style="width: 80px; height: 60px; border-radius: 8px; object-fit: cover;" />` : ''}
-                                     <div>
-                                         <div style="font-size: 14px; color: #6b7280; display: flex; align-items: center; gap: 4px;">
-                                             🏠 Adventure
-                                         </div>
-                                         <div style="font-size: 18px; font-weight: 600; color: #1f2937; line-height: 1.4;">${item.title}</div>
+                const renderCartItems = () => {
+                    return items.map((item: any) => `
+                         <div style="border-bottom: 1px dashed #e5e7eb; padding-bottom: 24px; margin-bottom: 24px;">
+                             <div style="display: flex; gap: 16px; margin-bottom: 16px;">
+                                 ${item.image ? `<img src="${item.image}" alt="${item.title}" style="width: 80px; height: 60px; border-radius: 8px; object-fit: cover;" />` : ''}
+                                 <div>
+                                     <div style="font-size: 14px; color: #6b7280; display: flex; align-items: center; gap: 4px;">
+                                         🏠 Adventure
                                      </div>
+                                     <div style="font-size: 18px; font-weight: 600; color: #1f2937; line-height: 1.4;">${item.title}</div>
                                  </div>
-                                 
-                                 <table width="100%" cellpadding="0" cellspacing="0" style="font-size: 12px; color: #1f2937;">
-                                     <tr>
-                                         <td width="50%" style="padding-bottom: 12px; vertical-align: top;">
-                                             <div style="color: #6b7280; font-size: 12px; margin-bottom: 4px;">📅 Date</div>
-                                             <div style="font-size: 16px; font-weight: 500;">${item.date ? formatFullDate(item.date) : 'TBD'}</div>
-                                         </td>
-                                         <td width="50%" style="padding-bottom: 12px; vertical-align: top;">
-                                             <div style="color: #6b7280; font-size: 12px; margin-bottom: 4px;">👥 Guests</div>
-                                             <div style="font-size: 16px; font-weight: 500;">${item.adults || 1} Guests</div>
-                                         </td>
-                                     </tr>
-                                 </table>
                              </div>
-                        `).join('');
-                            };
+                             
+                             <table width="100%" cellpadding="0" cellspacing="0" style="font-size: 12px; color: #1f2937;">
+                                 <tr>
+                                     <td width="50%" style="padding-bottom: 12px; vertical-align: top;">
+                                         <div style="color: #6b7280; font-size: 12px; margin-bottom: 4px;">📅 Date</div>
+                                         <div style="font-size: 16px; font-weight: 500;">${item.date ? formatFullDate(item.date) : 'TBD'}</div>
+                                     </td>
+                                     <td width="50%" style="padding-bottom: 12px; vertical-align: top;">
+                                         <div style="color: #6b7280; font-size: 12px; margin-bottom: 4px;">👥 Guests</div>
+                                         <div style="font-size: 16px; font-weight: 500;">${item.adults || 1} Guests</div>
+                                     </td>
+                                 </tr>
+                             </table>
+                         </div>
+                    `).join('');
+                };
 
-                            return `
-                         <div style="background-color: #F9F7F2; padding: 40px 20px; font-family: 'Helvetica', 'Arial', sans-serif;">
-                            <div style="max-width: 600px; margin: 0 auto; padding-bottom: 40px;">
-                                
-                                <div style="text-align: center; margin-bottom: 30px; background-color: #1A1E26; padding: 40px 20px; border-radius: 16px; color: white;">
-                                    <div style="background: white; border-radius: 50%; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px auto;">
-                                        <span style="font-size: 24px;">✅</span>
-                                    </div>
-                                    <h1 style="font-family: 'Times New Roman', serif; font-size: 28px; margin: 0 0 10px 0;">Your Experiences are Booked!</h1>
+                return `
+                     <div style="background-color: #F9F7F2; padding: 40px 20px; font-family: 'Helvetica', 'Arial', sans-serif;">
+                        <div style="max-width: 600px; margin: 0 auto; padding-bottom: 40px;">
+                            
+                            <div style="text-align: center; margin-bottom: 30px; background-color: #1A1E26; padding: 40px 20px; border-radius: 16px; color: white;">
+                                <div style="background: white; border-radius: 50%; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px auto;">
+                                    <span style="font-size: 24px;">✅</span>
                                 </div>
+                                <h1 style="font-family: 'Times New Roman', serif; font-size: 28px; margin: 0 0 10px 0;">Your Experiences are Booked!</h1>
+                            </div>
 
-                                <div style="background: white; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); margin-bottom: 24px; overflow: hidden;">
-                                    <div style="padding: 16px 24px; border-bottom: 1px solid #f3f4f6;">
-                                        <h3 style="margin: 0; font-size: 18px; color: #1f2937; display: flex; align-items: center; gap: 8px;">
-                                            <span>🌴</span> Itinerary
-                                        </h3>
-                                    </div>
-                                    <div style="padding: 24px;">
-                                        ${renderCartItems()}
-                                    </div>
+                            <div style="background: white; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); margin-bottom: 24px; overflow: hidden;">
+                                <div style="padding: 16px 24px; border-bottom: 1px solid #f3f4f6;">
+                                    <h3 style="margin: 0; font-size: 18px; color: #1f2937; display: flex; align-items: center; gap: 8px;">
+                                        <span>🌴</span> Itinerary
+                                    </h3>
                                 </div>
-                                
-                                <div style="background: white; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); overflow: hidden;">
-                                    <div style="padding: 16px 24px; border-bottom: 1px solid #f3f4f6;">
-                                        <h3 style="margin: 0; font-size: 18px; color: #1f2937; display: flex; align-items: center; gap: 8px;">
-                                            <span>💰</span> Payment Summary
-                                        </h3>
-                                    </div>
-                                    <div style="padding: 24px;">
-                                        <div style="display: flex; justify-content: space-between; font-size: 18px; font-weight: bold; color: #1f2937; margin-bottom: 8px;">
-                                            <span>Total Paid (USD)</span>
-                                            <span>$${totalPrice.toFixed(2)}</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div style="text-align: center; color: #999; font-size: 12px; margin-top: 30px;">
-                                    <p>💬 Need help? WhatsApp: <a href="https://wa.me/18095105465" style="color: #D4AF37; text-decoration: none;">+1 (809) 510-5465</a></p>
-                                    <p>Sweet Home Punta Cana | Bávaro, Punta Cana</p>
+                                <div style="padding: 24px;">
+                                    ${renderCartItems()}
                                 </div>
                             </div>
-                         </div>
-                     `;
-                        }
+                            
+                            <div style="background: white; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); overflow: hidden;">
+                                <div style="padding: 16px 24px; border-bottom: 1px solid #f3f4f6;">
+                                    <h3 style="margin: 0; font-size: 18px; color: #1f2937; display: flex; align-items: center; gap: 8px;">
+                                        <span>💰</span> Payment Summary
+                                    </h3>
+                                </div>
+                                <div style="padding: 24px;">
+                                    <div style="display: flex; justify-content: space-between; font-size: 18px; font-weight: bold; color: #1f2937; margin-bottom: 8px;">
+                                        <span>Total Paid (USD)</span>
+                                        <span>$${totalPrice.toFixed(2)}</span>
+                                    </div>
+                                </div>
+                            </div>
 
-                        if (normalizedBookingType === 'room') {
-                            const checkIn = bookingDetails.checkInDate ? formatDate(bookingDetails.checkInDate) : 'N/A';
-                            const checkOut = bookingDetails.checkOutDate ? formatDate(bookingDetails.checkOutDate) : 'N/A';
-                            const roomName = bookingDetails.roomName || 'Luxury Room';
-                            const guests = bookingDetails.numberOfGuests || 1;
+                            <div style="text-align: center; color: #999; font-size: 12px; margin-top: 30px;">
+                                <p>💬 Need help? WhatsApp: <a href="https://wa.me/18095105465" style="color: #D4AF37; text-decoration: none;">+1 (809) 510-5465</a></p>
+                                <p>Sweet Home Punta Cana | Bávaro, Punta Cana</p>
+                            </div>
+                        </div>
+                     </div>
+                 `;
+            }
 
-                            return `
+            if (normalizedBookingType === 'room') {
+                const checkIn = bookingDetails.checkInDate ? formatDate(bookingDetails.checkInDate) : 'N/A';
+                const checkOut = bookingDetails.checkOutDate ? formatDate(bookingDetails.checkOutDate) : 'N/A';
+                const roomName = bookingDetails.roomName || 'Luxury Room';
+                const guests = bookingDetails.numberOfGuests || 1;
+
+                return `
              <div style="background-color: #F9F7F2; padding: 0; font-family: 'Helvetica', 'Arial', sans-serif;">
                  <div style="position: relative; height: 250px; background-image: url('${(bookingDetails.room?.image && bookingDetails.room.image.startsWith('http')) ? bookingDetails.room.image : `https://sweet-home-punta-cana.vercel.app${bookingDetails.room?.image || '/1-Caribbean.png'}`}'); background-size: cover; background-position: center;">
                    <div style="position: absolute; inset: 0; background: rgba(0,0,0,0.4);"></div>
@@ -494,29 +491,29 @@ export async function sendBookingConfirmation(data: BookingEmailData) {
 
                           <!-- Room List Loop -->
                           ${(() => {
-                                    // Use bookingDetails directly if bookingData isn't available in this scope, 
-                                    // but we need to ensure 'rooms' exists. 
-                                    // In step 272 we added 'rooms' to bookingData. 
-                                    // Let's safe guard.
-                                    const rooms = (bookingDetails.rooms && Array.isArray(bookingDetails.rooms)) ? bookingDetails.rooms : [{
-                                        name: bookingDetails.roomName || 'Luxury Room',
-                                        id: bookingDetails.id,
-                                        capacity: bookingDetails.numberOfGuests,
-                                        price: bookingDetails.totalPrice,
-                                        image: bookingDetails.room?.image || 'https://sweet-home-punta-cana.vercel.app/1-Caribbean.png'
-                                    }];
+                        // Use bookingDetails directly if bookingData isn't available in this scope, 
+                        // but we need to ensure 'rooms' exists. 
+                        // In step 272 we added 'rooms' to bookingData. 
+                        // Let's safe guard.
+                        const rooms = (bookingDetails.rooms && Array.isArray(bookingDetails.rooms)) ? bookingDetails.rooms : [{
+                            name: bookingDetails.roomName || 'Luxury Room',
+                            id: bookingDetails.id,
+                            capacity: bookingDetails.numberOfGuests,
+                            price: bookingDetails.totalPrice,
+                            image: bookingDetails.room?.image || 'https://sweet-home-punta-cana.vercel.app/1-Caribbean.png'
+                        }];
 
-                                    const start = new Date(bookingDetails.checkInDate);
-                                    const end = new Date(bookingDetails.checkOutDate);
-                                    const nights = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) || 1;
+                        const start = new Date(bookingDetails.checkInDate);
+                        const end = new Date(bookingDetails.checkOutDate);
+                        const nights = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) || 1;
 
-                                    return rooms.map((room: any, index: number) => {
-                                        const roomNights = nights;
-                                        const roomPrice = room.price || (room.totalPrice) || (totalPrice / rooms.length);
-                                        const nightlyRate = roomPrice / roomNights;
-                                        const isLast = index === rooms.length - 1;
+                        return rooms.map((room: any, index: number) => {
+                            const roomNights = nights;
+                            const roomPrice = room.price || (room.totalPrice) || (totalPrice / rooms.length);
+                            const nightlyRate = roomPrice / roomNights;
+                            const isLast = index === rooms.length - 1;
 
-                                        return `
+                            return `
                                  <div style="display: flex; gap: 15px; margin-bottom: ${isLast ? '0' : '20px'}; padding-bottom: ${isLast ? '0' : '20px'}; border-bottom: ${isLast ? 'none' : '1px solid #f0f0f0'};">
                                      <!-- Image -->
                                      <div style="width: 80px; height: 80px; border-radius: 8px; overflow: hidden; flex-shrink: 0; background-color: #eee;">
@@ -532,8 +529,8 @@ export async function sendBookingConfirmation(data: BookingEmailData) {
                                      </div>
                                  </div>
                                  `;
-                                    }).join('');
-                                })()}
+                        }).join('');
+                    })()}
 
                        </div>
                     </div>
@@ -561,16 +558,16 @@ export async function sendBookingConfirmation(data: BookingEmailData) {
                    </div>
                 </div>
              </div>`;
-                        }
+            }
 
-                        if (normalizedBookingType === 'excursion') {
-                            const bookingId = confirmationId.substring(0, 8).toUpperCase();
-                            const bookingDate = details.mainExcursion?.bookingDate ? formatFullDate(details.mainExcursion.bookingDate) : (bookingDetails.date ? formatFullDate(bookingDetails.date) : 'Date to be confirmed');
+            if (normalizedBookingType === 'excursion') {
+                const bookingId = confirmationId.substring(0, 8).toUpperCase();
+                const bookingDate = details.mainExcursion?.bookingDate ? formatFullDate(details.mainExcursion.bookingDate) : (bookingDetails.date ? formatFullDate(bookingDetails.date) : 'Date to be confirmed');
 
-                            // Helper to render excursion items (Main + Bundles)
-                            const renderExcursionItems = () => {
-                                const items = [details.mainExcursion, ...(details.bundledItems || [])].filter(Boolean);
-                                return items.map((item: any) => `
+                // Helper to render excursion items (Main + Bundles)
+                const renderExcursionItems = () => {
+                    const items = [details.mainExcursion, ...(details.bundledItems || [])].filter(Boolean);
+                    return items.map((item: any) => `
                         <div style="border-bottom: 1px dashed #e5e7eb; padding-bottom: 24px; margin-bottom: 24px;">
                             <div style="display: flex; gap: 16px; margin-bottom: 16px;">
                                 ${item.image ? `<img src="${item.image}" alt="${item.title}" style="width: 80px; height: 60px; border-radius: 8px; object-fit: cover;" />` : ''}
@@ -619,9 +616,9 @@ export async function sendBookingConfirmation(data: BookingEmailData) {
                             </table>
                         </div>
                    `).join('');
-                            };
+                };
 
-                            return `
+                return `
              <div style="background-color: #F9F7F2; padding: 40px 20px; font-family: 'Helvetica', 'Arial', sans-serif;">
                <div style="max-width: 600px; margin: 0 auto; padding-bottom: 40px;">
                  
@@ -741,26 +738,26 @@ export async function sendBookingConfirmation(data: BookingEmailData) {
 
                </div>
              </div>`;
-                        }
+            }
 
-                        if (normalizedBookingType === 'laundry') {
-                            // Laundry Service - Exact Confirmation Page Replica
-                            const pickupTime = details.pickupTime || '08:00 AM';
-                            const bags = details.bags || 1;
-                            const roomNumber = details.roomNumber || 'N/A';
-                            const phone = bookingDetails.phone || details.phone || 'N/A';
-                            const dateStr = bookingDetails.date ? formatFullDate(bookingDetails.date) : 'N/A';
-                            const receiptDate = bookingDetails.date ? new Date(bookingDetails.date).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }) : 'N/A';
+            if (normalizedBookingType === 'laundry') {
+                // Laundry Service - Exact Confirmation Page Replica
+                const pickupTime = details.pickupTime || '08:00 AM';
+                const bags = details.bags || 1;
+                const roomNumber = details.roomNumber || 'N/A';
+                const phone = bookingDetails.phone || details.phone || 'N/A';
+                const dateStr = bookingDetails.date ? formatFullDate(bookingDetails.date) : 'N/A';
+                const receiptDate = bookingDetails.date ? new Date(bookingDetails.date).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }) : 'N/A';
 
-                            // Special Instructions (conditional)
-                            const specialInstructions = details.specialInstructions ? `
+                // Special Instructions (conditional)
+                const specialInstructions = details.specialInstructions ? `
                 <div style="padding-top: 15px; border-top: 1px dashed #ccc; margin-top: 15px;">
                     <div style="font-size: 11px; text-transform: uppercase; color: #999; margin-bottom: 5px; font-family: 'Helvetica', sans-serif;">Special Instructions</div>
                     <div style="font-size: 14px; color: #333; font-style: italic;">${details.specialInstructions}</div>
                 </div>
              ` : '';
 
-                            return `
+                return `
              <div style="background-color: #f4f4f4; padding: 40px 20px; font-family: 'Helvetica', 'Arial', sans-serif;">
                <div style="max-width: 600px; margin: 0 auto;">
                   
@@ -926,10 +923,10 @@ export async function sendBookingConfirmation(data: BookingEmailData) {
                   Sweet Home Punta Cana | Bávaro, Punta Cana
                </div>
              </div>`;
-                        }
+            }
 
-                        // Fallback
-                        return `
+            // Fallback
+            return `
             <div class="container">
               <div class="room-header">
                 <h1>🏝️ Sweet Home Punta Cana</h1>
@@ -943,8 +940,8 @@ export async function sendBookingConfirmation(data: BookingEmailData) {
                 <div class="room-total">Total: $${totalPrice.toFixed(2)} USD</div>
               </div>
             </div>`;
-                    })()
-            }
+        })()
+        }
             </body>
                 </html>
                     `;
@@ -961,7 +958,7 @@ export async function sendBookingConfirmation(data: BookingEmailData) {
             html,
         });
 
-        console.log(`✅ Booking confirmation sent to ${ guestEmail } `);
+        console.log(`✅ Booking confirmation sent to ${guestEmail} `);
         return { success: true, html };
     } catch (error) {
         console.error('❌ Failed to send booking email:', error);
