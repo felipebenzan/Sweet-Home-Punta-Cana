@@ -247,15 +247,24 @@ export function ExcursionBookingWidget({
             </div>
 
             {isAdded ? (
-                <Button
-                    asChild
-                    className="w-full bg-green-600 text-white hover:bg-green-700 font-bold"
-                    size="lg"
-                >
-                    <Link href="/checkout/excursions">
-                        Go to Cart <ShoppingCart className="ml-2 h-4 w-4" />
-                    </Link>
-                </Button>
+                <div className="space-y-3">
+                    <Button
+                        asChild
+                        className="w-full bg-green-600 text-white hover:bg-green-700 font-bold"
+                        size="lg"
+                    >
+                        <Link href="/checkout/excursions">
+                            Go to Cart <ShoppingCart className="ml-2 h-4 w-4" />
+                        </Link>
+                    </Button>
+                    <Button
+                        variant="ghost"
+                        className="w-full text-muted-foreground hover:text-shpc-ink md:hidden"
+                        onClick={() => setIsMobileDrawerOpen(false)}
+                    >
+                        Continue Shopping
+                    </Button>
+                </div>
             ) : (
                 <Button
                     className="w-full bg-shpc-yellow text-shpc-ink hover:bg-shpc-yellow/90 font-bold"
