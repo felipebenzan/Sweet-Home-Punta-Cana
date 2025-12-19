@@ -37,7 +37,7 @@ export function FloatingCartButton() {
                 <Button
                     size="icon"
                     className={cn(
-                        "fixed bottom-6 right-6 z-50 h-14 w-14 rounded-full shadow-xl bg-shpc-yellow text-shpc-ink hover:bg-shpc-yellow/90 animate-in zoom-in-0 duration-300",
+                        "fixed bottom-6 right-6 z-40 h-14 w-14 rounded-full shadow-xl bg-shpc-yellow text-shpc-ink hover:bg-shpc-yellow/90 animate-in zoom-in-0 duration-300",
                         // "md:hidden" // User didn't say only mobile. They said "global component". 
                         // But usually redundant if sidebar exists. I'll leave it global as requested.
                     )}

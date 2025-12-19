@@ -304,13 +304,15 @@ export function ExcursionBookingWidget({
                                 Reserve
                             </Button>
                         </SheetTrigger>
-                        <SheetContent side="bottom" className="rounded-t-3xl pt-6 h-[85vh]">
-                            <SheetHeader className="pb-6 text-left">
-                                <SheetTitle>Book Experience</SheetTitle>
+                        <SheetContent side="bottom" className="h-[90vh] sm:h-[85vh] overflow-y-auto rounded-t-xl p-6 z-[100]">
+                            <SheetHeader className="pb-4">
+                                <SheetTitle className="font-playfair text-2xl font-bold flex items-center justify-between">
+                                    Book Experience
+                                    {/* Close is handled by Default Sheet Close */}
+                                </SheetTitle>
                             </SheetHeader>
-                            <div className="overflow-y-auto h-full pb-20"> {/* Add padding for scroll */}
-                                <BookingFormContent inlineCalendar={true} />
-                            </div>
+
+                            <BookingFormContent inlineCalendar={true} />
                         </SheetContent>
                     </Sheet>
                 </div>
