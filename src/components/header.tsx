@@ -1,14 +1,14 @@
-
 'use client';
 
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Menu } from 'lucide-react';
+import { Menu, ShoppingCart } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation';
+import { useCartStore } from '@/store/use-cart-store';
 
 const navLinks = [
   { href: '/', label: 'Home' },
@@ -21,10 +21,21 @@ const navLinks = [
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
+  const cartItems = useCartStore((state) => state.items);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     setIsMobileMenuOpen(false);
   }, [pathname]);
+
+  const cartCount = mounted ? cartItems.reduce((acc, item) => acc + (item.type === 'excursion' ? 1 : 0), 0) : 0;
+  // Actually, item count usually means number of distinct items or total quantity? 
+  // Let's use length of items array for simplicity as structure is 1 item per addition.
+  const displayCount = mounted ? cartItems.length : 0;
 
   return (
     <header className="h-[var(--header-height)]">
@@ -51,12 +62,29 @@ export default function Header() {
                 {link.label}
               </Link>
             ))}
+            <Link
+              href="/checkout/excursions"
+              className="flex items-center gap-2 text-neutral-600 transition-colors hover:text-shpc-ink font-semibold"
+            >
+              <ShoppingCart className="h-4 w-4" />
+              Cart
+              {displayCount > 0 && (
+                <span className="bg-shpc-yellow text-shpc-ink text-[10px] font-bold px-1.5 py-0.5 rounded-full -ml-1">
+                  {displayCount}
+                </span>
+              )}
+            </Link>
           </nav>
           <div className="md:hidden">
             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon">
-                  <Menu className="h-6 w-6" />
+                  <div className="relative">
+                    <Menu className="h-6 w-6" />
+                    {displayCount > 0 && (
+                      <span className="absolute -top-1 -right-1 h-2.5 w-2.5 bg-shpc-yellow rounded-full border border-white" />
+                    )}
+                  </div>
                   <span className="sr-only">Open menu</span>
                 </Button>
               </SheetTrigger>
@@ -74,6 +102,18 @@ export default function Header() {
                       {link.label}
                     </Link>
                   ))}
+                  <Link
+                    href="/checkout/excursions"
+                    className="text-lg font-medium text-shpc-ink transition-colors hover:text-shpc-yellow block py-2 flex items-center gap-2"
+                  >
+                    <ShoppingCart className="h-5 w-5" />
+                    Cart
+                    {displayCount > 0 && (
+                      <span className="bg-shpc-yellow text-shpc-ink text-xs font-bold px-2 py-0.5 rounded-full">
+                        {displayCount} item{displayCount !== 1 ? 's' : ''}
+                      </span>
+                    )}
+                  </Link>
                 </nav>
               </SheetContent>
             </Sheet>
@@ -83,4 +123,3 @@ export default function Header() {
     </header>
   );
 }
-

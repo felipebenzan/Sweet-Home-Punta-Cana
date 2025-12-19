@@ -9,6 +9,7 @@ import type { Excursion } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getExcursions } from '@/app/server-actions.readonly';
 import { revalidatePath } from 'next/cache';
+import { CartSidebar } from '@/components/excursions/cart-sidebar';
 
 export const revalidate = 0; // Disable cache for instant updates
 
@@ -35,54 +36,64 @@ export default async function ExcursionsPage() {
         </div>
       </section>
 
-      {/* Main Grid */}
-      <div className="max-w-6xl mx-auto px-6 py-12 sm:py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {allExcursions && allExcursions.length > 0 ? (
-            allExcursions.map((excursion) => (
-              <Card key={excursion.id} className="overflow-hidden shadow-soft rounded-2xl w-full flex flex-col group">
-                <Link href={`/excursions/${excursion.slug}`} className="block overflow-hidden">
-                  <div className="relative aspect-video w-full">
-                    <Image
-                      src={excursion.image}
-                      alt={excursion.title}
-                      fill
-                      className="object-cover transition-transform duration-300 group-hover:scale-105"
-                      data-ai-hint="vacation excursion"
-                    />
-                  </div>
-                </Link>
-                <CardContent className="p-6 flex flex-col flex-grow">
-                  <h3 className="font-playfair text-2xl font-bold text-shpc-ink">{excursion.title}</h3>
-                  <p className="text-sm text-muted-foreground mt-2 flex-grow">{excursion.tagline}</p>
-                  <div className="flex items-center text-sm text-muted-foreground gap-6 mt-4 pt-4 border-t">
-                    <div className="flex items-center gap-2">
-                      <Sun className="h-4 w-4" />
-                      <span>{excursion.practicalInfo?.departure || 'N/A'}</span>
+      {/* Main Layout Container */}
+      <div className="max-w-7xl mx-auto px-6 py-12 sm:py-16">
+        <div className="flex flex-col lg:flex-row gap-12 items-start">
+
+          {/* Cart Sidebar (Left) - Will hide itself if empty */}
+          <CartSidebar />
+
+          {/* Main Grid (Right) */}
+          <div className="flex-grow w-full">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {allExcursions && allExcursions.length > 0 ? (
+                allExcursions.map((excursion) => (
+                  <Card key={excursion.id} className="overflow-hidden shadow-soft rounded-2xl w-full flex flex-col group">
+                    <Link href={`/excursions/${excursion.slug}`} className="block overflow-hidden">
+                      <div className="relative aspect-video w-full">
+                        <Image
+                          src={excursion.image}
+                          alt={excursion.title}
+                          fill
+                          className="object-cover transition-transform duration-300 group-hover:scale-105"
+                          data-ai-hint="vacation excursion"
+                        />
+                      </div>
+                    </Link>
+                    <CardContent className="p-6 flex flex-col flex-grow">
+                      <h3 className="font-playfair text-2xl font-bold text-shpc-ink">{excursion.title}</h3>
+                      <p className="text-sm text-muted-foreground mt-2 flex-grow">{excursion.tagline}</p>
+                      <div className="flex items-center text-sm text-muted-foreground gap-6 mt-4 pt-4 border-t">
+                        <div className="flex items-center gap-2">
+                          <Sun className="h-4 w-4" />
+                          <span>{excursion.practicalInfo?.departure || 'N/A'}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Clock className="h-4 w-4" />
+                          <span>{excursion.practicalInfo?.duration || 'N/A'}</span>
+                        </div>
+                      </div>
+                    </CardContent>
+                    <div className="px-6 pb-6 flex justify-between items-center">
+                      <div>
+                        <span className="text-sm text-muted-foreground">From </span>
+                        <span className="text-2xl font-bold text-foreground">${excursion.price.adult.toFixed(2)}</span>
+                      </div>
+                      <Button asChild variant="outline">
+                        <Link href={`/excursions/${excursion.slug}`}>View Details <ArrowRight className="ml-2 h-4 w-4" /></Link>
+                      </Button>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Clock className="h-4 w-4" />
-                      <span>{excursion.practicalInfo?.duration || 'N/A'}</span>
-                    </div>
-                  </div>
-                </CardContent>
-                <div className="px-6 pb-6 flex justify-between items-center">
-                  <div>
-                    <span className="text-sm text-muted-foreground">From </span>
-                    <span className="text-2xl font-bold text-foreground">${excursion.price.adult.toFixed(2)}</span>
-                  </div>
-                  <Button asChild variant="outline">
-                    <Link href={`/excursions/${excursion.slug}`}>View Details <ArrowRight className="ml-2 h-4 w-4" /></Link>
-                  </Button>
+                  </Card>
+                ))
+              ) : (
+                <div className="md:col-span-2 text-center py-16">
+                  <h2 className="text-2xl font-semibold text-shpc-ink">Coming Soon!</h2>
+                  <p className="mt-2 text-neutral-600">We are busy curating the best local experiences. Check back soon!</p>
                 </div>
-              </Card>
-            ))
-          ) : (
-            <div className="md:col-span-2 text-center py-16">
-              <h2 className="text-2xl font-semibold text-shpc-ink">Coming Soon!</h2>
-              <p className="mt-2 text-neutral-600">We are busy curating the best local experiences. Check back soon!</p>
+              )}
             </div>
-          )}
+          </div>
+
         </div>
       </div>
 
