@@ -304,7 +304,7 @@ export function ExcursionBookingWidget({
                                 Reserve
                             </Button>
                         </SheetTrigger>
-                        <SheetContent side="bottom" className="h-[90vh] sm:h-[85vh] overflow-y-auto rounded-t-xl p-6 z-[100]">
+                        <SheetContent side="bottom" className="h-[90vh] sm:h-[85vh] overflow-y-auto rounded-t-xl p-6">
                             <SheetHeader className="pb-4">
                                 <SheetTitle className="font-playfair text-2xl font-bold flex items-center justify-between">
                                     Book Experience
