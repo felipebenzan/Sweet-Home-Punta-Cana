@@ -1,9 +1,9 @@
 "use client";
 
 import * as React from "react";
-import { format } from "date-fns";
+import { format, eachDayOfInterval, isSameDay } from "date-fns";
 import { Calendar as CalendarIcon, Loader2, Save, Trash2, X } from "lucide-react";
-import { useForm } from "react-hook-form";
+import { DateRange } from "react-day-picker";
 import { toast } from "@/hooks/use-toast";
 
 import { cn } from "@/lib/utils";
@@ -16,41 +16,29 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
 
-import { updateRoomBasePrice, upsertDailyRate, deleteDailyRate, getDailyRates } from "@/app/admin/rooms/actions"; // Adjust path as needed
+import { updateRoomBasePrice, bulkUpdateDailyRates, bulkDeleteDailyRates, getDailyRates } from "@/app/admin/rooms/actions";
 
 interface PricesTabProps {
     roomId: string;
     initialBasePrice: number;
 }
 
-interface DailyRate {
-    date: string; // ISO date only YYYY-MM-DD
-    price: number;
-}
-
 export function PricesTab({ roomId, initialBasePrice }: PricesTabProps) {
     const [basePrice, setBasePrice] = React.useState(initialBasePrice);
     const [isSavingBase, setIsSavingBase] = React.useState(false);
 
-    // Calendar state
-    const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(undefined);
+    // Calendar state (Range)
+    const [range, setRange] = React.useState<DateRange | undefined>(undefined);
     const [month, setMonth] = React.useState<Date>(new Date());
 
     // Rates cache: "YYYY-MM-DD" -> price
     const [rates, setRates] = React.useState<Record<string, number>>({});
     const [isLoadingRates, setIsLoadingRates] = React.useState(false);
 
-    // Popover state
-    const [isPopoverOpen, setIsPopoverOpen] = React.useState(false);
+    // Bulk Edit State
     const [priceInput, setPriceInput] = React.useState("");
     const [isSavingRate, setIsSavingRate] = React.useState(false);
 
@@ -58,15 +46,14 @@ export function PricesTab({ roomId, initialBasePrice }: PricesTabProps) {
     React.useEffect(() => {
         const fetchRates = async () => {
             setIsLoadingRates(true);
-            const start = new Date(month.getFullYear(), month.getMonth() - 1, 1); // Fetch prev month too just in case
-            const end = new Date(month.getFullYear(), month.getMonth() + 2, 0); // Fetch next month too
+            const start = new Date(month.getFullYear(), month.getMonth() - 1, 1);
+            const end = new Date(month.getFullYear(), month.getMonth() + 2, 0);
 
             const result = await getDailyRates(roomId, start.toISOString(), end.toISOString());
 
             if (result.success && result.rates) {
                 const newRates: Record<string, number> = {};
                 result.rates.forEach((r: any) => {
-                    // Ensure we just get the YYYY-MM-DD part
                     const d = new Date(r.date).toISOString().split('T')[0];
                     newRates[d] = r.price;
                 });
@@ -77,6 +64,16 @@ export function PricesTab({ roomId, initialBasePrice }: PricesTabProps) {
 
         fetchRates();
     }, [roomId, month]);
+
+    // Update price input when selection changes
+    React.useEffect(() => {
+        if (range?.from) {
+            // Be smart: if single date or range start has a price, pre-fill it
+            const key = range.from.toISOString().split('T')[0];
+            const existing = rates[key];
+            setPriceInput(existing?.toString() || basePrice.toString());
+        }
+    }, [range, rates, basePrice]);
 
     const handleSaveBasePrice = async () => {
         setIsSavingBase(true);
@@ -90,73 +87,60 @@ export function PricesTab({ roomId, initialBasePrice }: PricesTabProps) {
         }
     };
 
-    const handleDateSelect = (date: Date | undefined) => {
-        if (!date) return;
-        setSelectedDate(date);
-        const dateKey = date.toISOString().split('T')[0];
-        const existingPrice = rates[dateKey];
-        setPriceInput(existingPrice ? existingPrice.toString() : basePrice.toString());
-        setIsPopoverOpen(true);
-    };
-
-    const handleSaveDailyRate = async () => {
-        if (!selectedDate) return;
+    const handleSaveBulkRates = async () => {
+        if (!range?.from) return;
         setIsSavingRate(true);
 
-        const dateStr = selectedDate.toISOString().split('T')[0]; // YYYY-MM-DD
         const price = parseFloat(priceInput);
-
         if (isNaN(price)) {
             toast({ title: "Invalid Price", variant: "destructive" });
             setIsSavingRate(false);
             return;
         }
 
-        // Upsert
-        const result = await upsertDailyRate(roomId, dateStr, price);
-        setIsSavingRate(false);
+        const start = range.from;
+        const end = range.to || range.from; // Handle single day selection in range mode
+        const dates = eachDayOfInterval({ start, end });
 
-        if (result.success) {
-            setRates(prev => ({ ...prev, [dateStr]: price }));
-            toast({ title: "Rate Updated", description: `Price for ${dateStr} set to $${price}` });
-            setIsPopoverOpen(false);
-        } else {
-            toast({ title: "Failed to save rate", variant: "destructive" });
-        }
-    };
+        const updates = dates.map(d => ({
+            date: d.toISOString().split('T')[0],
+            price
+        }));
 
-    const handleDeleteDailyRate = async () => {
-        if (!selectedDate) return;
-        setIsSavingRate(true);
-        const dateStr = selectedDate.toISOString().split('T')[0];
-
-        const result = await deleteDailyRate(roomId, dateStr);
+        const result = await bulkUpdateDailyRates(roomId, updates);
         setIsSavingRate(false);
 
         if (result.success) {
             const newRates = { ...rates };
-            delete newRates[dateStr];
+            updates.forEach(u => { newRates[u.date] = u.price; });
             setRates(newRates);
-            toast({ title: "Rate Reset", description: "Date is now using base price." });
-            setIsPopoverOpen(false);
+            toast({ title: "Rates Updated", description: `Updated ${updates.length} dates to $${price}` });
+            setRange(undefined); // Clear selection after save
         } else {
-            toast({ title: "Failed to reset rate", variant: "destructive" });
+            toast({ title: "Failed to save rates", variant: "destructive" });
         }
     };
 
-    // Custom Day render to show prices
-    const modifiers = {
-        hasRate: (date: Date) => {
-            const key = date.toISOString().split('T')[0];
-            return key in rates;
-        }
-    };
+    const handleResetRates = async () => {
+        if (!range?.from) return;
+        setIsSavingRate(true);
 
-    const modifiersStyles = {
-        hasRate: {
-            fontWeight: 'bold',
-            color: '#d97706', // amber-600
-            textDecoration: 'underline'
+        const start = range.from;
+        const end = range.to || range.from;
+        const dates = eachDayOfInterval({ start, end });
+        const dateStrings = dates.map(d => d.toISOString().split('T')[0]);
+
+        const result = await bulkDeleteDailyRates(roomId, dateStrings);
+        setIsSavingRate(false);
+
+        if (result.success) {
+            const newRates = { ...rates };
+            dateStrings.forEach(d => { delete newRates[d]; });
+            setRates(newRates);
+            toast({ title: "Rates Reset", description: "Selected dates now use base price." });
+            setRange(undefined);
+        } else {
+            toast({ title: "Failed to reset rates", variant: "destructive" });
         }
     };
 
@@ -193,144 +177,116 @@ export function PricesTab({ roomId, initialBasePrice }: PricesTabProps) {
                 </CardContent>
             </Card>
 
-            {/* CALENDAR */}
+            {/* CALENDAR & EDITOR */}
             <Card className="shadow-soft rounded-2xl">
                 <CardHeader>
                     <CardTitle>Rate Calendar</CardTitle>
                     <CardDescription>
-                        Click on a date to override the base price. Dates with custom rates are highlighted.
+                        Select a date range to override prices. Existing custom rates are highlighted in amber.
                     </CardDescription>
                 </CardHeader>
-                <CardContent className="flex flex-col items-center">
+                <CardContent className="flex flex-col lg:flex-row gap-8 items-start">
 
-                    <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
-                        <PopoverTrigger asChild>
-                            <div />
-                            {/* 
-                  Hidden trigger because we open programmatically on date select. 
-                  Actually, Calendar integration with Popover is tricky.
-                  Better approach: Wrap Calendar in a div, and put Popover anchored to something else or use a Dialog.
-                  
-                  Let's just put the Popover anchor around the Calendar or use a Dialog controlled by state.
-                  
-                  Wait, standard shadcn Popover requires a trigger. 
-                  I will use a Dialog for simplicity for the edit interaction, or just position a floating card.
-                  
-                  Actually, let's just render the Calendar, and have a "Edit Rate" area appear below/beside it when a date is selected, 
-                  OR use the Popover on a specialized "Day" component if passing components to DayPicker.
-                  
-                  Simpler: Just show a clean Dialog when a date is clicked.
-                */}
-                        </PopoverTrigger>
-                        <PopoverContent className="w-80">
-                            <div className="space-y-4">
-                                <h4 className="font-semibold leading-none">
-                                    Edit Rate for {selectedDate?.toLocaleDateString()}
-                                </h4>
-                                <p className="text-sm text-muted-foreground">
-                                    Set a custom price for this specific date.
-                                </p>
-                                <div className="flex items-center gap-2">
-                                    <Label htmlFor="daily-price" className="sr-only">Price</Label>
-                                    <Input
-                                        id="daily-price"
-                                        type="number"
-                                        value={priceInput}
-                                        onChange={(e) => setPriceInput(e.target.value)}
-                                    />
-                                    <Button size="icon" onClick={handleSaveDailyRate} disabled={isSavingRate}>
-                                        {isSavingRate ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-                                    </Button>
-                                    <Button size="icon" variant="destructive" onClick={handleDeleteDailyRate} disabled={isSavingRate}>
-                                        <Trash2 className="h-4 w-4" />
-                                    </Button>
-                                </div>
-                            </div>
-                        </PopoverContent>
-                    </Popover>
+                    {/* Calendar Area */}
+                    <div className="border rounded-md p-4 bg-white mx-auto lg:mx-0">
+                        <Calendar
+                            mode="range"
+                            selected={range}
+                            onSelect={setRange}
+                            month={month}
+                            onMonthChange={setMonth}
+                            className="p-0"
+                            classNames={{
+                                month: "space-y-4",
+                                cell: "h-16 w-14 text-center text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
+                                day: cn(
+                                    "h-16 w-14 p-0 font-normal aria-selected:opacity-100 flex flex-col items-center justify-start pt-2 gap-1 hover:bg-accent/50 transition-colors"
+                                ),
+                            }}
+                            components={{
+                                DayContent: (props) => {
+                                    const { date } = props;
+                                    const dateKey = date.toISOString().split('T')[0];
+                                    const price = rates[dateKey];
 
-                    {/* Custom Calendar Implementation to visualize prices */}
+                                    return (
+                                        <>
+                                            <span className="text-sm font-medium">{date.getDate()}</span>
+                                            {price && (
+                                                <span className="text-[10px] font-bold text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded shadow-sm">
+                                                    ${price}
+                                                </span>
+                                            )}
+                                        </>
+                                    )
+                                }
+                            }}
+                        />
+                    </div>
 
-                    <div className="flex flex-col md:flex-row gap-8 items-start w-full">
-                        <div className="border rounded-md p-4 bg-white mx-auto">
-                            <Calendar
-                                mode="single"
-                                selected={selectedDate}
-                                onSelect={handleDateSelect}
-                                month={month}
-                                onMonthChange={setMonth}
-                                modifiers={modifiers}
-                                modifiersStyles={modifiersStyles}
-                                components={{
-                                    DayContent: (props) => {
-                                        const { date } = props;
-                                        const dateKey = date.toISOString().split('T')[0];
-                                        const price = rates[dateKey];
-
-                                        return (
-                                            <div className="relative w-full h-full flex flex-col items-center justify-center py-1">
-                                                <span>{date.getDate()}</span>
-                                                {price && (
-                                                    <span className="text-[10px] font-bold text-amber-600 bg-amber-50 px-1 rounded -mt-1">
-                                                        ${price}
-                                                    </span>
-                                                )}
-                                            </div>
-                                        )
-                                    }
-                                }}
-                            />
-                        </div>
-
-                        {/* Editor Side Panel (Alternative to Popover/Dialog) - visible when date selected */}
-                        {selectedDate && (
-                            <Card className="w-full md:w-80 animate-in fade-in slide-in-from-right-4">
+                    {/* Editor Panel - Always visible but disabled if no selection? Or context aware. */}
+                    <div className="flex-1 w-full lg:w-auto space-y-4">
+                        {range?.from ? (
+                            <Card className="w-full bg-muted/30 border-dashed animate-in fade-in slide-in-from-right-4">
                                 <CardHeader className="pb-3">
-                                    <div className="flex justify-between items-center">
-                                        <CardTitle className="text-lg">Edit Rate</CardTitle>
-                                        <Button variant="ghost" size="icon" onClick={() => setSelectedDate(undefined)}>
+                                    <div className="flex justify-between items-start">
+                                        <div>
+                                            <CardTitle className="text-lg">Edit Rates</CardTitle>
+                                            <CardDescription>
+                                                {format(range.from, 'MMM d')}
+                                                {range.to && range.to > range.from && ` - ${format(range.to, 'MMM d, yyyy')}`}
+                                            </CardDescription>
+                                        </div>
+                                        <Button variant="ghost" size="icon" onClick={() => setRange(undefined)}>
                                             <X className="h-4 w-4" />
                                         </Button>
                                     </div>
-                                    <CardDescription>{format(selectedDate, 'MMMM do, yyyy')}</CardDescription>
                                 </CardHeader>
-                                <CardContent className="space-y-4">
+                                <CardContent className="space-y-6">
                                     <div className="space-y-2">
-                                        <Label>Price for Night</Label>
+                                        <Label>Set Price for Selection</Label>
                                         <div className="relative">
                                             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
                                             <Input
                                                 type="number"
                                                 value={priceInput}
                                                 onChange={(e) => setPriceInput(e.target.value)}
-                                                className="pl-8"
+                                                className="pl-8 bg-white"
                                             />
                                         </div>
+                                        <p className="text-xs text-muted-foreground">
+                                            This price will apply to all selected dates.
+                                        </p>
                                     </div>
 
-                                    <div className="flex flex-col gap-2">
-                                        <Button onClick={handleSaveDailyRate} disabled={isSavingRate} className="w-full">
+                                    <div className="space-y-2">
+                                        <Button onClick={handleSaveBulkRates} disabled={isSavingRate} className="w-full bg-shpc-yellow text-shpc-ink hover:bg-shpc-yellow/90">
                                             {isSavingRate ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-                                            Save Rate
+                                            Save Rates
                                         </Button>
 
-                                        {rates[selectedDate.toISOString().split('T')[0]] && (
-                                            <Button
-                                                onClick={handleDeleteDailyRate}
-                                                disabled={isSavingRate}
-                                                variant="outline"
-                                                className="w-full text-destructive hover:bg-destructive/10"
-                                            >
-                                                <Trash2 className="mr-2 h-4 w-4" />
-                                                Reset to Base Price
-                                            </Button>
-                                        )}
+                                        <Button
+                                            onClick={handleResetRates}
+                                            disabled={isSavingRate}
+                                            variant="outline"
+                                            className="w-full text-destructive hover:bg-destructive/10 border-destructive/20"
+                                        >
+                                            <Trash2 className="mr-2 h-4 w-4" />
+                                            Reset to Base Price
+                                        </Button>
                                     </div>
                                 </CardContent>
                             </Card>
+                        ) : (
+                            <div className="h-full flex flex-col items-center justify-center p-8 text-center border-2 border-dashed rounded-lg text-muted-foreground bg-muted/10 min-h-[300px]">
+                                <CalendarIcon className="h-10 w-10 mb-4 opacity-20" />
+                                <h3 className="text-lg font-semibold mb-2">No Dates Selected</h3>
+                                <p className="text-sm max-w-[240px]">
+                                    Click and drag on the calendar to select a range of dates to edit.
+                                </p>
+                            </div>
                         )}
                     </div>
-
                 </CardContent>
             </Card>
         </div>

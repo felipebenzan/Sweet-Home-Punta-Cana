@@ -150,3 +150,75 @@ export async function getDailyRates(roomId: string, startStr: string, endStr: st
         return { success: false, error: 'Database error' };
     }
 }
+export async function bulkUpdateDailyRates(roomId: string, updates: { date: string; price: number }[]) {
+    const session = await verifySession();
+    if (!session) {
+        return { success: false, error: 'Unauthorized' };
+    }
+
+    // Validate inputs
+    const updatesSchema = z.array(z.object({
+        date: z.string().refine((val) => !isNaN(Date.parse(val))),
+        price: z.number().min(0),
+    }));
+
+    const result = updatesSchema.safeParse(updates);
+    if (!result.success) {
+        return { success: false, error: 'Invalid data format' };
+    }
+
+    try {
+        // We use a transaction to ensure all or nothing
+        // Prisma's createMany is nice, but we need upsert (update if exists).
+        // createMany with skipDuplicates ignores updates.
+        // So we might need to delete valid existing then createMany, OR loop upserts in transaction.
+        // For < 100 items, loop in transaction is fine.
+
+        await prisma.$transaction(
+            updates.map((update) => {
+                const dateObj = new Date(update.date);
+                return prisma.dailyRate.upsert({
+                    where: {
+                        roomId_date: {
+                            roomId,
+                            date: dateObj,
+                        },
+                    },
+                    update: { price: update.price },
+                    create: {
+                        roomId,
+                        date: dateObj,
+                        price: update.price,
+                    },
+                });
+            })
+        );
+
+        return { success: true };
+    } catch (error) {
+        console.error('Failed to bulk update rates:', error);
+        return { success: false, error: 'Database error' };
+    }
+}
+
+export async function bulkDeleteDailyRates(roomId: string, dates: string[]) {
+    const session = await verifySession();
+    if (!session) {
+        return { success: false, error: 'Unauthorized' };
+    }
+
+    try {
+        const dateObjs = dates.map(d => new Date(d));
+        await prisma.dailyRate.deleteMany({
+            where: {
+                roomId,
+                date: { in: dateObjs }
+            }
+        });
+
+        return { success: true };
+    } catch (error) {
+        console.error('Failed to bulk delete rates:', error);
+        return { success: false, error: 'Database error' };
+    }
+}
