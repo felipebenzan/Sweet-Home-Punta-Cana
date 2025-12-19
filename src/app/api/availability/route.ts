@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { Beds24 } from '@/lib/beds24';
+import { calculateBookingPrice } from '@/lib/pricing';
 
 export const dynamic = 'force-dynamic';
 
@@ -57,7 +58,8 @@ export async function GET(request: NextRequest) {
         };
 
         // 4. Merge Data
-        const mergedRooms = localRooms.map(room => {
+        // 4. Merge Data
+        const mergedRooms = await Promise.all(localRooms.map(async room => {
             const b24 = room.beds24_room_id ? beds24Data[room.beds24_room_id] : null;
 
             // If we have Beds24 data, use it. 
@@ -67,15 +69,20 @@ export async function GET(request: NextRequest) {
                 ? b24.available
                 : false;
 
-            // Fallback to local room price if API price is 0 or missing
-            // Calculate nights for fallback price (local DB has nightly price)
+            // Calculate dynamic price using our hybrid system
             const start = new Date(arrival);
             const end = new Date(departure);
-            const nights = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
 
-            // STRICT: Always use LOCAL price for the website, ignoring Beds24 price.
-            // We calculate Total Price here to maintain consistency with the frontend.
-            const finalPrice = room.price * Math.max(1, nights);
+            let finalPrice = 0;
+            try {
+                // This calculates the TOTAL price for the range, including custom daily rates
+                finalPrice = await calculateBookingPrice(room.id, start, end);
+            } catch (pricingError) {
+                console.error(`Pricing calculation failed for room ${room.id}`, pricingError);
+                // Fallback to legacy static price calculation
+                const nights = Math.max(1, Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)));
+                finalPrice = ((room as any).basePrice ?? room.price) * nights;
+            }
 
             let parsedAmenities: string[] = [];
             try {
@@ -101,7 +108,7 @@ export async function GET(request: NextRequest) {
                 isAvailable,
                 beds24Details: b24
             };
-        });
+        }));
 
         // 5. Filter & Sort Logic
         const availableRooms = mergedRooms.filter(r => r.isAvailable);
