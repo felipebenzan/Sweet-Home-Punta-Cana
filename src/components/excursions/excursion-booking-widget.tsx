@@ -154,13 +154,8 @@ export function ExcursionBookingWidget({
                                     }}
                                     disabled={getDisabledDays()}
                                     initialFocus
-                                    className="w-full"
-                                    classNames={{
-                                        month: "space-y-4 w-full flex flex-col items-center",
-                                        table: "w-full border-collapse space-y-1",
-                                        head_row: "flex w-full justify-between",
-                                        row: "flex w-full mt-2 justify-between",
-                                    }}
+                                    className="rounded-md border bg-white"
+                                    fromDate={new Date()} // Prevent past dates
                                 />
                             </div>
                         </CollapsibleContent>
