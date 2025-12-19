@@ -21,6 +21,14 @@ export interface Room {
   beds24_room_id?: string;
   isAvailable?: boolean;
   beds24Details?: any;
+  basePrice?: number;
+}
+
+export interface DailyRate {
+  id: string;
+  date: Date;
+  price: number;
+  roomId: string;
 }
 
 export interface Review {

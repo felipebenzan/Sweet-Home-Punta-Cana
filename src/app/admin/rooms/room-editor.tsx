@@ -18,6 +18,8 @@ import {
   Link2,
 } from "lucide-react";
 
+import { PricesTab } from "@/components/admin/prices-tab";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -354,6 +356,7 @@ export default function RoomEditor({ slug, initialData }: RoomEditorProps) {
             <TabsList className="mb-6 inline-flex">
               <TabsTrigger value="details">Details</TabsTrigger>
               <TabsTrigger value="amenities">Amenities</TabsTrigger>
+              <TabsTrigger value="prices">Prices</TabsTrigger>
               <TabsTrigger value="photos">Photos</TabsTrigger>
             </TabsList>
           </div>
@@ -535,55 +538,19 @@ export default function RoomEditor({ slug, initialData }: RoomEditorProps) {
             </Card>
           </TabsContent>
 
-          <TabsContent value="amenities">
-            <Card className="shadow-soft rounded-2xl">
-              <CardHeader>
-                <CardTitle>Amenities</CardTitle>
-                <CardDescription>
-                  Select all amenities available in this room.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {allAmenities.map((amenity) => (
-                    <div
-                      key={amenity}
-                      className="flex items-center space-x-2 p-3 bg-shpc-sand/50 rounded-lg"
-                    >
-                      <Switch
-                        id={amenity.toLowerCase().replace(/\s+/g, "-")}
-                        checked={room.amenities?.includes(amenity)}
-                        onCheckedChange={(checked) =>
-                          handleAmenityChange(amenity, checked)
-                        }
-                      />
-                      <Label
-                        htmlFor={amenity.toLowerCase().replace(/\s+/g, "-")}
-                        className="cursor-pointer"
-                      >
-                        {amenity}
-                      </Label>
-                    </div>
-                  ))}
-                </div>
-                <div className="pt-4 border-t">
-                  <Label htmlFor="new-amenity" className="font-medium">
-                    Add a Custom Amenity
-                  </Label>
-                  <div className="flex items-center gap-2 mt-2">
-                    <Input
-                      id="new-amenity"
-                      placeholder="e.g., Ocean View"
-                      value={newAmenityLabel}
-                      onChange={(e) => setNewAmenityLabel(e.target.value)}
-                    />
-                    <Button type="button" onClick={handleAddAmenity}>
-                      Add
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+          <TabsContent value="prices">
+            {room?.id ? (
+              <PricesTab
+                roomId={room.id}
+                initialBasePrice={room.basePrice ?? room.price ?? 55}
+              />
+            ) : (
+              <div className="p-6 text-center border rounded-lg bg-muted/20">
+                <p className="text-muted-foreground">
+                  Please save the room first to unlock price management.
+                </p>
+              </div>
+            )}
           </TabsContent>
 
           <TabsContent value="photos">
@@ -591,8 +558,7 @@ export default function RoomEditor({ slug, initialData }: RoomEditorProps) {
               <CardHeader>
                 <CardTitle>Photos</CardTitle>
                 <CardDescription>
-                  Paste public image URLs from the Firebase Console or any other
-                  hosting service.
+                  Paste public image URLs from any hosting service.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-8">

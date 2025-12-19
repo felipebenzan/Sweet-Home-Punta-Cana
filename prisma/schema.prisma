@@ -32,7 +32,22 @@ model Room {
   inventoryUnits     Int      @default(1)
   cancellationPolicy String?
   
+  basePrice          Float    @default(55.00)
+  dailyRates         DailyRate[]
+
   reservations       Reservation[]
+}
+
+model DailyRate {
+  id        String   @id @default(cuid())
+  date      DateTime
+  price     Float
+  roomId    String
+  room      Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([roomId, date])
 }
 
 model Excursion {
