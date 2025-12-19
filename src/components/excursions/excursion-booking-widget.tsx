@@ -87,9 +87,7 @@ export function ExcursionBookingWidget({
         });
 
         setIsAdded(true);
-        // setIsMobileDrawerOpen(false); // Keep drawer open to show the button? Or close and show toast?
-        // User request: "once people click on add to itinerary, show a go to cart button"
-        // I'll keep the drawer open (or stay on page) and show the button.
+        setIsMobileDrawerOpen(false); // Close drawer immediately as requested ("don't show it... only show it when we click small cart")
     };
 
     const getDisabledDays = () => {
@@ -241,35 +239,14 @@ export function ExcursionBookingWidget({
                 </div>
             </div>
 
-            {isAdded ? (
-                <div className="space-y-3">
-                    <Button
-                        asChild
-                        className="w-full bg-green-600 text-white hover:bg-green-700 font-bold"
-                        size="lg"
-                    >
-                        <Link href="/checkout/excursions">
-                            Go to Cart <ShoppingCart className="ml-2 h-4 w-4" />
-                        </Link>
-                    </Button>
-                    <Button
-                        variant="ghost"
-                        className="w-full text-muted-foreground hover:text-shpc-ink md:hidden"
-                        onClick={() => setIsMobileDrawerOpen(false)}
-                    >
-                        Continue Shopping
-                    </Button>
-                </div>
-            ) : (
-                <Button
-                    className="w-full bg-shpc-yellow text-shpc-ink hover:bg-shpc-yellow/90 font-bold"
-                    size="lg"
-                    disabled={!isReadyToAdd}
-                    onClick={handleAddToCart}
-                >
-                    Add to Itinerary
-                </Button>
-            )}
+            <Button
+                className="w-full bg-shpc-yellow text-shpc-ink hover:bg-shpc-yellow/90 font-bold"
+                size="lg"
+                onClick={handleAddToCart}
+                disabled={!isReadyToAdd}
+            >
+                Add to Itinerary
+            </Button>
         </div>
     );
 
