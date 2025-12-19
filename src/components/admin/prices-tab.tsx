@@ -207,16 +207,21 @@ export function PricesTab({ roomId, initialBasePrice }: PricesTabProps) {
                                 DayContent: (props) => {
                                     const { date } = props;
                                     const dateKey = date.toISOString().split('T')[0];
-                                    const price = rates[dateKey];
+                                    const dailyPrice = rates[dateKey];
+                                    const displayPrice = dailyPrice ?? basePrice;
+                                    const isOverride = dailyPrice !== undefined;
 
                                     return (
                                         <>
                                             <span className="text-sm font-medium">{date.getDate()}</span>
-                                            {price && (
-                                                <span className="text-[10px] font-bold text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded shadow-sm">
-                                                    ${price}
-                                                </span>
-                                            )}
+                                            <span className={cn(
+                                                "text-[10px] font-bold px-1.5 py-0.5 rounded shadow-sm",
+                                                isOverride
+                                                    ? "text-amber-700 bg-amber-100"
+                                                    : "text-muted-foreground bg-slate-100"
+                                            )}>
+                                                ${displayPrice}
+                                            </span>
                                         </>
                                     )
                                 }

@@ -8,7 +8,7 @@ import { DateTime } from 'luxon';
 
 // Schema for updating base price
 const UpdateBasePriceSchema = z.object({
-    roomId: z.string().uuid(),
+    roomId: z.string().min(1), // Relaxed from uuid() to support legacy IDs
     basePrice: z.number().min(0),
 });
 
@@ -41,7 +41,7 @@ export async function updateRoomBasePrice(roomId: string, basePrice: number) {
 
 // Schema for upserting daily rate
 const UpsertDailyRateSchema = z.object({
-    roomId: z.string().uuid(),
+    roomId: z.string().min(1), // Relaxed from uuid()
     date: z.string().refine((val) => !isNaN(Date.parse(val)), {
         message: "Invalid date string",
     }),
