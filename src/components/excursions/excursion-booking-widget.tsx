@@ -6,6 +6,8 @@ import {
     Plus,
     Minus,
     Loader2,
+    ArrowRight,
+    ShoppingCart,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -23,13 +25,12 @@ import {
 } from '@/components/ui/sheet';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
-// import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer"; // Alternative if Sheet feels too heavy for mobile bottom drawer
+import Link from 'next/link';
 
 interface ExcursionBookingWidgetProps {
     id: string;
     title: string;
     basePrice: number;
-    priceChild?: number;
     imageUrl: string;
 }
 
@@ -37,7 +38,6 @@ export function ExcursionBookingWidget({
     id,
     title,
     basePrice,
-    priceChild,
     imageUrl,
 }: ExcursionBookingWidgetProps) {
     const { toast } = useToast();
@@ -46,12 +46,12 @@ export function ExcursionBookingWidget({
     // Form State
     const [date, setDate] = React.useState<Date | undefined>();
     const [adults, setAdults] = React.useState(2);
-    const [children, setChildren] = React.useState(0);
     const [isCalendarOpen, setIsCalendarOpen] = React.useState(false);
     const [isMobileDrawerOpen, setIsMobileDrawerOpen] = React.useState(false);
+    const [isAdded, setIsAdded] = React.useState(false);
 
     // Derived State
-    const totalPrice = (adults * basePrice) + (children * (priceChild || basePrice));
+    const totalPrice = adults * basePrice;
     const isReadyToAdd = !!date;
 
     const handleAddToCart = () => {
@@ -65,10 +65,10 @@ export function ExcursionBookingWidget({
             date: date.toISOString(),
             passengers: {
                 adults,
-                children,
+                children: 0,
             },
             pricePerAdult: basePrice,
-            pricePerChild: priceChild || basePrice,
+            pricePerChild: 0,
             totalPrice,
             type: 'excursion',
         });
@@ -78,8 +78,10 @@ export function ExcursionBookingWidget({
             description: `${title} has been added to your itinerary.`,
         });
 
-        setIsMobileDrawerOpen(false); // Close drawer on mobile
-        // Optional: Redirect to cart or open mini-cart
+        setIsAdded(true);
+        // setIsMobileDrawerOpen(false); // Keep drawer open to show the button? Or close and show toast?
+        // User request: "once people click on add to itinerary, show a go to cart button"
+        // I'll keep the drawer open (or stay on page) and show the button.
     };
 
     const getDisabledDays = () => {
@@ -100,7 +102,7 @@ export function ExcursionBookingWidget({
                 <p className="text-sm text-muted-foreground">From</p>
                 <div className="flex items-baseline gap-1">
                     <span className="text-2xl font-bold text-shpc-ink">${basePrice}</span>
-                    <span className="text-sm text-neutral-500">/ adult</span>
+                    <span className="text-sm text-neutral-500">/ person</span>
                 </div>
             </div>
 
@@ -131,6 +133,7 @@ export function ExcursionBookingWidget({
                             onSelect={(d) => {
                                 setDate(d);
                                 setIsCalendarOpen(false);
+                                setIsAdded(false); // Reset added state on change
                             }}
                             disabled={getDisabledDays()}
                             initialFocus
@@ -143,7 +146,7 @@ export function ExcursionBookingWidget({
             <div className="space-y-4">
                 <div className="flex items-center justify-between">
                     <div>
-                        <p className="text-sm font-medium">Adults</p>
+                        <p className="text-sm font-medium">Guests</p>
                         <p className="text-xs text-muted-foreground">Age 13+</p>
                     </div>
                     <div className="flex items-center gap-3">
@@ -151,7 +154,10 @@ export function ExcursionBookingWidget({
                             variant="outline"
                             size="icon"
                             className="h-8 w-8 rounded-full"
-                            onClick={() => setAdults(Math.max(1, adults - 1))}
+                            onClick={() => {
+                                setAdults(Math.max(1, adults - 1));
+                                setIsAdded(false);
+                            }}
                             disabled={adults <= 1}
                         >
                             <Minus className="h-3 w-3" />
@@ -161,34 +167,10 @@ export function ExcursionBookingWidget({
                             variant="outline"
                             size="icon"
                             className="h-8 w-8 rounded-full"
-                            onClick={() => setAdults(adults + 1)}
-                        >
-                            <Plus className="h-3 w-3" />
-                        </Button>
-                    </div>
-                </div>
-
-                <div className="flex items-center justify-between">
-                    <div>
-                        <p className="text-sm font-medium">Children</p>
-                        <p className="text-xs text-muted-foreground">Age 3-12</p>
-                    </div>
-                    <div className="flex items-center gap-3">
-                        <Button
-                            variant="outline"
-                            size="icon"
-                            className="h-8 w-8 rounded-full"
-                            onClick={() => setChildren(Math.max(0, children - 1))}
-                            disabled={children <= 0}
-                        >
-                            <Minus className="h-3 w-3" />
-                        </Button>
-                        <span className="w-4 text-center text-sm font-medium">{children}</span>
-                        <Button
-                            variant="outline"
-                            size="icon"
-                            className="h-8 w-8 rounded-full"
-                            onClick={() => setChildren(children + 1)}
+                            onClick={() => {
+                                setAdults(adults + 1);
+                                setIsAdded(false);
+                            }}
                         >
                             <Plus className="h-3 w-3" />
                         </Button>
@@ -201,29 +183,35 @@ export function ExcursionBookingWidget({
             {/* Price Breakdown */}
             <div className="space-y-2">
                 <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">${basePrice} x {adults} Adults</span>
+                    <span className="text-muted-foreground">${basePrice} x {adults} Guests</span>
                     <span>${(basePrice * adults).toFixed(2)}</span>
                 </div>
-                {children > 0 && (
-                    <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">${priceChild || basePrice} x {children} Children</span>
-                        <span>${((priceChild || basePrice) * children).toFixed(2)}</span>
-                    </div>
-                )}
                 <div className="flex justify-between text-lg font-bold pt-2">
                     <span>Total</span>
                     <span>${totalPrice.toFixed(2)}</span>
                 </div>
             </div>
 
-            <Button
-                className="w-full bg-shpc-yellow text-shpc-ink hover:bg-shpc-yellow/90 font-bold"
-                size="lg"
-                disabled={!isReadyToAdd}
-                onClick={handleAddToCart}
-            >
-                Add to Itinerary
-            </Button>
+            {isAdded ? (
+                <Button
+                    asChild
+                    className="w-full bg-green-600 text-white hover:bg-green-700 font-bold"
+                    size="lg"
+                >
+                    <Link href="/checkout/excursions">
+                        Go to Cart <ShoppingCart className="ml-2 h-4 w-4" />
+                    </Link>
+                </Button>
+            ) : (
+                <Button
+                    className="w-full bg-shpc-yellow text-shpc-ink hover:bg-shpc-yellow/90 font-bold"
+                    size="lg"
+                    disabled={!isReadyToAdd}
+                    onClick={handleAddToCart}
+                >
+                    Add to Itinerary
+                </Button>
+            )}
         </div>
     );
 

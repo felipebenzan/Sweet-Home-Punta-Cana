@@ -91,7 +91,6 @@ export default function ExcursionClientPage({ excursion, otherExcursions, google
           id={excursion.id}
           title={excursion.title}
           basePrice={excursion.price.adult}
-          priceChild={excursion.price.children}
           imageUrl={excursion.image}
         />
       </div>
@@ -265,7 +264,6 @@ export default function ExcursionClientPage({ excursion, otherExcursions, google
             id={excursion.id}
             title={excursion.title}
             basePrice={excursion.price.adult}
-            priceChild={excursion.price.children}
             imageUrl={excursion.image}
           />
         </div>
