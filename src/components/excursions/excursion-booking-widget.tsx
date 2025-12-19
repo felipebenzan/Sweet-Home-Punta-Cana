@@ -1,5 +1,6 @@
 'use client';
 import * as React from 'react';
+import { useScrollDirection } from '@/hooks/use-scroll-direction'; // Import hook
 import {
     Calendar as CalendarIcon,
     Users,
@@ -42,6 +43,7 @@ export function ExcursionBookingWidget({
 }: ExcursionBookingWidgetProps) {
     const { toast } = useToast();
     const addItem = useCartStore((state) => state.addItem);
+    const scrollDirection = useScrollDirection(); // Use hook
 
     // Form State
     const [date, setDate] = React.useState<Date | undefined>();
@@ -242,7 +244,12 @@ export function ExcursionBookingWidget({
             </div>
 
             {/* MOBILE VIEW: Top Bar + Drawer */}
-            <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-white border-b border-neutral-200 p-4 shadow-md">
+            <div
+                className={cn(
+                    "md:hidden fixed left-0 right-0 z-50 bg-white border-b border-neutral-200 p-4 shadow-md transition-all duration-300",
+                    scrollDirection === 'down' ? "top-0" : "top-[4.5rem]" // 4.5rem is mobile header height
+                )}
+            >
                 <div className="flex items-center justify-between gap-4">
                     <div>
                         <p className="text-xs text-muted-foreground font-medium">From</p>
