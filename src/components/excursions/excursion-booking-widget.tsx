@@ -95,7 +95,7 @@ export function ExcursionBookingWidget({
     };
 
     // Shared Form Content (used in both Desktop Card and Mobile Drawer)
-    const BookingFormContent = () => (
+    const BookingFormContent = ({ inlineCalendar = false }) => (
         <div className="space-y-6">
             {/* Header Section within Form */}
             <div className="space-y-1">
@@ -113,33 +113,48 @@ export function ExcursionBookingWidget({
                 <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                     Date
                 </label>
-                <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
-                    <PopoverTrigger asChild>
-                        <Button
-                            variant="outline"
-                            className={cn(
-                                "w-full justify-start text-left font-normal",
-                                !date && "text-muted-foreground"
-                            )}
-                        >
-                            <CalendarIcon className="mr-2 h-4 w-4" />
-                            {date ? format(date, "PPP") : <span>Pick a date</span>}
-                        </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
+                {inlineCalendar ? (
+                    <div className="rounded-md border p-3 flex justify-center">
                         <Calendar
                             mode="single"
                             selected={date}
                             onSelect={(d) => {
                                 setDate(d);
-                                setIsCalendarOpen(false);
-                                setIsAdded(false); // Reset added state on change
+                                setIsAdded(false);
                             }}
                             disabled={getDisabledDays()}
                             initialFocus
                         />
-                    </PopoverContent>
-                </Popover>
+                    </div>
+                ) : (
+                    <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
+                        <PopoverTrigger asChild>
+                            <Button
+                                variant="outline"
+                                className={cn(
+                                    "w-full justify-start text-left font-normal",
+                                    !date && "text-muted-foreground"
+                                )}
+                            >
+                                <CalendarIcon className="mr-2 h-4 w-4" />
+                                {date ? format(date, "PPP") : <span>Pick a date</span>}
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                                mode="single"
+                                selected={date}
+                                onSelect={(d) => {
+                                    setDate(d);
+                                    setIsCalendarOpen(false);
+                                    setIsAdded(false); // Reset added state on change
+                                }}
+                                disabled={getDisabledDays()}
+                                initialFocus
+                            />
+                        </PopoverContent>
+                    </Popover>
+                )}
             </div>
 
             {/* Passengers */}
@@ -246,7 +261,7 @@ export function ExcursionBookingWidget({
                                 <SheetTitle>Book Experience</SheetTitle>
                             </SheetHeader>
                             <div className="overflow-y-auto h-full pb-20"> {/* Add padding for scroll */}
-                                <BookingFormContent />
+                                <BookingFormContent inlineCalendar={true} />
                             </div>
                         </SheetContent>
                     </Sheet>
