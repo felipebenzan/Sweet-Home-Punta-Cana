@@ -226,8 +226,8 @@ export function ExcursionBookingWidget({
                 </Card>
             </div>
 
-            {/* MOBILE VIEW: Bottom Bar + Drawer */}
-            <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-neutral-200 p-4 pb-safe shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
+            {/* MOBILE VIEW: Top Bar + Drawer */}
+            <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-white border-b border-neutral-200 p-4 shadow-md">
                 <div className="flex items-center justify-between gap-4">
                     <div>
                         <p className="text-xs text-muted-foreground font-medium">From</p>
