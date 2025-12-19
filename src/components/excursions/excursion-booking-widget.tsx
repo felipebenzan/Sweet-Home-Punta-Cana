@@ -24,6 +24,11 @@ import {
     SheetTitle,
     SheetTrigger,
 } from '@/components/ui/sheet';
+import {
+    Collapsible,
+    CollapsibleContent,
+    CollapsibleTrigger,
+} from "@/components/ui/collapsible"
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
@@ -50,6 +55,7 @@ export function ExcursionBookingWidget({
     const [adults, setAdults] = React.useState(2);
     const [isCalendarOpen, setIsCalendarOpen] = React.useState(false);
     const [isMobileDrawerOpen, setIsMobileDrawerOpen] = React.useState(false);
+    const [isMobileDateExpanded, setIsMobileDateExpanded] = React.useState(false);
     const [isAdded, setIsAdded] = React.useState(false);
 
     // Derived State
@@ -116,18 +122,49 @@ export function ExcursionBookingWidget({
                     Date
                 </label>
                 {inlineCalendar ? (
-                    <div className="rounded-md border p-3 flex justify-center">
-                        <Calendar
-                            mode="single"
-                            selected={date}
-                            onSelect={(d) => {
-                                setDate(d);
-                                setIsAdded(false);
-                            }}
-                            disabled={getDisabledDays()}
-                            initialFocus
-                        />
-                    </div>
+                    <Collapsible
+                        open={isMobileDateExpanded}
+                        onOpenChange={setIsMobileDateExpanded}
+                        className="w-full space-y-2"
+                    >
+                        <CollapsibleTrigger asChild>
+                            <Button
+                                variant="outline"
+                                className={cn(
+                                    "w-full justify-start text-left font-normal",
+                                    !date && "text-muted-foreground"
+                                )}
+                            >
+                                <CalendarIcon className="mr-2 h-4 w-4" />
+                                {date ? format(date, "PPP") : <span>Pick a date</span>}
+                            </Button>
+                        </CollapsibleTrigger>
+                        <CollapsibleContent className="space-y-2">
+                            <div className="rounded-md border p-3 flex justify-center bg-neutral-50">
+                                <Calendar
+                                    mode="single"
+                                    selected={date}
+                                    onSelect={(d) => {
+                                        setDate(d);
+                                        setIsAdded(false);
+                                        // Close after delay
+                                        setTimeout(() => {
+                                            setIsMobileDateExpanded(false);
+                                        }, 300);
+                                    }}
+                                    disabled={getDisabledDays()}
+                                    initialFocus
+                                    className="w-full"
+                                    classNames={{
+                                        month: "space-y-4 w-full flex flex-col items-center",
+                                        table: "w-full border-collapse space-y-1",
+                                        head_row: "flex w-full justify-between",
+                                        row: "flex w-full mt-2 justify-between",
+                                    }}
+                                />
+                            </div>
+                        </CollapsibleContent>
+                    </Collapsible>
                 ) : (
                     <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
                         <PopoverTrigger asChild>
