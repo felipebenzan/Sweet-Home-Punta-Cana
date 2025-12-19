@@ -1,97 +1,33 @@
-
 'use client';
 
 import type { Excursion } from '@/lib/types';
 import Image from 'next/image';
-import { notFound, useParams, useRouter } from 'next/navigation';
 import {
+  Check,
+  MapPin,
+  ExternalLink,
+  Sun,
+  Clock,
+  Info,
+  List,
+  Sparkles,
+  ArrowRight,
+  X,
   Calendar as CalendarIcon,
   Users,
   Plus,
   Minus,
-  Sun,
-  Clock,
-  Info,
-  Check,
-  Phone,
   Tag,
-  List,
-  Sparkles,
-  MapPin,
-  ArrowRight,
-  ExternalLink,
-  X,
-  CheckCircle,
+  CheckCircle
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { format, addDays, isSameDay } from 'date-fns';
+import { Card, CardContent } from '@/components/ui/card';
 import * as React from 'react';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import Autoplay from "embla-carousel-autoplay";
-import { cn } from '@/lib/utils';
-import { Separator } from '@/components/ui/separator';
-import { Label } from '@/components/ui/label';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import EmbeddedMap from '@/components/embedded-map';
-import { Skeleton } from '@/components/ui/skeleton';
-
-interface BundledItem extends Excursion {
-  bookingDate?: Date;
-  adults: number;
-}
-
-type GuestCounterProps = {
-  label: string;
-  count: number;
-  onCountChange: (count: number) => void;
-  price?: number;
-  isDisabled?: boolean;
-  min?: number;
-};
-
-// Simplified child component for the guest counters
-function GuestCounter({
-  label,
-  count,
-  onCountChange,
-  price,
-  isDisabled = false,
-  min = 0,
-}: GuestCounterProps) {
-  return (
-    <div className="flex justify-between items-center">
-      <div>
-        <p className="font-medium text-sm">{label}</p>
-        {price !== undefined && <p className="text-xs text-muted-foreground">${price}/person</p>}
-      </div>
-      <div className="flex items-center gap-2">
-        <Button
-          variant="outline"
-          size="icon"
-          className="h-7 w-7"
-          onClick={() => onCountChange(Math.max(min, count - 1))}
-          disabled={isDisabled}
-        >
-          <Minus className="h-4 w-4" />
-        </Button>
-        <span className="font-semibold text-base w-7 text-center">{count}</span>
-        <Button
-          variant="outline"
-          size="icon"
-          className="h-7 w-7"
-          onClick={() => onCountChange(count + 1)}
-          disabled={isDisabled}
-        >
-          <Plus className="h-4 w-4" />
-        </Button>
-      </div>
-    </div>
-  );
-}
-
+import { ExcursionBookingWidget } from '@/components/excursions/excursion-booking-widget';
 
 function BundleOfferCard({
   excursion,
@@ -137,12 +73,6 @@ function BundleOfferCard({
                 {excursion.inclusions.length > 3 && <li>And more...</li>}
               </ul>
             </div>
-            <div className="space-y-2">
-              <h4 className="font-semibold flex items-center gap-2"><Sparkles className="h-4 w-4" />Recommendations</h4>
-              <ul className="list-disc list-inside text-muted-foreground">
-                {excursion.practicalInfo.notes.slice(0, 2).map(item => <li key={item}>{item}</li>)}
-              </ul>
-            </div>
           </AccordionContent>
         </AccordionItem>
       </Accordion>
@@ -152,14 +82,8 @@ function BundleOfferCard({
 
 
 export default function ExcursionClientPage({ excursion, otherExcursions, googleMapsApiKey }: { excursion: Excursion, otherExcursions: Excursion[], googleMapsApiKey: string }) {
-  // State for the main excursion
-  const [mainExcursionState, setMainExcursionState] = React.useState<Omit<BundledItem, keyof Excursion>>({
-    bookingDate: undefined,
-    adults: 2,
-  });
-
-  // State for bundled items
-  const [bundledItems, setBundledItems] = React.useState<Record<string, BundledItem>>({});
+  // State for bundled items (simplified for now as focus is on main widget)
+  const [bundledItems, setBundledItems] = React.useState<Record<string, Excursion>>({});
 
   const handleToggleBundle = (toggledExcursion: Excursion) => {
     setBundledItems(prev => {
@@ -167,30 +91,11 @@ export default function ExcursionClientPage({ excursion, otherExcursions, google
       if (newBundled[toggledExcursion.id]) {
         delete newBundled[toggledExcursion.id];
       } else {
-        newBundled[toggledExcursion.id] = {
-          ...toggledExcursion,
-          bookingDate: undefined,
-          adults: 1,
-        };
+        newBundled[toggledExcursion.id] = toggledExcursion;
       }
       return newBundled;
     });
   };
-
-  const handleBundledItemChange = (excursionId: string, updatedValues: Partial<BundledItem>) => {
-    setBundledItems(prev => ({
-      ...prev,
-      [excursionId]: { ...prev[excursionId], ...updatedValues }
-    }));
-  };
-
-  const bundledAsArray = Object.values(bundledItems);
-
-  const mainExcursionDate = mainExcursionState.bookingDate;
-  const allItemsValid = bundledAsArray.every(item => item.bookingDate && (!mainExcursionDate || !isSameDay(item.bookingDate, mainExcursionDate)));
-  const isBookable = !!(mainExcursionDate && allItemsValid);
-  console.log('current page: excursion/slug/excursion-client-page');
-
 
   return (
     <div className="bg-shpc-sand">
@@ -211,20 +116,18 @@ export default function ExcursionClientPage({ excursion, otherExcursions, google
         </div>
       </section>
 
-      {/* Mobile Booking Widget - Below Hero */}
-      <div className="lg:hidden bg-white p-4 border-b border-neutral-200">
-        <BookingForm
-          mainExcursion={{ ...excursion, ...mainExcursionState }}
-          onMainExcursionChange={setMainExcursionState}
-          bundledItems={bundledAsArray}
-          onBundledItemChange={handleBundledItemChange}
-          onRemoveBundledItem={(id) => handleToggleBundle({ id } as Excursion)}
-          isBookable={isBookable}
-          isMobile={true}
+      {/* Mobile Booking Widget Instance (Hidden on Desktop) */}
+      <div className="lg:hidden relative z-50">
+        <ExcursionBookingWidget
+          id={excursion.id}
+          title={excursion.title}
+          basePrice={excursion.price.adult}
+          priceChild={excursion.price.children}
+          imageUrl={excursion.image}
         />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 max-w-7xl mx-auto p-4 lg:p-8 gap-8 lg:gap-12">
+      <div className="grid grid-cols-1 lg:grid-cols-3 max-w-7xl mx-auto p-4 lg:p-8 gap-8 lg:gap-12 pb-32">
 
         {/* Main Content - Left Column */}
         <div className="lg:col-span-2 space-y-12">
@@ -392,368 +295,18 @@ export default function ExcursionClientPage({ excursion, otherExcursions, google
           </section>
         </div>
 
-        {/* Booking Widget - Compact Sticky Sidebar */}
+        {/* Desktop Sidebar Booking Widget (Sticky) */}
         <div className="hidden lg:block lg:col-span-1">
-          <div className="sticky top-24">
-            <div className={cn(
-              "bg-white rounded-lg shadow-lg mb-12",
-              bundledAsArray.length > 0 && "max-h-[85vh] overflow-y-auto custom-scrollbar"
-            )}>
-              {/* Header */}
-              <div className="px-10 py-8 border-b border-neutral-200">
-                <h3 className="font-playfair text-xl font-semibold text-shpc-ink uppercase tracking-wide">
-                  Book Your Adventure
-                </h3>
-              </div>
-
-              {/* Booking Form Content - Internal Scroll if bundled */}
-              <BookingForm
-                mainExcursion={{ ...excursion, ...mainExcursionState }}
-                onMainExcursionChange={setMainExcursionState}
-                bundledItems={bundledAsArray}
-                onBundledItemChange={handleBundledItemChange}
-                onRemoveBundledItem={(id) => handleToggleBundle({ id } as Excursion)}
-                isBookable={isBookable}
-                isMobile={false}
-              />
-            </div>
-          </div>
+          <ExcursionBookingWidget
+            id={excursion.id}
+            title={excursion.title}
+            basePrice={excursion.price.adult}
+            priceChild={excursion.price.children}
+            imageUrl={excursion.image}
+          />
         </div>
 
       </div>
     </div>
-  );
-}
-
-
-// New component to keep the booking logic together
-function BookingForm({
-  mainExcursion,
-  onMainExcursionChange,
-  bundledItems,
-  onBundledItemChange,
-  onRemoveBundledItem,
-  isBookable,
-  isMobile,
-
-}: {
-  mainExcursion: BundledItem;
-  onMainExcursionChange: (newState: Omit<BundledItem, keyof Excursion>) => void;
-  bundledItems: BundledItem[];
-  onBundledItemChange: (id: string, updatedValues: Partial<BundledItem>) => void;
-  onRemoveBundledItem: (id: string) => void;
-
-  isBookable: boolean;
-  isMobile?: boolean;
-}) {
-  const router = useRouter();
-
-  const mainExcursionPrice = (mainExcursion.adults * mainExcursion.price.adult);
-  const mainExcursionDate = mainExcursion.bookingDate;
-
-  const bundledPrice = bundledItems.reduce((total, item) => {
-    return total + (item.adults * item.price.adult);
-  }, 0);
-
-  const subtotal = mainExcursionPrice + bundledPrice;
-  const totalItems = 1 + bundledItems.length;
-  const bundleDiscount = totalItems > 1 ? subtotal * 0.10 : 0;
-  const totalPrice = subtotal - bundleDiscount;
-
-  const getPriceForItem = (item: { price: Excursion['price'], adults: number }) => {
-    return (item.adults * item.price.adult);
-  }
-
-  const handleBookNow = () => {
-    if (!isBookable) return;
-
-    const bookingDetails = {
-      mainExcursion: {
-        ...mainExcursion,
-        bookingDate: mainExcursion.bookingDate?.toISOString()
-      },
-      bundledItems: bundledItems.map(item => ({ ...item, bookingDate: item.bookingDate?.toISOString() })),
-      totalPrice,
-      bundleDiscount,
-    };
-    // Use a different key for excursion bookings
-    localStorage.setItem('excursionBookingDetails', JSON.stringify(bookingDetails));
-    router.push('/checkout/excursions');
-  };
-
-  const getDisabledDays = () => {
-    const now = new Date();
-    // 6 PM is 18:00 in 24-hour format
-    if (now.getHours() >= 18) {
-      // If it's 6 PM or later, disable today and tomorrow.
-      // The earliest bookable date is the day after tomorrow.
-      return { before: addDays(new Date(), 2) };
-    }
-    // Otherwise, just disable today.
-    // The earliest bookable date is tomorrow.
-    return { before: addDays(new Date(), 1) };
-  };
-
-  const [mainCalendarOpen, setMainCalendarOpen] = React.useState(false);
-  const [bundleCalendarOpen, setBundleCalendarOpen] = React.useState<Record<string, boolean>>({});
-
-  return (
-    <div className={cn("space-y-0", isMobile && "space-y-4")}>
-      {/* Main Excursion Inputs */}
-      <div className={cn(
-        isMobile ? "grid grid-cols-3 gap-2 items-end" : "px-10 py-6 space-y-4"
-      )}>
-        {/* Mobile: Hidden Title */}
-        {!isMobile && (
-          <div className="flex items-center gap-3">
-            <Image src={mainExcursion.image} alt={mainExcursion.title} width={60} height={45} className="rounded-lg object-cover aspect-video" data-ai-hint="vacation excursion" />
-            <p className="font-inter font-semibold text-sm text-shpc-ink">{mainExcursion.title}</p>
-          </div>
-        )}
-
-        {/* Date Selection */}
-        <div className="space-y-2">
-          <label className={cn(
-            "font-inter text-xs font-medium text-neutral-700 flex items-center gap-2",
-            isMobile && "sr-only"
-          )}>
-            <CalendarIcon className="h-3.5 w-3.5 text-neutral-500" />
-            Date
-          </label>
-          <Popover open={mainCalendarOpen} onOpenChange={setMainCalendarOpen}>
-            <PopoverTrigger asChild>
-              <Button
-                variant={'outline'}
-                className={cn(
-                  "w-full justify-start text-left font-normal text-sm border-neutral-300 rounded-none hover:border-shpc-yellow focus:border-shpc-yellow px-0 py-3",
-                  !isMobile && "border-0 border-b",
-                  isMobile && "border h-12 px-3 rounded text-xs"
-                )}
-              >
-                {mainExcursionDate ? format(mainExcursionDate, isMobile ? 'MMM d' : 'PPP') : <span className="text-neutral-400">Date</span>}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
-              <Calendar
-                mode="single"
-                selected={mainExcursionDate}
-                onSelect={(date) => {
-                  onMainExcursionChange({ ...mainExcursion, bookingDate: date });
-                  setMainCalendarOpen(false);
-                }}
-                initialFocus
-                disabled={getDisabledDays()}
-              />
-            </PopoverContent>
-          </Popover>
-        </div>
-
-        {/* Adults Counter */}
-        <div className="space-y-2">
-          <label className={cn(
-            "font-inter text-xs font-medium text-neutral-700 flex items-center gap-2",
-            isMobile && "sr-only"
-          )}>
-            <Users className="h-3.5 w-3.5 text-neutral-500" />
-            Adults
-          </label>
-          <div className={cn(
-            "flex items-center justify-between py-3",
-            !isMobile && "border-b border-neutral-300",
-            isMobile && "border border-neutral-300 rounded h-12 px-2"
-          )}>
-            {!isMobile && <span className="text-xs text-neutral-600">${mainExcursion.price.adult}/person</span>}
-            <div className={cn("flex items-center gap-4", isMobile && "px-0")}>
-              <Button
-                variant="outline"
-                size="icon"
-                className="h-7 w-7 rounded-full border-shpc-yellow text-shpc-yellow hover:bg-shpc-yellow hover:text-shpc-ink shrink-0"
-                onClick={() => onMainExcursionChange({ ...mainExcursion, adults: Math.max(1, mainExcursion.adults - 1) })}
-              >
-                <Minus className="h-3 w-3" />
-              </Button>
-              <span className="font-semibold text-base w-6 text-center">{mainExcursion.adults}</span>
-              <Button
-                variant="outline"
-                size="icon"
-                className="h-7 w-7 rounded-full border-shpc-yellow text-shpc-yellow hover:bg-shpc-yellow hover:text-shpc-ink shrink-0"
-                onClick={() => onMainExcursionChange({ ...mainExcursion, adults: mainExcursion.adults + 1 })}
-              >
-                <Plus className="h-3 w-3" />
-              </Button>
-            </div>
-          </div>
-        </div>
-
-        {/* Mobile: Book Now Button in 3rd Column */}
-        {isMobile && (
-          <Button
-            size="lg"
-            className="w-full bg-shpc-yellow text-shpc-ink hover:bg-shpc-yellow/90 font-semibold h-12 text-xs px-1 uppercase leading-tight"
-            disabled={!isBookable}
-            onClick={handleBookNow}
-          >
-            BOOK NOW
-          </Button>
-        )}
-      </div>
-
-
-      {/* Bundled Items */}
-      {
-        bundledItems.map((item, index) => (
-          <React.Fragment key={item.id}>
-            <Separator />
-            <div className="px-10 py-6 space-y-4">
-              <div className="flex justify-between items-start">
-                <div className="flex items-center gap-3 flex-grow">
-                  <Image src={item.image} alt={item.title} width={60} height={45} className="rounded-lg object-cover aspect-video" data-ai-hint="vacation excursion" />
-                  <div>
-                    <p className="font-inter font-semibold text-sm text-shpc-ink">{item.title}</p>
-                    <span className="text-xs text-shpc-yellow font-medium">Bundled</span>
-                  </div>
-                </div>
-                <Button variant="ghost" size="icon" className="h-7 w-7 text-neutral-400 hover:bg-red-50 hover:text-red-600" onClick={() => onRemoveBundledItem(item.id)}>
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
-
-              {/* Date Selection */}
-              <div className="space-y-2">
-                <label className="font-inter text-xs font-medium text-neutral-700 flex items-center gap-2">
-                  <CalendarIcon className="h-3.5 w-3.5 text-neutral-500" />
-                  Date
-                </label>
-                <Popover open={bundleCalendarOpen[item.id] || false} onOpenChange={(isOpen) => setBundleCalendarOpen(prev => ({ ...prev, [item.id]: isOpen }))}>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant={'outline'}
-                      className="w-full justify-start text-left font-normal text-sm border-0 border-b border-neutral-300 rounded-none hover:border-shpc-yellow focus:border-shpc-yellow px-0 py-3"
-                    >
-                      {item.bookingDate ? format(item.bookingDate, 'PPP') : <span className="text-neutral-400">Pick a date</span>}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
-                    <Calendar
-                      mode="single"
-                      selected={item.bookingDate}
-                      onSelect={(date) => {
-                        onBundledItemChange(item.id, { bookingDate: date });
-                        setBundleCalendarOpen(prev => ({ ...prev, [item.id]: false }));
-                      }}
-                      initialFocus
-                      disabled={(date) => {
-                        const now = new Date();
-                        const isAfter6PM = now.getHours() >= 18;
-                        const earliestDate = addDays(new Date(), isAfter6PM ? 2 : 1);
-                        earliestDate.setHours(0, 0, 0, 0);
-
-                        if (!date) return true;
-
-                        const isBeforeEarliest = date < earliestDate;
-                        const isMainDate = mainExcursionDate ? isSameDay(date, mainExcursionDate) : false;
-                        return isBeforeEarliest || isMainDate;
-                      }}
-                    />
-                  </PopoverContent>
-                </Popover>
-                {mainExcursionDate && item.bookingDate && isSameDay(mainExcursionDate, item.bookingDate) && (
-                  <p className="text-red-600 text-xs font-inter">Bundled excursions cannot be on the same day.</p>
-                )}
-              </div>
-
-              {/* Adults Counter */}
-              <div className="space-y-2">
-                <label className="font-inter text-xs font-medium text-neutral-700 flex items-center gap-2">
-                  <Users className="h-3.5 w-3.5 text-neutral-500" />
-                  Adults
-                </label>
-                <div className="flex items-center justify-between py-3 border-b border-neutral-300">
-                  <span className="text-xs text-neutral-600">${item.price.adult}/person</span>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      className="h-7 w-7 rounded-full border-shpc-yellow text-shpc-yellow hover:bg-shpc-yellow hover:text-shpc-ink"
-                      onClick={() => onBundledItemChange(item.id, { adults: Math.max(1, item.adults - 1) })}
-                    >
-                      <Minus className="h-3 w-3" />
-                    </Button>
-                    <span className="font-semibold text-base w-6 text-center">{item.adults}</span>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      className="h-7 w-7 rounded-full border-shpc-yellow text-shpc-yellow hover:text-shpc-ink hover:bg-shpc-yellow"
-                      onClick={() => onBundledItemChange(item.id, { adults: item.adults + 1 })}
-                    >
-                      <Plus className="h-3 w-3" />
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </React.Fragment>
-        ))
-      }
-
-      {/* Summary Section */}
-      <div className={cn("border-t-2 border-neutral-300", isMobile && "hidden")}></div>
-      <div className={cn("px-10 py-6 space-y-4", isMobile && "px-0 py-0")}>
-        {!isMobile && <h3 className="font-playfair text-lg font-semibold text-shpc-ink">Summary</h3>}
-
-        <div className="space-y-2 text-sm font-inter">
-          <div className="flex justify-between items-start">
-            <span className="text-neutral-600 text-xs">{mainExcursion.title} ({mainExcursion.adults} Adults)</span>
-            <span className="font-semibold text-shpc-ink text-sm">${getPriceForItem({ price: mainExcursion.price, adults: mainExcursion.adults }).toFixed(2)}</span>
-          </div>
-          {bundledItems.map(item => (
-            <div key={item.id} className="flex justify-between items-start">
-              <span className="text-neutral-600 text-xs flex-1 pr-2">{item.title} ({item.adults} Adults)</span>
-              <span className="font-semibold text-shpc-ink text-sm">${getPriceForItem(item).toFixed(2)}</span>
-            </div>
-          ))}
-        </div>
-
-        {bundleDiscount > 0 && (
-          <div className="flex justify-between items-center text-sm font-inter">
-            <span className="flex items-center gap-1.5 text-green-600 font-medium text-xs">
-              <Tag className="h-3.5 w-3.5" />
-              Bundle Savings (10%)
-            </span>
-            <span className="font-semibold text-green-600 text-sm">-${bundleDiscount.toFixed(2)}</span>
-          </div>
-        )}
-
-        {/* Total - Prominent Display */}
-        {/* Total - Prominent Display - Hidden on Mobile */}
-        {!isMobile && (
-          <div className="pt-4 border-t-2 border-neutral-400">
-            <div className="flex justify-between items-baseline mb-1">
-              <span className="font-inter text-xs uppercase tracking-wide text-neutral-700">Total</span>
-              <span className="font-playfair text-3xl font-bold text-shpc-ink">${totalPrice.toFixed(2)}</span>
-            </div>
-            <p className="text-xs text-green-600 font-inter flex items-center gap-1 justify-end">
-              <CheckCircle className="h-3 w-3" />
-              Taxes and fees included
-            </p>
-          </div>
-        )}
-
-        {/* CTA Button - Desktop Only (Mobile is in column 3) */}
-        {!isMobile && (
-          <Button
-            size="lg"
-            className="w-full bg-shpc-yellow text-shpc-ink hover:bg-shpc-yellow/90 font-semibold py-6 text-sm"
-            disabled={!isBookable}
-            onClick={handleBookNow}
-          >
-            {isBookable ? 'Book Now' : 'Complete selections'}
-          </Button>
-        )}
-        {!isBookable && (
-          <p className="text-xs text-center text-neutral-500 font-inter">Please select a date for all excursions to continue.</p>
-        )}
-      </div>
-    </div >
   );
 }
