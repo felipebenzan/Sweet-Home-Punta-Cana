@@ -33,24 +33,23 @@ export function FloatingCartButton() {
 
     return (
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
-            <SheetTrigger asChild>
-                <Button
-                    size="icon"
-                    className={cn(
-                        "fixed bottom-6 right-6 z-40 h-14 w-14 rounded-full shadow-xl bg-shpc-yellow text-shpc-ink hover:bg-shpc-yellow/90 animate-in zoom-in-0 duration-300",
-                        // "md:hidden" // User didn't say only mobile. They said "global component". 
-                        // But usually redundant if sidebar exists. I'll leave it global as requested.
-                    )}
-                >
-                    <ShoppingCart className="h-6 w-6" />
-                    <span className="sr-only">Open Cart</span>
-                    {items.length > 0 && (
-                        <span className="absolute top-0 right-0 h-4 w-4 bg-red-600 text-white text-[10px] font-bold flex items-center justify-center rounded-full border border-white">
-                            {items.length}
-                        </span>
-                    )}
-                </Button>
-            </SheetTrigger>
+            <Button
+                onClick={() => setIsOpen(true)}
+                size="icon"
+                className={cn(
+                    "fixed bottom-6 right-6 z-40 h-14 w-14 rounded-full shadow-xl bg-shpc-yellow text-shpc-ink hover:bg-shpc-yellow/90 animate-in zoom-in-0 duration-300",
+                    // "md:hidden" // User didn't say only mobile. They said "global component". 
+                    // But usually redundant if sidebar exists. I'll leave it global as requested.
+                )}
+            >
+                <ShoppingCart className="h-6 w-6" />
+                <span className="sr-only">Open Cart</span>
+                {items.length > 0 && (
+                    <span className="absolute top-0 right-0 h-4 w-4 bg-red-600 text-white text-[10px] font-bold flex items-center justify-center rounded-full border border-white">
+                        {items.length}
+                    </span>
+                )}
+            </Button>
             <SheetContent className="flex flex-col h-full w-full sm:max-w-md p-0">
                 <SheetHeader className="p-6 pb-2 border-b">
                     <div className="flex items-center gap-2">
