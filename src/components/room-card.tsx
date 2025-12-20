@@ -66,7 +66,10 @@ export default function RoomCard({ room, onSelect, isSelected, isSelectionMode =
         <div className="p-4 bg-background mt-auto">
           {nights && nights > 0 && (
             <div className="mb-4 text-center">
-              <p className="text-2xl font-bold">${(room.price).toFixed(2)}</p>
+              <div className="flex items-center justify-center gap-2">
+                <p className="text-2xl font-bold">${(room.price).toFixed(2)}</p>
+                <span className="font-handwritten text-muted-foreground text-sm translate-y-1">all taxes & fees included</span>
+              </div>
               <p className="text-xs text-muted-foreground">for {nights} {nights === 1 ? 'night' : 'nights'}</p>
             </div>
           )}
