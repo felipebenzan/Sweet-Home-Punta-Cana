@@ -45,6 +45,10 @@ export default function CheckoutSummary({
                         <p className="text-sm text-neutral-600">
                             {format(new Date(dates.from), 'LLL dd, y')} - {format(new Date(dates.to), 'LLL dd, y')}
                         </p>
+                        <div className="flex gap-4 text-xs text-shpc-ink mt-1 font-medium">
+                            <span>Check in: 3:00 PM</span>
+                            <span>Check Out: 11:00 AM</span>
+                        </div>
                         <p className="text-xs text-muted-foreground mt-1">
                             {nights} {nights === 1 ? 'night' : 'nights'}
                         </p>
