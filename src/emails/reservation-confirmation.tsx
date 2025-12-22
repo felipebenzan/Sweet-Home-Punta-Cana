@@ -41,8 +41,18 @@ export default function ReservationConfirmationEmail({
   const shortId = confirmationId ? confirmationId.substring(0, 7).toUpperCase() : 'CONFIRM';
   const previewText = `Pack your bags ${guestInfo?.firstName || 'Guest'}, your booking is confirmed!`;
 
-  const fromDate = parseISO(dates.from);
-  const toDate = parseISO(dates.to);
+  const parseLocal = (dateStr: string) => {
+    if (!dateStr) return new Date();
+    const cleanDate = dateStr.includes('T') ? dateStr.split('T')[0] : dateStr;
+    const parts = cleanDate.split('-');
+    if (parts.length === 3) {
+      return new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+    }
+    return parseISO(dateStr);
+  };
+
+  const fromDate = parseLocal(dates.from);
+  const toDate = parseLocal(dates.to);
   const nights = differenceInDays(toDate, fromDate) || 1;
 
   // For QR code, if multiple rooms, just use the confirmationId plus GROUP
@@ -168,7 +178,7 @@ export default function ReservationConfirmationEmail({
                     <Text style={label}>🗓 Dates</Text>
                     <Text style={valueMedium}>
                       {dates?.from && dates?.to
-                        ? `${format(parseISO(dates.from), "MMM dd")} – ${format(parseISO(dates.to), "MMM dd, yyyy")}`
+                        ? `${format(parseLocal(dates.from), "MMM dd")} – ${format(parseLocal(dates.to), "MMM dd, yyyy")}`
                         : 'Dates Pending'}
                     </Text>
                   </Column>

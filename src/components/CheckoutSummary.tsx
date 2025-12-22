@@ -43,7 +43,20 @@ export default function CheckoutSummary({
                     <div>
                         <p className="font-semibold text-shpc-ink">Dates</p>
                         <p className="text-sm text-neutral-600">
-                            {format(new Date(dates.from), 'LLL dd, y')} - {format(new Date(dates.to), 'LLL dd, y')}
+                            <p className="text-sm text-neutral-600">
+                                {(() => {
+                                    // Parse YYYY-MM-DD as local date to prevent timezone shifts
+                                    const parseLocal = (dateStr: string) => {
+                                        if (!dateStr) return new Date();
+                                        const parts = dateStr.split('-');
+                                        if (parts.length === 3) {
+                                            return new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+                                        }
+                                        return new Date(dateStr);
+                                    };
+                                    return `${format(parseLocal(dates.from), 'LLL dd, y')} - ${format(parseLocal(dates.to), 'LLL dd, y')}`;
+                                })()}
+                            </p>
                         </p>
                         <div className="flex gap-4 text-xs text-shpc-ink mt-1 font-medium">
                             <span>Check in: 3:00 PM</span>

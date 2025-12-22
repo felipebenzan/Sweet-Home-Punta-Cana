@@ -230,8 +230,19 @@ function ConfirmationContent({ googleMapsApiKey }: ConfirmationClientProps) {
     return 'roomName' in b;
   };
 
-  const fromDate = isReservation(booking) ? parseISO(booking.checkInDate) : (booking.date ? parseISO(booking.date) : new Date());
-  const toDate = isReservation(booking) ? parseISO(booking.checkOutDate) : fromDate;
+  const parseLocal = (dateStr: string | undefined | null) => {
+    if (!dateStr) return new Date();
+    // Use only the date part YYYY-MM-DD if T exists
+    const cleanDate = dateStr.includes('T') ? dateStr.split('T')[0] : dateStr;
+    const parts = cleanDate.split('-');
+    if (parts.length === 3) {
+      return new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+    }
+    return parseISO(dateStr);
+  };
+
+  const fromDate = isReservation(booking) ? parseLocal(booking.checkInDate) : (booking.date ? parseLocal(booking.date) : new Date());
+  const toDate = isReservation(booking) ? parseLocal(booking.checkOutDate) : fromDate;
   const shortId = booking.id.substring(0, 7).toUpperCase();
 
   const transferBooking = isReservation(booking)
@@ -441,7 +452,7 @@ function ConfirmationContent({ googleMapsApiKey }: ConfirmationClientProps) {
                                 <div className="space-y-1">
                                   <p className="text-sm text-muted-foreground flex items-center gap-2"><CalendarIcon className="w-4 h-4 text-shpc-yellow" /> Date</p>
                                   <p className="font-medium text-lg">
-                                    {item.bookingDate ? format(parseISO(item.bookingDate), "EEEE, MMM dd, yyyy") : format(fromDate, "EEEE, MMM dd, yyyy")}
+                                    {item.bookingDate ? format(parseLocal(item.bookingDate), "EEEE, MMM dd, yyyy") : format(fromDate, "EEEE, MMM dd, yyyy")}
                                   </p>
                                 </div>
 
@@ -547,7 +558,7 @@ function ConfirmationContent({ googleMapsApiKey }: ConfirmationClientProps) {
                     </div>
                     <div className="space-y-1">
                       <p className="text-sm text-muted-foreground">Transfer Date</p>
-                      <p className="font-medium">{transferBooking.date ? format(parseISO(transferBooking.date), "MMM dd, yyyy") : "N/A"}</p>
+                      <p className="font-medium">{transferBooking.date ? format(parseLocal(transferBooking.date), "MMM dd, yyyy") : "N/A"}</p>
                     </div>
 
                     {/* Airline - Show for Arrival */}

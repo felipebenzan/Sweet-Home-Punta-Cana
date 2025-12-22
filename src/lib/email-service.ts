@@ -117,18 +117,32 @@ export async function sendBookingConfirmation(data: BookingEmailData) {
     }
     // -------------------------------------------------------------------------
 
-    // Helper to format date
+    // Helper to format date safely as local date
     const formatDate = (dateStr: string) => {
         if (!dateStr) return 'N/A';
         try {
-            return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            // Parse YYYY-MM-DD as local
+            const clean = dateStr.includes('T') ? dateStr.split('T')[0] : dateStr;
+            const parts = clean.split('-');
+            let date = new Date(dateStr);
+            if (parts.length === 3) {
+                date = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+            }
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
         } catch (e) { return dateStr; }
     };
-    // Helper to format date with weekday
+
+    // Helper to format date with weekday safely
     const formatFullDate = (dateStr: string) => {
         if (!dateStr) return 'N/A';
         try {
-            return new Date(dateStr).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+            const clean = dateStr.includes('T') ? dateStr.split('T')[0] : dateStr;
+            const parts = clean.split('-');
+            let date = new Date(dateStr);
+            if (parts.length === 3) {
+                date = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+            }
+            return date.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
         } catch (e) { return dateStr; }
     };
 
